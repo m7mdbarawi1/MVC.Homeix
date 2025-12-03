@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Homeix.Models.JobProgress>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CompletedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsRatedByCustomer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsRatedByWorker)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedToUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerPost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RequestedByUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CompletedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsRatedByCustomer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsRatedByWorker)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedToUser.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerPost.CustomerPostId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestedByUser.UserId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.JobProgressId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.JobProgressId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.JobProgressId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

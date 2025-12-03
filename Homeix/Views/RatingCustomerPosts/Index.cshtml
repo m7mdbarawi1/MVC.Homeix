@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Homeix.Models.RatingCustomerPost>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RatingValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobProgress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RatedUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RaterUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RatingValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Review)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobProgress.JobProgressId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RatedUser.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RaterUser.UserId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RatingCustomerPostId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.RatingCustomerPostId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RatingCustomerPostId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

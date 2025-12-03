@@ -12,13 +12,12 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-dark bg-main border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <!-- Brand with Modern 3D Logo -->
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" style="position: relative; display: inline-block;">
+
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/homeixlogo.jpg" alt="Homeix Logo" class="logo-3d">
                 </a>
 
                 <style>
-                    /* Modern 3D Logo Effect */
                     .logo-3d {
                         height: 50px;
                         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -26,35 +25,72 @@
                         border-radius: 8px;
                     }
 
-                        /* Slight lift and glow on hover */
                         .logo-3d:hover {
                             transform: translateY(-3px) rotateX(3deg) rotateY(3deg) scale(1.05);
                             box-shadow: 0 8px 16px rgba(0,0,0,0.5), 0 12px 25px rgba(255,215,0,0.3);
                         }
                 </style>
 
-
-                <!-- Toggler for mobile -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Navbar links -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <!-- LEFT NAVIGATION -->
                     <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+
                         <li class="nav-item">
-                            <a class="nav-link text-white hover-yellow" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-white hover-yellow" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white hover-yellow" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        <!-- DIRECT LINKS TO ALL INDEX PAGES (NO DROPDOWN) -->
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Advertisements" asp-action="Index">Advertisements</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="FavoritePosts" asp-action="Index">Favorite Posts</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="JobProgresses" asp-action="Index">Job Progress</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Messages" asp-action="Index">Messages</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Offers" asp-action="Index">Offers</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Payments" asp-action="Index">Payments</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="PostCategories" asp-action="Index">Post Categories</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="PostMediums" asp-action="Index">Post Media</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="RatingCustomerPosts" asp-action="Index">Customer Ratings</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Ratings" asp-action="Index">Worker Ratings</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="SubscriptionPlans" asp-action="Index">Subscription Plans</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="UserRoles" asp-action="Index">User Roles</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Users" asp-action="Index">Users</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="WorkerApprovals" asp-action="Index">Worker Approvals</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
                     </ul>
 
-                    <!-- Login/Register -->
+
+                    <!-- RIGHT SIDE LOGIN -->
                     <ul class="navbar-nav ms-auto mb-2 mb-sm-0">
                         <partial name="_LoginPartial" />
                     </ul>
+
                 </div>
             </div>
         </nav>
@@ -68,8 +104,7 @@
 
     <footer class="footer mt-auto py-3 border-top bg-black text-white text-center">
         <div class="container">
-            &copy; 2025 - Homeix -
-            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-yellow">Privacy</a>
+            &copy; 2025 - Homeix
         </div>
     </footer>
 
