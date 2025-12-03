@@ -4,113 +4,87 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Homeix</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Homeix.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-main border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-main fixed-top shadow-sm">
             <div class="container-fluid">
 
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/homeixlogo.jpg" alt="Homeix Logo" class="logo-3d">
+                <!-- Brand Logo -->
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/homeixlogo.jpg" class="logo-3d" alt="Homeix Logo" />
                 </a>
 
-                <style>
-                    .logo-3d {
-                        height: 50px;
-                        transition: transform 0.3s ease, box-shadow 0.3s ease;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.2);
-                        border-radius: 8px;
-                    }
-
-                        .logo-3d:hover {
-                            transform: translateY(-3px) rotateX(3deg) rotateY(3deg) scale(1.05);
-                            box-shadow: 0 8px 16px rgba(0,0,0,0.5), 0 12px 25px rgba(255,215,0,0.3);
-                        }
-                </style>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse" id="mainNavbar">
 
                     <!-- LEFT NAVIGATION -->
-                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                         <li class="nav-item">
-                            <a class="nav-link text-white hover-yellow" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        <!-- DIRECT LINKS TO ALL INDEX PAGES (NO DROPDOWN) -->
+                        <!-- DIRECT LINKS FOR ALL INDEX PAGES -->
+                        <li class="nav-item"><a class="nav-link" asp-controller="Advertisements" asp-action="Index">Advertisements</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Messages" asp-action="Index">Messages</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Offers" asp-action="Index">Offers</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Payments" asp-action="Index">Payments</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="PostCategories" asp-action="Index">Categories</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="PostMediums" asp-action="Index">Media</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="RatingCustomerPosts" asp-action="Index">Customer Ratings</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Ratings" asp-action="Index">Worker Ratings</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="SubscriptionPlans" asp-action="Index">Plans</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="UserRoles" asp-action="Index">Roles</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Users</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="WorkerApprovals" asp-action="Index">Worker Approvals</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
 
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Advertisements" asp-action="Index">Advertisements</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="FavoritePosts" asp-action="Index">Favorite Posts</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="JobProgresses" asp-action="Index">Job Progress</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Messages" asp-action="Index">Messages</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Offers" asp-action="Index">Offers</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Payments" asp-action="Index">Payments</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="PostCategories" asp-action="Index">Post Categories</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="PostMediums" asp-action="Index">Post Media</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="RatingCustomerPosts" asp-action="Index">Customer Ratings</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Ratings" asp-action="Index">Worker Ratings</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="SubscriptionPlans" asp-action="Index">Subscription Plans</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="UserRoles" asp-action="Index">User Roles</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="Users" asp-action="Index">Users</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="WorkerApprovals" asp-action="Index">Worker Approvals</a></li>
-
-                        <li class="nav-item"><a class="nav-link text-white hover-yellow" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
                     </ul>
 
-
-                    <!-- RIGHT SIDE LOGIN -->
-                    <ul class="navbar-nav ms-auto mb-2 mb-sm-0">
+                    <!-- RIGHT SIDE -->
+                    <ul class="navbar-nav ms-auto">
                         <partial name="_LoginPartial" />
                     </ul>
 
                 </div>
+
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main class="container page-content">
+        @RenderBody()
+    </main>
 
-    <footer class="footer mt-auto py-3 border-top bg-black text-white text-center">
-        <div class="container">
-            &copy; 2025 - Homeix
+    <!-- FIXED FOOTER -->
+    <footer class="footer bg-black text-white text-center">
+        <div class="container py-3">
+            © 2025 - Homeix
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
