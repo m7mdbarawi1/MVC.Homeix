@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Models;
+using Homeix.Data;
 
 namespace Homeix.Controllers
 {
@@ -56,8 +57,6 @@ namespace Homeix.Controllers
         }
 
         // POST: RatingCustomerPosts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RatingCustomerPostId,JobProgressId,RaterUserId,RatedUserId,RatingValue,Review,CreatedAt")] RatingCustomerPost ratingCustomerPost)
@@ -94,8 +93,6 @@ namespace Homeix.Controllers
         }
 
         // POST: RatingCustomerPosts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("RatingCustomerPostId,JobProgressId,RaterUserId,RatedUserId,RatingValue,Review,CreatedAt")] RatingCustomerPost ratingCustomerPost)

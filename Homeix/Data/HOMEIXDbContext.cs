@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Homeix.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Homeix.Models;
+namespace Homeix.Data;
 
 public partial class HOMEIXDbContext : DbContext
 {
@@ -10,63 +11,36 @@ public partial class HOMEIXDbContext : DbContext
     {
     }
 
-    public HOMEIXDbContext(DbContextOptions<HOMEIXDbContext> options)
-        : base(options)
+    public HOMEIXDbContext(DbContextOptions<HOMEIXDbContext> options) : base(options)
     {
     }
 
     public virtual DbSet<Advertisement> Advertisements { get; set; }
-
     public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
-
     public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
-
     public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
-
     public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
-
     public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
-
     public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
-
     public virtual DbSet<Conversation> Conversations { get; set; }
-
     public virtual DbSet<CustomerPost> CustomerPosts { get; set; }
-
     public virtual DbSet<FavoritePost> FavoritePosts { get; set; }
-
     public virtual DbSet<JobProgress> JobProgresses { get; set; }
-
     public virtual DbSet<Message> Messages { get; set; }
-
     public virtual DbSet<Offer> Offers { get; set; }
-
     public virtual DbSet<Payment> Payments { get; set; }
-
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
-
     public virtual DbSet<PostCategory> PostCategories { get; set; }
-
     public virtual DbSet<PostMedium> PostMedia { get; set; }
-
     public virtual DbSet<Rating> Ratings { get; set; }
-
     public virtual DbSet<RatingCustomerPost> RatingCustomerPosts { get; set; }
-
     public virtual DbSet<Sondo> Sondos { get; set; }
-
     public virtual DbSet<Subscription> Subscriptions { get; set; }
-
     public virtual DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
-
     public virtual DbSet<TestTable> TestTables { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<UserRole> UserRoles { get; set; }
-
     public virtual DbSet<WorkerApproval> WorkerApprovals { get; set; }
-
     public virtual DbSet<WorkerPost> WorkerPosts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

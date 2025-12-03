@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Models;
+using Homeix.Data;
 
 namespace Homeix.Controllers
 {
@@ -49,8 +50,6 @@ namespace Homeix.Controllers
         }
 
         // POST: UserRoles/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RoleId,RoleName")] UserRole userRole)

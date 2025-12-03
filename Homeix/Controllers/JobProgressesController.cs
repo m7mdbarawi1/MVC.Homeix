@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Models;
+using Homeix.Data;
 
 namespace Homeix.Controllers
 {
@@ -56,8 +57,6 @@ namespace Homeix.Controllers
         }
 
         // POST: JobProgresses/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("JobProgressId,CustomerPostId,RequestedByUserId,AssignedToUserId,Status,StartedAt,CompletedAt,IsRatedByCustomer,IsRatedByWorker")] JobProgress jobProgress)
@@ -94,8 +93,6 @@ namespace Homeix.Controllers
         }
 
         // POST: JobProgresses/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("JobProgressId,CustomerPostId,RequestedByUserId,AssignedToUserId,Status,StartedAt,CompletedAt,IsRatedByCustomer,IsRatedByWorker")] JobProgress jobProgress)
