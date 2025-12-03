@@ -1,175 +1,210 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using System.Security.Claims
+@using Homeix.Data
+@inject HOMEIXDbContext _context
+
+@{
+    var currentCulture = "en";
+    var dir = "ltr";
+    string? roleName = User.FindFirst(ClaimTypes.Role)?.Value?.ToLower();
+}
+
+<!DOCTYPE html>
+<html lang="@currentCulture" dir="@dir" class="light-theme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - Homeix</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    @RenderSection("Head", required: false)
 </head>
 
-<body>
-    <!-- ========================= HEADER ========================= -->
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- ========================= NAVBAR ========================= -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-main fixed-top shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-main shadow-sm fixed-top" id="mainNavbar">
             <div class="container-fluid">
 
-                <!-- BRAND -->
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                    <img src="~/homeixlogo.jpg" class="logo-3d" alt="Homeix Logo" />
+                <!-- LOGO -->
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <img src="~/homeixlogo.jpg" height="40" class="me-2 logo-3d" />
                 </a>
 
-                <!-- TOGGLER -->
+                <!-- MOBILE -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                        data-bs-target="#navbarMain">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- NAVBAR MENU -->
-                <div class="collapse navbar-collapse" id="mainNavbar">
-
-                    <!-- LEFT MENU -->
+                <!-- NAV MENU -->
+                <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                        <!-- POSTS -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Posts</a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
-                                <li><a class="dropdown-item" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
-                                <li><a class="dropdown-item" asp-controller="PostCategories" asp-action="Index">Categories</a></li>
-                                <li><a class="dropdown-item" asp-controller="PostMediums" asp-action="Index">Media</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- MESSAGES -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Messages</a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-controller="Messages" asp-action="Index">Messages</a></li>
-                                <li><a class="dropdown-item" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- PAYMENTS -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Payments</a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">Payments</a></li>
-                                <li><a class="dropdown-item" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
-                                <li><a class="dropdown-item" asp-controller="SubscriptionPlans" asp-action="Index">Plans</a></li>
-                                <li><a class="dropdown-item" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- RATINGS -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Ratings</a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-controller="Ratings" asp-action="Index">Worker Ratings</a></li>
-                                <li><a class="dropdown-item" asp-controller="RatingCustomerPosts" asp-action="Index">Customer Ratings</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- WORKERS -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Workers</a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-controller="WorkerApprovals" asp-action="Index">Worker Approvals</a></li>
-                                <li><a class="dropdown-item" asp-controller="Advertisements" asp-action="Index">Advertisements</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- USERS -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Users</a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
-                                <li><a class="dropdown-item" asp-controller="UserRoles" asp-action="Index">Roles</a></li>
-                                <li><a class="dropdown-item" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
-                                <li><a class="dropdown-item" asp-controller="Offers" asp-action="Index">Offers</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- JOB PROGRESS -->
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a>
-                        </li>
-
-                    </ul>
-
-                    <!-- ========== RIGHT SIDE BUTTONS ========== -->
-                    <ul class="navbar-nav ms-auto align-items-center gap-2">
-
-                        <!-- THEME TOGGLE -->
-                        <li class="nav-item">
-                            <button class="btn btn-theme-toggle">🌙</button>
-                        </li>
-
-                        <!-- LANGUAGE -->
-                        <li class="nav-item dropdown">
-                            <button class="btn btn-lang dropdown-toggle" data-bs-toggle="dropdown">
-                                Language
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                                <li><a class="dropdown-item">English</a></li>
-                                <li><a class="dropdown-item">Arabic</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- ACCOUNT DROPDOWN -->
-                        <li class="nav-item dropdown">
-                            <button class="btn btn-login dropdown-toggle" data-bs-toggle="dropdown">
-                                Account
-                            </button>
-
-                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-
-                                <!-- SIGN IN -->
-                                <li>
-                                    <a class="dropdown-item"
-                                       asp-area=""
-                                       asp-controller="Account"
-                                       asp-action="Login">
-                                        Sign In
-                                    </a>
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            if (roleName == "admin")
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Posts</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a class="dropdown-item" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
+                                        <li><a class="dropdown-item" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
+                                        <li><a class="dropdown-item" asp-controller="PostCategories" asp-action="Index">Categories</a></li>
+                                        <li><a class="dropdown-item" asp-controller="PostMediums" asp-action="Index">Media</a></li>
+                                    </ul>
                                 </li>
 
-                                <!-- SIGN UP -->
-                                <li>
-                                    <a class="dropdown-item"
-                                       asp-area=""
-                                       asp-controller="Account"
-                                       asp-action="Register">
-                                        Sign Up
-                                    </a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Messages</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a class="dropdown-item" asp-controller="Messages" asp-action="Index">Messages</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
+                                    </ul>
                                 </li>
 
-                            </ul>
-                        </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Payments</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">Payments</a></li>
+                                        <li><a class="dropdown-item" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
+                                        <li><a class="dropdown-item" asp-controller="SubscriptionPlans" asp-action="Index">Plans</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></li>
+                                    </ul>
+                                </li>
 
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Ratings</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a class="dropdown-item" asp-controller="Ratings" asp-action="Index">Worker Ratings</a></li>
+                                        <li><a class="dropdown-item" asp-controller="RatingCustomerPosts" asp-action="Index">Customer Ratings</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Workers</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a class="dropdown-item" asp-controller="WorkerApprovals" asp-action="Index">Worker Approvals</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Advertisements" asp-action="Index">Advertisements</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Users</a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
+                                        <li><a class="dropdown-item" asp-controller="UserRoles" asp-action="Index">Roles</a></li>
+                                        <li><a class="dropdown-item" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Offers" asp-action="Index">Offers</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a>
+                                </li>
+                            }
+                            else if (roleName == "customer")
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
+                            }
+                            else if (roleName == "worker")
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="WorkerDashboard" asp-action="Index">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Advertisements" asp-action="MyAds">My Ads</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="MyJobs">My Jobs</a></li>
+                            }
+                        }
                     </ul>
+
+                    <!-- RIGHT SIDE -->
+                    <div class="d-flex align-items-center gap-2">
+
+                        <!-- THEME SWITCH -->
+                        <button id="themeToggle" class="btn btn-outline-light btn-sm">
+                            <span id="themeIcon">🌙</span>
+                        </button>
+
+                        <!-- ACCOUNT -->
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            <div class="dropdown">
+                                <a class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                    @User.Identity!.Name <small>(@roleName)</small>
+                                </a>
+
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">Login</a>
+                        }
+                    </div>
+
                 </div>
             </div>
         </nav>
     </header>
 
     <!-- ========================= MAIN CONTENT ========================= -->
-    <main class="container page-content">
+    <main class="container-fluid flex-grow-1 py-4">
         @RenderBody()
     </main>
 
     <!-- ========================= FOOTER ========================= -->
-    <footer class="footer bg-black text-white text-center">
-        <div class="container py-3">© 2025 - Homeix</div>
+    <footer class="footer bg-black text-white text-center mt-auto">
+        <div class="container py-3">
+            © 2025 - Homeix
+        </div>
     </footer>
 
     <!-- ========================= SCRIPTS ========================= -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- NAVBAR SPACING -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const nav = document.getElementById("mainNavbar");
+            document.body.style.paddingTop = nav.offsetHeight + "px";
+        });
+    </script>
+
+    <!-- DARK / LIGHT MODE -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const root = document.documentElement;
+            const icon = document.getElementById("themeIcon");
+            const button = document.getElementById("themeToggle");
+
+            const saved = localStorage.getItem("theme") || "light";
+            if (saved === "dark") root.classList.add("dark-theme");
+            icon.textContent = saved === "dark" ? "🌙" : "☀️";
+
+            button.addEventListener("click", () => {
+                const isDark = root.classList.toggle("dark-theme");
+                localStorage.setItem("theme", isDark ? "dark" : "light");
+                icon.textContent = isDark ? "🌙" : "☀️";
+            });
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

@@ -1,43 +1,46 @@
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 
-namespace Homeix;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
-{
-    public static void Main(string[] args)
+var cs = builder.Configuration.GetConnectionString("DefaultConnection")
+         ?? throw new InvalidOperationException("Connection string not found.");
+
+builder.Services.AddDbContext<HOMEIXDbContext>(opt =>
+    opt.UseSqlServer(cs));
+
+builder.Services.AddAuthentication("HomeixAuth")
+    .AddCookie("HomeixAuth", options =>
     {
-        var builder = WebApplication.CreateBuilder(args);
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromHours(5);
+        options.SlidingExpiration = true;
+    });
 
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddAuthorization();
+builder.Services.AddControllersWithViews();
 
-        // *** HOMEIX Scaffolded DbContext ***
-        builder.Services.AddDbContext<HOMEIXDbContext>(options => options.UseSqlServer(connectionString));
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-        builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<HOMEIXDbContext>();
-        builder.Services.AddControllersWithViews();
+var app = builder.Build();
 
-        var app = builder.Build();
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseMigrationsEndPoint();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
-        }
-
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-        app.UseRouting();
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-        app.MapRazorPages();
-        app.Run();
-    }
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

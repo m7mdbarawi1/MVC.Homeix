@@ -1,247 +1,236 @@
-/* ===================== COLORS ===================== */
+/* ==========================================
+   HOMEIX LUXURY BLUE/NAVY/GOLD THEME
+   Light + Dark Mode (class-based)
+========================================== */
+
+/* ---------- COLOR PALETTE ---------- */
 :root {
-    --navy: #0a0f2b;
-    --navy-light: #131b3f;
+    --primary: #0a0f2b;
+    --primary-light: #131b3f;
     --blue: #1a237e;
     --gold: #ffd700;
     --gold-dark: #e6c300;
-    --white: #ffffff;
+    /* Light Mode */
+    --light-bg: #f5f7fa;
+    --light-card: #ffffff;
+    --light-text: #0a0f2b;
+    --light-border: #d1d5db;
+    /* Dark Mode */
+    --dark-bg: #0b0f1e;
+    --dark-card: #1a1f30;
+    --dark-text: #e2e8f0;
+    --dark-border: #334155;
 }
 
-/* ===================== BASE ===================== */
-html, body {
-    height: 100%;
-    margin: 0;
-    background: var(--navy);
-    color: var(--white);
-    font-family: 'Segoe UI', sans-serif;
-    overflow-x: hidden;
+/* ---------- GLOBAL BODY ---------- */
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: var(--light-bg);
+    color: var(--light-text);
+    transition: background 0.3s, color 0.3s;
 }
 
-/* ensure content is not hidden behind navbar/footer */
-.page-content {
-    padding-top: 100px;
-    padding-bottom: 120px;
+.dark-theme body {
+    background-color: var(--dark-bg) !important;
+    color: var(--dark-text) !important;
 }
 
-@media (max-width: 576px) {
-    .page-content {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
-
-/* ===================== NAVBAR ===================== */
+/* ---------- NAVBAR ---------- */
 .bg-main {
-    background: linear-gradient(135deg, var(--navy-light), var(--blue)) !important;
+    background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
 }
 
-/* fix dropdown background for dark navbar */
-.dropdown-menu-dark {
-    background-color: #0b1130 !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-    .dropdown-menu-dark .dropdown-item {
-        color: var(--white);
-    }
-
-        .dropdown-menu-dark .dropdown-item:hover {
-            background-color: var(--blue);
-            color: var(--gold);
-        }
-
-/* nav items */
-.navbar .nav-link {
-    color: var(--white) !important;
+.nav-link {
+    color: white !important;
     font-weight: 500;
+    transition: 0.2s;
 }
 
-    .navbar .nav-link:hover {
+    .nav-link:hover {
         color: var(--gold) !important;
     }
 
-/* fix nav spacing */
-.navbar-nav {
-    gap: 0.3rem;
+.navbar-brand img {
+    transition: 0.2s;
 }
 
-/* mobile adjustments */
-@media (max-width: 992px) {
-    .navbar-nav .nav-link {
-        padding: 8px 12px;
-        border-radius: 6px;
-    }
-}
-
-/* ===================== LOGO ===================== */
-.logo-3d {
-    height: 50px;
-    width: auto;
-    border-radius: 10px;
-    transition: transform .2s ease;
-}
-
-    .logo-3d:hover {
+    .navbar-brand img:hover {
         transform: scale(1.05);
     }
 
-/* ===================== FOOTER (NOT FIXED) ===================== */
-.footer {
-    position: relative; /* NOT FIXED */
-    bottom: 0;
-    width: 100%;
-    background: #000;
-    color: var(--white);
-    border-top: 2px solid var(--gold);
-    text-align: center;
-    padding: 12px 0;
-    margin-top: 40px; /* Adds spacing above footer */
+.dark-theme .navbar {
+    background-color: #000 !important;
 }
 
+/* ---------- DROPDOWNS ---------- */
+.dropdown-menu {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.20);
+}
 
-/* smaller footer text on small screens */
-@media (max-width: 450px) {
-    .footer {
-        font-size: 14px;
+.dropdown-item:hover {
+    background-color: var(--blue);
+    color: var(--gold);
+}
+
+.dark-theme .dropdown-menu {
+    background-color: #1e293b;
+    border: 1px solid var(--dark-border);
+}
+
+.dark-theme .dropdown-item {
+    color: var(--dark-text);
+}
+
+    .dark-theme .dropdown-item:hover {
+        background-color: var(--primary-light);
+        color: var(--gold);
     }
+
+/* ---------- CARDS ---------- */
+.card {
+    background: var(--light-card);
+    border: 1px solid var(--light-border);
+    transition: 0.3s;
 }
 
-/* ===================== TABLES ===================== */
+.dark-theme .card {
+    background: var(--dark-card);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+/* ---------- FORMS ---------- */
+.form-control {
+    background: var(--light-card);
+    border: 1px solid var(--light-border);
+}
+
+.dark-theme .form-control {
+    background: #1f2937;
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-primary,
+.btn-accent {
+    background-color: var(--gold);
+    border-color: var(--gold);
+}
+
+    .btn-primary:hover,
+    .btn-accent:hover {
+        background-color: var(--gold-dark);
+    }
+
+.btn-outline-light:hover {
+    color: var(--gold) !important;
+    border-color: var(--gold) !important;
+}
+
+/* ---------- TABLES ---------- */
 .table {
-    color: var(--white);
+    background: white;
 }
 
     .table th {
-        background: var(--blue) !important;
+        background: var(--blue);
         color: var(--gold);
-        border: none !important;
     }
 
     .table td {
-        background: rgba(255, 255, 255, 0.05);
-        border: none !important;
+        background: rgba(0,0,0,0.03);
     }
 
-.table-responsive {
-    overflow-x: auto;
+/* DARK MODE TABLES */
+.dark-theme .table {
+    background: var(--dark-card);
+    color: var(--dark-text);
 }
 
-/* ===================== FORMS ===================== */
-.form-control {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--white);
-    border: 1px solid #555;
-}
-
-    .form-control::placeholder {
-        color: #cccccc;
+    .dark-theme .table th {
+        background: var(--primary-light);
+        color: var(--gold);
     }
 
-    .form-control:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
-    }
-
-/* labels */
-.form-label {
-    color: var(--gold);
-    font-weight: 500;
+.dark-theme .table-striped tbody tr:nth-child(odd) {
+    background: #1e293b;
 }
 
-/* ===================== BUTTONS ===================== */
-.btn-primary {
-    background: var(--gold);
-    color: #000;
-    border: none;
-    transition: background .2s ease-in-out;
+/* ---------- FOOTER ---------- */
+.footer {
+    background: #000;
+    color: white;
+    border-top: 2px solid var(--gold);
 }
 
-    .btn-primary:hover {
-        background: var(--gold-dark);
-        color: #000;
-    }
-
-.btn-dark {
-    background-color: var(--navy-light);
-    border: none;
+.dark-theme .footer {
+    color: var(--dark-text);
 }
 
-    .btn-dark:hover {
-        background-color: var(--blue);
-    }
-
-/* ===================== GENERAL CONTAINER, CARDS ===================== */
-.card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #444;
-    color: var(--white);
+/* ---------- CHATBOT ---------- */
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
 }
 
-.card-header {
+#chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     background: var(--blue);
-    color: var(--gold);
-    border-bottom: none;
-}
-
-/* smooth fade animation */
-.fade-in {
-    animation: fadeIn .5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-/* ===================== RIGHT NAVBAR BUTTONS ===================== */
-
-.btn-theme-toggle {
-    background: transparent;
-    border: 2px solid var(--white);
-    color: var(--white);
-    padding: 6px 12px;
-    font-size: 18px;
-    border-radius: 10px;
-    transition: .2s;
-}
-
-    .btn-theme-toggle:hover {
-        color: var(--gold);
-        border-color: var(--gold);
-    }
-
-.btn-lang {
-    background: transparent;
-    border: 2px solid var(--white);
-    color: var(--white);
-    padding: 6px 16px;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: .2s;
-}
-
-    .btn-lang:hover {
-        border-color: var(--gold);
-        color: var(--gold);
-    }
-
-.btn-login {
-    background: var(--gold);
-    color: #000;
-    font-weight: 700;
-    border-radius: 10px;
-    padding: 6px 18px;
+    color: white;
     border: none;
+    transition: 0.2s;
 }
 
-    .btn-login:hover {
-        background: var(--gold-dark);
-        color: #000;
+    #chatbot-toggle:hover {
+        background: var(--primary-light);
     }
+
+#chatbot-box {
+    width: 320px;
+    max-height: 480px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.dark-theme #chatbot-box {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+}
+
+.chat-messages {
+    padding: 10px;
+    background: #f8f9fa;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.dark-theme .chat-messages {
+    background: #1e293b;
+}
+
+.chat-message.user {
+    background: var(--blue);
+    color: white;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+}
+
+.chat-message.bot {
+    background: var(--light-bg);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+
+.dark-theme .chat-message.bot {
+    background: #334155;
+    color: var(--dark-text);
+}

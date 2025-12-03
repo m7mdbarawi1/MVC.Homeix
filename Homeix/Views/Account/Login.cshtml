@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container-fluid page-wrapper mt-5 pt-4">
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title fw-bold">Login</h1>
+        </div>
+    </div>
+
+    <!-- Centered Login Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-4">
+
+                    <form method="post" asp-controller="Account" asp-action="Login">
+
+                        @Html.AntiForgeryToken()
+
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold">Email</label>
+                            <input id="email" name="email" type="email" class="form-control"
+                                   placeholder="Enter your email" required />
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">Password</label>
+                            <div class="input-group">
+                                <input id="password" name="password" type="password" class="form-control"
+                                       placeholder="Enter your password" required />
+
+                                <button type="button" class="btn btn-outline-secondary" id="togglePassword" tabindex="-1">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error Message -->
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger py-2 mt-3">
+                                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+                            </div>
+                        }
+
+                        <!-- Login Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary fw-semibold">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </button>
+                        </div>
+
+                        <!-- Register Link -->
+                        <p class="text-center mt-3 mb-0">
+                            Don't have an account?
+                            <a asp-controller="Account" asp-action="Register" class="fw-semibold">Register here</a>.
+                        </p>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Password visibility toggle
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('togglePassword');
+            const icon = toggleBtn.querySelector('i');
+
+            toggleBtn.addEventListener('click', () => {
+                const isHidden = passwordInput.type === 'password';
+                passwordInput.type = isHidden ? 'text' : 'password';
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
+            });
+        });
+    </script>
+}

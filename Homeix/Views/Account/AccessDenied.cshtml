@@ -1,0 +1,58 @@
+﻿@model ErrorViewModel
+
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container-fluid page-wrapper mt-4">
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title text-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i> Error
+            </h1>
+            <h4 class="text-muted">An unexpected error has occurred.</h4>
+        </div>
+    </div>
+
+    <!-- Error Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body">
+
+                    @if (Model.ShowRequestId)
+                    {
+                        <p>
+                            <strong>Request ID:</strong>
+                            <code>@Model.RequestId</code>
+                        </p>
+                    }
+
+                    <h5>Development Mode</h5>
+                    <p>
+                        Swapping to the Development environment displays more detailed information about the error that occurred.
+                    </p>
+
+                    <p class="text-danger">
+                        <strong>Important:</strong> The Development environment should NOT be enabled for deployed applications.
+                    </p>
+
+                    <p>
+                        To enable Development environment, set the <code>ASPNETCORE_ENVIRONMENT</code> environment variable to <strong>Development</strong>
+                        and restart the application.
+                    </p>
+
+                </div>
+
+                <div class="card-footer text-end">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Back to Home
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
