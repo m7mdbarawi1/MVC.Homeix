@@ -1,40 +1,83 @@
 /* ===================== COLORS ===================== */
 :root {
     --navy: #0a0f2b;
+    --navy-light: #131b3f;
     --blue: #1a237e;
     --gold: #ffd700;
+    --gold-dark: #e6c300;
     --white: #ffffff;
 }
 
 /* ===================== BASE ===================== */
 html, body {
     height: 100%;
-    background: #0a0f2b;
-    color: var(--white);
     margin: 0;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Segoe UI', sans-serif;
+    overflow-x: hidden;
 }
 
+/* ensure content is not hidden behind navbar/footer */
 .page-content {
-    padding-top: 90px; /* space for fixed navbar */
-    padding-bottom: 90px; /* space for fixed footer */
+    padding-top: 100px;
+    padding-bottom: 120px;
+}
+
+@media (max-width: 576px) {
+    .page-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 }
 
 /* ===================== NAVBAR ===================== */
 .bg-main {
-    background: linear-gradient(135deg, #131b3f, #1a237e) !important;
+    background: linear-gradient(135deg, var(--navy-light), var(--blue)) !important;
 }
 
+/* fix dropdown background for dark navbar */
+.dropdown-menu-dark {
+    background-color: #0b1130 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .dropdown-menu-dark .dropdown-item {
+        color: var(--white);
+    }
+
+        .dropdown-menu-dark .dropdown-item:hover {
+            background-color: var(--blue);
+            color: var(--gold);
+        }
+
+/* nav items */
 .navbar .nav-link {
     color: var(--white) !important;
+    font-weight: 500;
 }
 
     .navbar .nav-link:hover {
         color: var(--gold) !important;
     }
 
+/* fix nav spacing */
+.navbar-nav {
+    gap: 0.3rem;
+}
+
+/* mobile adjustments */
+@media (max-width: 992px) {
+    .navbar-nav .nav-link {
+        padding: 8px 12px;
+        border-radius: 6px;
+    }
+}
+
 /* ===================== LOGO ===================== */
 .logo-3d {
     height: 50px;
+    width: auto;
     border-radius: 10px;
     transition: transform .2s ease;
 }
@@ -43,7 +86,7 @@ html, body {
         transform: scale(1.05);
     }
 
-/* ===================== FOOTER (FIXED) ===================== */
+/* ===================== FOOTER ===================== */
 .footer {
     position: fixed;
     bottom: 0;
@@ -51,7 +94,16 @@ html, body {
     background: #000;
     color: var(--white);
     border-top: 2px solid var(--gold);
-    z-index: 1000;
+    text-align: center;
+    padding: 12px 0;
+    z-index: 9999;
+}
+
+/* smaller footer text on small screens */
+@media (max-width: 450px) {
+    .footer {
+        font-size: 14px;
+    }
 }
 
 /* ===================== TABLES ===================== */
@@ -60,33 +112,90 @@ html, body {
 }
 
     .table th {
-        background: #1a237e !important;
+        background: var(--blue) !important;
         color: var(--gold);
+        border: none !important;
     }
 
     .table td {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255, 255, 255, 0.05);
+        border: none !important;
     }
+
+.table-responsive {
+    overflow-x: auto;
+}
 
 /* ===================== FORMS ===================== */
 .form-control {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--white);
     border: 1px solid #555;
 }
 
+    .form-control::placeholder {
+        color: #cccccc;
+    }
+
     .form-control:focus {
         border-color: var(--gold);
-        box-shadow: none;
+        box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
     }
+
+/* labels */
+.form-label {
+    color: var(--gold);
+    font-weight: 500;
+}
 
 /* ===================== BUTTONS ===================== */
 .btn-primary {
     background: var(--gold);
     color: #000;
     border: none;
+    transition: background .2s ease-in-out;
 }
 
     .btn-primary:hover {
-        background: #e6c300;
+        background: var(--gold-dark);
+        color: #000;
     }
+
+.btn-dark {
+    background-color: var(--navy-light);
+    border: none;
+}
+
+    .btn-dark:hover {
+        background-color: var(--blue);
+    }
+
+/* ===================== GENERAL CONTAINER, CARDS ===================== */
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    color: var(--white);
+}
+
+.card-header {
+    background: var(--blue);
+    color: var(--gold);
+    border-bottom: none;
+}
+
+/* smooth fade animation */
+.fade-in {
+    animation: fadeIn .5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
