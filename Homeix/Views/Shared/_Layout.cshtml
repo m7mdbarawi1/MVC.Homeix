@@ -15,30 +15,27 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-main fixed-top shadow-sm">
             <div class="container-fluid">
 
-                <!-- Brand Logo -->
+                <!-- BRAND -->
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                     <img src="~/homeixlogo.jpg" class="logo-3d" alt="Homeix Logo" />
                 </a>
 
-                <!-- Mobile Toggle -->
+                <!-- TOGGLER -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#mainNavbar" aria-controls="mainNavbar"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Navbar Menu -->
+                <!-- NAVBAR MENU -->
                 <div class="collapse navbar-collapse" id="mainNavbar">
 
                     <!-- LEFT MENU -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                        <!-- POSTS GROUP -->
+                        <!-- POSTS -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="postsDrop"
-                               role="button" data-bs-toggle="dropdown">
-                                Posts
-                            </a>
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Posts</a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
                                 <li><a class="dropdown-item" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
@@ -47,24 +44,18 @@
                             </ul>
                         </li>
 
-                        <!-- MESSAGES GROUP -->
+                        <!-- MESSAGES -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="msgDrop"
-                               role="button" data-bs-toggle="dropdown">
-                                Messages
-                            </a>
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Messages</a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" asp-controller="Messages" asp-action="Index">Messages</a></li>
                                 <li><a class="dropdown-item" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
                             </ul>
                         </li>
 
-                        <!-- PAYMENTS GROUP -->
+                        <!-- PAYMENTS -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="paymentDrop"
-                               role="button" data-bs-toggle="dropdown">
-                                Payments
-                            </a>
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Payments</a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">Payments</a></li>
                                 <li><a class="dropdown-item" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
@@ -73,36 +64,27 @@
                             </ul>
                         </li>
 
-                        <!-- RATINGS GROUP -->
+                        <!-- RATINGS -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="ratingsDrop"
-                               role="button" data-bs-toggle="dropdown">
-                                Ratings
-                            </a>
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Ratings</a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" asp-controller="Ratings" asp-action="Index">Worker Ratings</a></li>
                                 <li><a class="dropdown-item" asp-controller="RatingCustomerPosts" asp-action="Index">Customer Ratings</a></li>
                             </ul>
                         </li>
 
-                        <!-- WORKERS GROUP -->
+                        <!-- WORKERS -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="workerDrop"
-                               role="button" data-bs-toggle="dropdown">
-                                Workers
-                            </a>
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Workers</a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" asp-controller="WorkerApprovals" asp-action="Index">Worker Approvals</a></li>
                                 <li><a class="dropdown-item" asp-controller="Advertisements" asp-action="Index">Advertisements</a></li>
                             </ul>
                         </li>
 
-                        <!-- USERS GROUP -->
+                        <!-- USERS -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="usersDrop"
-                               role="button" data-bs-toggle="dropdown">
-                                Users
-                            </a>
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Users</a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
                                 <li><a class="dropdown-item" asp-controller="UserRoles" asp-action="Index">Roles</a></li>
@@ -111,20 +93,65 @@
                             </ul>
                         </li>
 
-                        <!-- JOB PROGRESS (single item) -->
+                        <!-- JOB PROGRESS -->
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a>
                         </li>
 
                     </ul>
 
-                    <!-- RIGHT SIDE LOGIN -->
-                    <ul class="navbar-nav ms-auto">
-                        <partial name="_LoginPartial" />
+                    <!-- ========== RIGHT SIDE BUTTONS ========== -->
+                    <ul class="navbar-nav ms-auto align-items-center gap-2">
+
+                        <!-- THEME TOGGLE -->
+                        <li class="nav-item">
+                            <button class="btn btn-theme-toggle">🌙</button>
+                        </li>
+
+                        <!-- LANGUAGE -->
+                        <li class="nav-item dropdown">
+                            <button class="btn btn-lang dropdown-toggle" data-bs-toggle="dropdown">
+                                Language
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                <li><a class="dropdown-item">English</a></li>
+                                <li><a class="dropdown-item">Arabic</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- ACCOUNT DROPDOWN -->
+                        <li class="nav-item dropdown">
+                            <button class="btn btn-login dropdown-toggle" data-bs-toggle="dropdown">
+                                Account
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+
+                                <!-- SIGN IN -->
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-area=""
+                                       asp-controller="Account"
+                                       asp-action="Login">
+                                        Sign In
+                                    </a>
+                                </li>
+
+                                <!-- SIGN UP -->
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-area=""
+                                       asp-controller="Account"
+                                       asp-action="Register">
+                                        Sign Up
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
                     </ul>
-
                 </div>
-
             </div>
         </nav>
     </header>
@@ -136,12 +163,10 @@
 
     <!-- ========================= FOOTER ========================= -->
     <footer class="footer bg-black text-white text-center">
-        <div class="container py-3">
-            © 2025 - Homeix
-        </div>
+        <div class="container py-3">© 2025 - Homeix</div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- ========================= SCRIPTS ========================= -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
