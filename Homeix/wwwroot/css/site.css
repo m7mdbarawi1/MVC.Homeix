@@ -22,7 +22,9 @@
     --dark-border: #334155;
 }
 
-/* ---------- GLOBAL BODY ---------- */
+/* ==========================================
+   GLOBAL BODY
+========================================== */
 body {
     font-family: "Segoe UI", sans-serif;
     background-color: var(--light-bg);
@@ -30,12 +32,15 @@ body {
     transition: background 0.3s, color 0.3s;
 }
 
-.dark-theme body {
+/* DARK MODE ROOT */
+.dark-theme {
     background-color: var(--dark-bg) !important;
     color: var(--dark-text) !important;
 }
 
-/* ---------- NAVBAR ---------- */
+/* ==========================================
+   NAVBAR (Luxury Gradient)
+========================================== */
 .bg-main {
     background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
 }
@@ -59,10 +64,12 @@ body {
     }
 
 .dark-theme .navbar {
-    background-color: #000 !important;
+    background: linear-gradient(135deg, #000814, #001233) !important;
 }
 
-/* ---------- DROPDOWNS ---------- */
+/* ==========================================
+   DROPDOWNS
+========================================== */
 .dropdown-menu {
     border-radius: 0.5rem;
     box-shadow: 0 4px 10px rgba(0,0,0,0.20);
@@ -87,7 +94,9 @@ body {
         color: var(--gold);
     }
 
-/* ---------- CARDS ---------- */
+/* ==========================================
+   CARDS
+========================================== */
 .card {
     background: var(--light-card);
     border: 1px solid var(--light-border);
@@ -100,11 +109,18 @@ body {
     color: var(--dark-text);
 }
 
-/* ---------- FORMS ---------- */
+/* ==========================================
+   FORMS
+========================================== */
 .form-control {
     background: var(--light-card);
     border: 1px solid var(--light-border);
 }
+
+    .form-control:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+    }
 
 .dark-theme .form-control {
     background: #1f2937;
@@ -112,11 +128,14 @@ body {
     border-color: var(--dark-border);
 }
 
-/* ---------- BUTTONS ---------- */
+/* ==========================================
+   BUTTONS
+========================================== */
 .btn-primary,
 .btn-accent {
     background-color: var(--gold);
     border-color: var(--gold);
+    color: black;
 }
 
     .btn-primary:hover,
@@ -129,7 +148,9 @@ body {
     border-color: var(--gold) !important;
 }
 
-/* ---------- TABLES ---------- */
+/* ==========================================
+   TABLES
+========================================== */
 .table {
     background: white;
 }
@@ -158,18 +179,24 @@ body {
     background: #1e293b;
 }
 
-/* ---------- FOOTER ---------- */
+/* ==========================================
+   FOOTER (MATCH NAVBAR COLOR)
+========================================== */
 .footer {
-    background: #000;
+    background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
     color: white;
     border-top: 2px solid var(--gold);
+    padding: 15px;
 }
 
 .dark-theme .footer {
+    background: linear-gradient(135deg, #000814, #001233) !important;
     color: var(--dark-text);
 }
 
-/* ---------- CHATBOT ---------- */
+/* ==========================================
+   CHATBOT FLOATING BUTTON
+========================================== */
 #chatbot-container {
     position: fixed;
     bottom: 20px;
@@ -191,6 +218,7 @@ body {
         background: var(--primary-light);
     }
 
+/* Chatbox Window */
 #chatbot-box {
     width: 320px;
     max-height: 480px;
@@ -226,8 +254,8 @@ body {
 .chat-message.bot {
     background: var(--light-bg);
     padding: 6px 10px;
-    border-radius: 6px;
     margin-bottom: 6px;
+    border-radius: 6px;
 }
 
 .dark-theme .chat-message.bot {

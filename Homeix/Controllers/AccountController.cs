@@ -12,24 +12,26 @@ namespace Homeix.Controllers
     public class AccountController : Controller
     {
         private readonly HOMEIXDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public AccountController(HOMEIXDbContext context)
+        public AccountController(HOMEIXDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
-        // ==========================
-        // GET: /Account/Login
-        // ==========================
+        // =============================================================
+        // LOGIN (GET)
+        // =============================================================
         public IActionResult Login(string? returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        // ==========================
-        // POST: /Account/Login
-        // ==========================
+        // =============================================================
+        // LOGIN (POST)
+        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
@@ -40,11 +42,11 @@ namespace Homeix.Controllers
                 return View();
             }
 
-            string hashedPassword = HashPassword(password);
+            string hashed = HashPassword(password);
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == email && u.PasswordHash == hashedPassword);
+                .FirstOrDefaultAsync(u => u.Email == email && u.PasswordHash == hashed);
 
             if (user == null)
             {
@@ -52,13 +54,6 @@ namespace Homeix.Controllers
                 return View();
             }
 
-            if (user.Role == null)
-            {
-                ViewBag.Error = "User role is missing.";
-                return View();
-            }
-
-            // Build claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.FullName),
@@ -67,38 +62,36 @@ namespace Homeix.Controllers
                 new Claim("UserId", user.UserId.ToString())
             };
 
-            var identity = new ClaimsIdentity(claims, "HomeixAuth");
-            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync("HomeixAuth",
+                new ClaimsPrincipal(new ClaimsIdentity(claims, "HomeixAuth")),
+                new AuthenticationProperties { IsPersistent = true });
 
-            await HttpContext.SignInAsync("HomeixAuth", principal, new AuthenticationProperties
-            {
-                IsPersistent = true
-            });
-
-            // Redirect safely
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
                 return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Index", "Home");
         }
 
-        // ==========================
-        // GET: /Account/Register
-        // ==========================
+        // =============================================================
+        // REGISTER (GET)
+        // =============================================================
         public IActionResult Register()
         {
             ViewBag.Roles = _context.UserRoles.ToList();
             return View();
         }
 
-        // ==========================
-        // POST: /Account/Register
-        // ==========================
+        // =============================================================
+        // REGISTER (POST)
+        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string fullName, string email, string phone, string password, int roleId)
         {
-            if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(email) ||
+            if (string.IsNullOrWhiteSpace(fullName) ||
+                string.IsNullOrWhiteSpace(email) ||
                 string.IsNullOrWhiteSpace(password))
             {
                 ViewBag.Error = "All fields are required.";
@@ -116,7 +109,7 @@ namespace Homeix.Controllers
             var role = await _context.UserRoles.FindAsync(roleId);
             if (role == null)
             {
-                ViewBag.Error = "Invalid role selected.";
+                ViewBag.Error = "Invalid role.";
                 ViewBag.Roles = _context.UserRoles.ToList();
                 return View();
             }
@@ -136,26 +129,141 @@ namespace Homeix.Controllers
             return RedirectToAction("Login");
         }
 
-        // ==========================
-        // POST: /Account/Logout
-        // ==========================
+        // =============================================================
+        // MY PROFILE (GET)
+        // =============================================================
+        public async Task<IActionResult> MyProfile()
+        {
+            var idClaim = User.FindFirst("UserId");
+            if (idClaim == null)
+                return RedirectToAction("Login");
+
+            int userId = int.Parse(idClaim.Value);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            return View(user);
+        }
+
+        // =============================================================
+        // MY PROFILE (POST)
+        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MyProfile(User model, string? NewPassword, IFormFile? ProfileImage)
+        {
+            var dbUser = await _context.Users.FindAsync(model.UserId);
+            if (dbUser == null)
+                return NotFound();
+
+            if (_context.Users.Any(u => u.Email == model.Email && u.UserId != model.UserId))
+            {
+                ModelState.AddModelError("Email", "This email is already in use.");
+                return View(model);
+            }
+
+            dbUser.FullName = model.FullName;
+            dbUser.Email = model.Email;
+            dbUser.PhoneNumber = model.PhoneNumber;
+
+            if (!string.IsNullOrWhiteSpace(NewPassword))
+                dbUser.PasswordHash = HashPassword(NewPassword);
+
+            // Upload profile image
+            if (ProfileImage != null)
+            {
+                string folder = Path.Combine(_env.WebRootPath, "uploads/profile");
+
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+
+                string fileName = $"{Guid.NewGuid()}_{ProfileImage.FileName}";
+                string path = Path.Combine(folder, fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await ProfileImage.CopyToAsync(stream);
+                }
+
+                dbUser.ProfilePicture = fileName;
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Refresh authentication
+            await HttpContext.SignOutAsync("HomeixAuth");
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, dbUser.FullName),
+                new Claim(ClaimTypes.Email, dbUser.Email),
+                new Claim(ClaimTypes.Role, (await _context.UserRoles.FindAsync(dbUser.RoleId))!.RoleName),
+                new Claim("UserId", dbUser.UserId.ToString())
+            };
+
+            await HttpContext.SignInAsync("HomeixAuth",
+                new ClaimsPrincipal(new ClaimsIdentity(claims, "HomeixAuth")),
+                new AuthenticationProperties { IsPersistent = true });
+
+            ViewBag.Success = "Profile updated successfully.";
+            return View(dbUser);
+        }
+
+        // =============================================================
+        // LOGOUT (GET)
+        // =============================================================
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("HomeixAuth");
             return RedirectToAction("Login");
         }
 
-        // ==========================
-        // Password Hashing (SHA256)
-        // ==========================
+        // =============================================================
+        // LOGOUT (POST)
+        // =============================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogoutPost()
+        {
+            await HttpContext.SignOutAsync("HomeixAuth");
+            return RedirectToAction("Login");
+        }
+
+        // =============================================================
+        // DELETE ACCOUNT
+        // =============================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMyAccount()
+        {
+            var idClaim = User.FindFirst("UserId");
+            if (idClaim == null)
+                return RedirectToAction("Login");
+
+            int userId = int.Parse(idClaim.Value);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            await HttpContext.SignOutAsync("HomeixAuth");
+            return RedirectToAction("Login");
+        }
+
+        // =============================================================
+        // PASSWORD HASHING (SHA256)
+        // =============================================================
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hashBytes = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hashBytes);
+            var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hash);
         }
     }
 }

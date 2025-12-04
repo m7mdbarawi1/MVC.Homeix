@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 
@@ -10,12 +10,18 @@ var cs = builder.Configuration.GetConnectionString("DefaultConnection")
 builder.Services.AddDbContext<HOMEIXDbContext>(opt =>
     opt.UseSqlServer(cs));
 
+// ======================
+// AUTHENTICATION CONFIG
+// ======================
 builder.Services.AddAuthentication("HomeixAuth")
     .AddCookie("HomeixAuth", options =>
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
-        options.LogoutPath = "/Account/Logout";
+
+        // 🔥 DO NOT SPECIFY LogoutPath because your action is LogoutPost, not Logout.
+        // options.LogoutPath = "/Account/Logout";  <-- REMOVE THIS LINE
+
         options.ExpireTimeSpan = TimeSpan.FromHours(5);
         options.SlidingExpiration = true;
     });
@@ -39,6 +45,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ROUTING
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

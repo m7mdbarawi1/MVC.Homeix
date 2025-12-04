@@ -25,7 +25,7 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- ========================= NAVBAR ========================= -->
+    <!-- ================= NAVBAR ================= -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-main shadow-sm fixed-top" id="mainNavbar">
             <div class="container-fluid">
@@ -35,7 +35,7 @@
                     <img src="~/homeixlogo.jpg" height="40" class="me-2 logo-3d" />
                 </a>
 
-                <!-- MOBILE -->
+                <!-- MOBILE TOGGLER -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarMain">
                     <span class="navbar-toggler-icon"></span>
@@ -130,7 +130,7 @@
                             <span id="themeIcon">🌙</span>
                         </button>
 
-                        <!-- ACCOUNT -->
+                        <!-- ACCOUNT DROPDOWN -->
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             <div class="dropdown">
@@ -141,8 +141,9 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a></li>
                                     <li><hr class="dropdown-divider" /></li>
+
                                     <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                        <form asp-controller="Account" asp-action="LogoutPost" method="post" class="px-3">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
                                         </form>
@@ -161,23 +162,23 @@
         </nav>
     </header>
 
-    <!-- ========================= MAIN CONTENT ========================= -->
+    <!-- ================= MAIN CONTENT ================= -->
     <main class="container-fluid flex-grow-1 py-4">
         @RenderBody()
     </main>
 
-    <!-- ========================= FOOTER ========================= -->
-    <footer class="footer bg-black text-white text-center mt-auto">
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer text-white text-center mt-auto">
         <div class="container py-3">
             © 2025 - Homeix
         </div>
     </footer>
 
-    <!-- ========================= SCRIPTS ========================= -->
+    <!-- ================= SCRIPTS ================= -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- NAVBAR SPACING -->
+    <!-- Navbar spacing fix -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const nav = document.getElementById("mainNavbar");
@@ -185,7 +186,7 @@
         });
     </script>
 
-    <!-- DARK / LIGHT MODE -->
+    <!-- Theme toggle -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
