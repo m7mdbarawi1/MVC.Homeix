@@ -1,264 +1,294 @@
 /* ==========================================
-   HOMEIX LUXURY BLUE/NAVY/GOLD THEME
-   Light + Dark Mode (class-based)
+   HOMEIX MASTER THEME — FINAL VERSION
+   Fully Working Light + Dark Mode
 ========================================== */
 
-/* ---------- COLOR PALETTE ---------- */
+/* ---------- COLOR VARIABLES ---------- */
 :root {
     --primary: #0a0f2b;
     --primary-light: #131b3f;
     --blue: #1a237e;
     --gold: #ffd700;
     --gold-dark: #e6c300;
-    /* Light Mode */
+    /* Light mode */
     --light-bg: #f5f7fa;
-    --light-card: #ffffff;
     --light-text: #0a0f2b;
-    --light-border: #d1d5db;
-    /* Dark Mode */
+    --light-card: #ffffff;
+    --light-border: #d7d7d7;
+    /* Dark mode */
     --dark-bg: #0b0f1e;
-    --dark-card: #1a1f30;
-    --dark-text: #e2e8f0;
-    --dark-border: #334155;
+    --dark-text: #e6e6e6;
+    --dark-card: #1a2035;
+    --dark-border: #2d3145;
 }
 
-/* ==========================================
-   GLOBAL BODY
-========================================== */
-body {
-    font-family: "Segoe UI", sans-serif;
-    background-color: var(--light-bg);
+/* ---------- ROOT PAGE ---------- */
+html {
+    background: var(--light-bg);
     color: var(--light-text);
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* DARK MODE ROOT */
-.dark-theme {
-    background-color: var(--dark-bg) !important;
-    color: var(--dark-text) !important;
+    html.dark-theme {
+        background: var(--dark-bg);
+        color: var(--dark-text);
+    }
+
+body {
+    background: transparent !important;
+    color: inherit !important;
 }
+
+
 
 /* ==========================================
-   NAVBAR (Luxury Gradient)
+   NAVBAR
 ========================================== */
 .bg-main {
     background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
 }
 
+html.dark-theme .bg-main {
+    background: linear-gradient(135deg, #000814, #001233) !important;
+}
+
 .nav-link {
-    color: white !important;
+    color: #ffffff !important;
     font-weight: 500;
-    transition: 0.2s;
 }
 
     .nav-link:hover {
         color: var(--gold) !important;
     }
 
-.navbar-brand img {
-    transition: 0.2s;
+.btn-accent {
+    background: var(--gold);
+    color: #000 !important;
+    border: none;
+    font-weight: 700;
 }
 
-    .navbar-brand img:hover {
-        transform: scale(1.05);
+    .btn-accent:hover {
+        background: var(--gold-dark);
     }
 
-.dark-theme .navbar {
+
+
+/* ==========================================
+   HERO SECTION
+========================================== */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    padding: 100px 0;
+    text-align: center;
+    color: #ffffff;
+}
+
+.hero-title {
+    color: var(--gold) !important;
+}
+
+html.dark-theme .hero-section {
     background: linear-gradient(135deg, #000814, #001233) !important;
 }
 
+
+
 /* ==========================================
-   DROPDOWNS
+   FEATURE CARDS
 ========================================== */
-.dropdown-menu {
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.20);
+.features-bg {
+    background: var(--light-bg);
+    color: var(--light-text);
+    padding: 60px 0;
 }
 
-.dropdown-item:hover {
-    background-color: var(--blue);
-    color: var(--gold);
-}
-
-.dark-theme .dropdown-menu {
-    background-color: #1e293b;
-    border: 1px solid var(--dark-border);
-}
-
-.dark-theme .dropdown-item {
+html.dark-theme .features-bg {
+    background: var(--dark-bg);
     color: var(--dark-text);
 }
 
-    .dark-theme .dropdown-item:hover {
-        background-color: var(--primary-light);
-        color: var(--gold);
-    }
-
-/* ==========================================
-   CARDS
-========================================== */
-.card {
-    background: var(--light-card);
+.feature-card {
+    border-radius: 10px;
+    overflow: hidden;
     border: 1px solid var(--light-border);
-    transition: 0.3s;
 }
 
-.dark-theme .card {
+html.dark-theme .feature-card {
+    border-color: var(--dark-border);
+}
+
+/* Gold header — ALWAYS black text */
+.feature-card-header {
+    background: var(--gold) !important;
+    color: #000 !important;
+    font-weight: 700;
+    text-align: center;
+    padding: 12px;
+}
+
+/* Card body */
+.feature-card .card-body {
+    background: var(--light-card);
+    color: var(--light-text);
+}
+
+html.dark-theme .feature-card .card-body {
     background: var(--dark-card);
-    border-color: var(--dark-border);
     color: var(--dark-text);
 }
 
+
+
 /* ==========================================
-   FORMS
+   WHY CHOOSE HOMEIX
 ========================================== */
-.form-control {
-    background: var(--light-card);
-    border: 1px solid var(--light-border);
+.features-section {
+    background: var(--primary-light);
+    color: #ffffff;
+    padding: 70px 0;
 }
 
-    .form-control:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
-    }
-
-.dark-theme .form-control {
-    background: #1f2937;
+html.dark-theme .features-section {
+    background: #111524;
     color: var(--dark-text);
-    border-color: var(--dark-border);
 }
 
-/* ==========================================
-   BUTTONS
-========================================== */
-.btn-primary,
-.btn-accent {
-    background-color: var(--gold);
-    border-color: var(--gold);
-    color: black;
-}
-
-    .btn-primary:hover,
-    .btn-accent:hover {
-        background-color: var(--gold-dark);
-    }
-
-.btn-outline-light:hover {
+.features-title {
     color: var(--gold) !important;
-    border-color: var(--gold) !important;
 }
+
+.feature-icon {
+    color: var(--gold);
+    font-size: 2.6rem;
+}
+
+
 
 /* ==========================================
-   TABLES
+   CTA SECTION
 ========================================== */
-.table {
-    background: white;
+.cta-section {
+    background: var(--primary);
+    color: #ffffff;
+    padding: 70px 0;
 }
 
-    .table th {
-        background: var(--blue);
-        color: var(--gold);
-    }
-
-    .table td {
-        background: rgba(0,0,0,0.03);
-    }
-
-/* DARK MODE TABLES */
-.dark-theme .table {
-    background: var(--dark-card);
+html.dark-theme .cta-section {
+    background: var(--primary-light);
     color: var(--dark-text);
 }
 
-    .dark-theme .table th {
-        background: var(--primary-light);
-        color: var(--gold);
-    }
-
-.dark-theme .table-striped tbody tr:nth-child(odd) {
-    background: #1e293b;
+.cta-title {
+    color: var(--gold) !important;
 }
 
+
+
 /* ==========================================
-   FOOTER (MATCH NAVBAR COLOR)
+   BUTTONS — GLOBAL FIX
+========================================== */
+.btn-outline-light {
+    color: #fff;
+    border-color: #fff;
+}
+
+    .btn-outline-light:hover {
+        color: var(--gold) !important;
+        border-color: var(--gold) !important;
+    }
+
+html.dark-theme .btn-outline-light {
+    color: var(--dark-text);
+    border-color: var(--dark-text);
+}
+
+    html.dark-theme .btn-outline-light:hover {
+        color: var(--gold) !important;
+        border-color: var(--gold) !important;
+    }
+
+
+
+/* ==========================================
+   UNIVERSAL FIXES
+========================================== */
+/* Base sections inherit theme text */
+.hero-section *,
+.features-bg *,
+.features-section *,
+.cta-section * {
+    color: inherit !important;
+}
+
+/* Light mode text-white fix */
+html:not(.dark-theme) .text-white {
+    color: var(--light-text) !important;
+}
+
+/* Dark mode text-white fix */
+html.dark-theme .text-white {
+    color: var(--dark-text) !important;
+}
+
+
+
+/* ==========================================
+   GOLD BACKGROUND FIX — ALWAYS BLACK TEXT
+========================================== */
+.feature-card-header,
+.feature-card-header *,
+.btn-accent,
+.btn-accent *,
+.bg-gold,
+.bg-gold *,
+.btn-warning,
+.btn-warning *,
+.feature-card-header {
+    color: #000 !important;
+}
+
+
+
+/* ==========================================
+   FOOTER
 ========================================== */
 .footer {
-    background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
+    background: linear-gradient(135deg, var(--primary-light), var(--blue));
     color: white;
-    border-top: 2px solid var(--gold);
     padding: 15px;
+    border-top: 2px solid var(--gold);
 }
 
-.dark-theme .footer {
-    background: linear-gradient(135deg, #000814, #001233) !important;
+html.dark-theme .footer {
+    background: linear-gradient(135deg, #000814, #001233);
     color: var(--dark-text);
 }
 
-/* ==========================================
-   CHATBOT FLOATING BUTTON
-========================================== */
-#chatbot-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1050;
-}
 
+
+/* ==========================================
+   CHATBOT
+========================================== */
 #chatbot-toggle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    width: 55px;
+    height: 55px;
     background: var(--blue);
-    color: white;
+    border-radius: 50%;
+    color: #fff;
     border: none;
-    transition: 0.2s;
 }
 
     #chatbot-toggle:hover {
         background: var(--primary-light);
     }
 
-/* Chatbox Window */
 #chatbot-box {
-    width: 320px;
-    max-height: 480px;
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
+    background: var(--light-card);
 }
 
-.dark-theme #chatbot-box {
+html.dark-theme #chatbot-box {
     background: var(--dark-card);
-    border: 1px solid var(--dark-border);
 }
 
-.chat-messages {
-    padding: 10px;
-    background: #f8f9fa;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.dark-theme .chat-messages {
-    background: #1e293b;
-}
-
-.chat-message.user {
-    background: var(--blue);
-    color: white;
-    padding: 6px 10px;
-    margin-bottom: 6px;
-    border-radius: 6px;
-}
-
-.chat-message.bot {
-    background: var(--light-bg);
-    padding: 6px 10px;
-    margin-bottom: 6px;
-    border-radius: 6px;
-}
-
-.dark-theme .chat-message.bot {
-    background: #334155;
-    color: var(--dark-text);
-}
+/* END OF FILE */

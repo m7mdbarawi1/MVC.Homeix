@@ -1,6 +1,5 @@
 ﻿@using System.Security.Claims
-@using Homeix.Data
-@inject HOMEIXDbContext _context
+@inject Homeix.Data.HOMEIXDbContext _context
 
 @{
     var currentCulture = "en";
@@ -12,20 +11,25 @@
 <html lang="@currentCulture" dir="@dir" class="light-theme">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>@ViewData["Title"] - Homeix</title>
 
+    <!-- Bootstrap -->
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Main Theme -->
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
 
     @RenderSection("Head", required: false)
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- ================= NAVBAR ================= -->
+    <!-- ==========================================
+         NAVBAR
+    =========================================== -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-main shadow-sm fixed-top" id="mainNavbar">
             <div class="container-fluid">
@@ -36,17 +40,19 @@
                 </a>
 
                 <!-- MOBILE TOGGLER -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarMain">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- NAV MENU -->
+                <!-- COLLAPSE -->
                 <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
+                            /* ==========================================
+                               ADMIN NAVIGATION
+                            =========================================== */
                             if (roleName == "admin")
                             {
                                 <li class="nav-item dropdown">
@@ -107,11 +113,19 @@
                                     <a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a>
                                 </li>
                             }
+
+                            /* ==========================================
+                               CUSTOMER NAVIGATION
+                            =========================================== */
                             else if (roleName == "customer")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
                             }
+
+                            /* ==========================================
+                               WORKER NAVIGATION
+                            =========================================== */
                             else if (roleName == "worker")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerDashboard" asp-action="Index">Dashboard</a></li>
@@ -122,10 +136,10 @@
                         }
                     </ul>
 
-                    <!-- RIGHT SIDE -->
+                    <!-- RIGHT SIDE BUTTONS -->
                     <div class="d-flex align-items-center gap-2">
 
-                        <!-- THEME SWITCH -->
+                        <!-- THEME TOGGLE -->
                         <button id="themeToggle" class="btn btn-outline-light btn-sm">
                             <span id="themeIcon">🌙</span>
                         </button>
@@ -141,7 +155,6 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a></li>
                                     <li><hr class="dropdown-divider" /></li>
-
                                     <li>
                                         <form asp-controller="Account" asp-action="LogoutPost" method="post" class="px-3">
                                             @Html.AntiForgeryToken()
@@ -162,23 +175,35 @@
         </nav>
     </header>
 
-    <!-- ================= MAIN CONTENT ================= -->
+
+
+    <!-- ==========================================
+         PAGE CONTENT
+    =========================================== -->
     <main class="container-fluid flex-grow-1 py-4">
         @RenderBody()
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="footer text-white text-center mt-auto">
+
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+    <footer class="footer text-center mt-auto">
         <div class="container py-3">
             © 2025 - Homeix
         </div>
     </footer>
 
-    <!-- ================= SCRIPTS ================= -->
+
+
+    <!-- ==========================================
+         SCRIPTS
+    =========================================== -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Navbar spacing fix -->
+    <!-- Fix body spacing below fixed navbar -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const nav = document.getElementById("mainNavbar");
@@ -186,18 +211,23 @@
         });
     </script>
 
-    <!-- Theme toggle -->
+    <!-- THEME TOGGLE SCRIPT -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
             const icon = document.getElementById("themeIcon");
-            const button = document.getElementById("themeToggle");
+            const btn = document.getElementById("themeToggle");
 
             const saved = localStorage.getItem("theme") || "light";
-            if (saved === "dark") root.classList.add("dark-theme");
-            icon.textContent = saved === "dark" ? "🌙" : "☀️";
 
-            button.addEventListener("click", () => {
+            if (saved === "dark") {
+                root.classList.add("dark-theme");
+                icon.textContent = "🌙";
+            } else {
+                icon.textContent = "☀️";
+            }
+
+            btn.addEventListener("click", () => {
                 const isDark = root.classList.toggle("dark-theme");
                 localStorage.setItem("theme", isDark ? "dark" : "light");
                 icon.textContent = isDark ? "🌙" : "☀️";

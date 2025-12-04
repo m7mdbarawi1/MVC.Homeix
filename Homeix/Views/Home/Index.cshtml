@@ -1,48 +1,77 @@
-﻿<!-- Hero Section -->
-<section class="bg-dark text-white py-5" style="background: linear-gradient(135deg, #0a0f2b 0%, #131b3f 100%);">
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- ==========================================
+   HERO SECTION
+========================================== -->
+<section class="hero-section py-5">
     <div class="container text-center">
-        <h1 class="display-3 fw-bold text-warning">Welcome to Homeix</h1>
-        <p class="lead text-white mt-3">
-            Discover how <strong>Homeix</strong> transforms your web experience with modern dashboards, analytics, and community support.
+        <h1 class="display-3 fw-bold hero-title">
+            Welcome to Homeix
+        </h1>
+
+        <p class="lead mt-3 hero-subtitle">
+            Discover how <strong>Homeix</strong> transforms your experience with
+            modern dashboards, analytics, and community-driven support.
         </p>
-        <a href="#features" class="btn btn-warning btn-lg text-dark mt-4">Explore Features</a>
+
+        <a href="#features-section" class="btn btn-accent btn-lg mt-4 fw-bold">
+            Explore Features
+        </a>
     </div>
 </section>
 
-<!-- Cards Section -->
-<section class="py-5 bg-dark">
+
+
+<!-- ==========================================
+   FEATURES CARDS
+========================================== -->
+<section class="py-5 features-bg">
     <div class="container">
         <div class="row g-4 text-center">
 
             <!-- Card 1 -->
             <div class="col-md-4">
-                <div class="card bg-dark text-white h-100 border-warning shadow">
-                    <div class="card-header bg-warning text-dark fw-bold">Modern Dashboard</div>
+                <div class="card h-100 shadow feature-card">
+                    <div class="feature-card-header fw-bold">
+                        Modern Dashboard
+                    </div>
                     <div class="card-body">
-                        <p class="card-text text-white">Manage all your tasks, projects, and activities in one intuitive dashboard.</p>
-                        <a href="#" class="btn btn-warning btn-lg text-dark">Explore</a>
+                        <p>
+                            Manage all your tasks and activities in one intuitive dashboard.
+                        </p>
+                        <a href="#" class="btn btn-accent btn-lg fw-bold">Explore</a>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2 -->
             <div class="col-md-4">
-                <div class="card bg-dark text-white h-100 border-warning shadow">
-                    <div class="card-header bg-warning text-dark fw-bold">Secure & Reliable</div>
+                <div class="card h-100 shadow feature-card">
+                    <div class="feature-card-header fw-bold">
+                        Secure & Reliable
+                    </div>
                     <div class="card-body">
-                        <p class="card-text text-white">Your data is fully protected with state-of-the-art encryption and secure storage.</p>
-                        <a href="#" class="btn btn-warning btn-lg text-dark">Learn More</a>
+                        <p>
+                            Your data is protected with enterprise-grade encryption.
+                        </p>
+                        <a href="#" class="btn btn-accent btn-lg fw-bold">Learn More</a>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3 -->
             <div class="col-md-4">
-                <div class="card bg-dark text-white h-100 border-warning shadow">
-                    <div class="card-header bg-warning text-dark fw-bold">Analytics & Insights</div>
+                <div class="card h-100 shadow feature-card">
+                    <div class="feature-card-header fw-bold">
+                        Analytics & Insights
+                    </div>
                     <div class="card-body">
-                        <p class="card-text text-white">Gain powerful insights from interactive charts and reports for better decisions.</p>
-                        <a href="#" class="btn btn-warning btn-lg text-dark">View Reports</a>
+                        <p>
+                            Gain insights with interactive charts and real-time reports.
+                        </p>
+                        <a href="#" class="btn btn-accent btn-lg fw-bold">View Reports</a>
                     </div>
                 </div>
             </div>
@@ -51,42 +80,74 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section id="features" class="py-5 text-center" style="background: #131b3f;">
+
+
+<!-- ==========================================
+   WHY CHOOSE HOMEIX
+========================================== -->
+<section id="features-section" class="py-5 text-center features-section">
     <div class="container">
-        <h2 class="fw-bold text-warning mb-5">Why Choose Homeix?</h2>
+        <h2 class="fw-bold mb-5 features-title">
+            Why Choose Homeix?
+        </h2>
+
         <div class="row g-4">
 
+            <!-- Feature 1 -->
             <div class="col-md-4">
-                <i class="bi bi-speedometer2 fs-1 text-warning mb-3"></i>
-                <h5 class="fw-bold text-white">Fast Performance</h5>
-                <p class="text-white">Optimized for speed to give you the smoothest experience possible.</p>
+                <i class="bi bi-speedometer2 fs-1 feature-icon"></i>
+                <h5 class="fw-bold mt-3">Fast Performance</h5>
+                <p>
+                    Optimized for speed to give you the smoothest experience.
+                </p>
             </div>
 
+            <!-- Feature 2 -->
             <div class="col-md-4">
-                <i class="bi bi-palette fs-1 text-warning mb-3"></i>
-                <h5 class="fw-bold text-white">Customizable Themes</h5>
-                <p class="text-white">Adjust colors, layouts, and styles to match your brand and preferences.</p>
+                <i class="bi bi-palette fs-1 feature-icon"></i>
+                <h5 class="fw-bold mt-3">Customizable Themes</h5>
+                <p>
+                    Adjust colors and layouts to match your brand and style.
+                </p>
             </div>
 
+            <!-- Feature 3 -->
             <div class="col-md-4">
-                <i class="bi bi-people fs-1 text-warning mb-3"></i>
-                <h5 class="fw-bold text-white">Community & Support</h5>
-                <p class="text-white">Connect with experts and get professional support anytime.</p>
+                <i class="bi bi-people fs-1 feature-icon"></i>
+                <h5 class="fw-bold mt-3">Community & Support</h5>
+                <p>
+                    Connect with experts and get support anytime.
+                </p>
             </div>
 
         </div>
     </div>
 </section>
 
-<!-- Additional Content Section -->
-<section class="py-5 bg-dark text-center">
+
+
+<!-- ==========================================
+   CALL TO ACTION (CTA)
+========================================== -->
+<section class="py-5 text-center cta-section">
     <div class="container">
-        <h2 class="fw-bold text-warning mb-4">Enhance Your Workflow</h2>
-        <p class="text-white mb-4">Homeix provides tools and insights to streamline your daily tasks, improve collaboration, and track progress in real-time.</p>
+        <h2 class="fw-bold mb-4 cta-title">
+            Enhance Your Workflow
+        </h2>
+
+        <p class="mb-4 cta-text">
+            Homeix provides tools and insights to streamline your tasks,
+            improve collaboration, and track progress in real-time.
+        </p>
+
         <div class="d-flex justify-content-center flex-wrap gap-3">
-            <a href="#" class="btn btn-warning btn-lg text-dark">Get Started</a>
-            <a href="#" class="btn btn-outline-warning btn-lg text-white">Learn More</a>
+            <a href="#" class="btn btn-accent btn-lg fw-bold">
+                Get Started
+            </a>
+
+            <a href="#" class="btn btn-outline-light btn-lg">
+                Learn More
+            </a>
         </div>
     </div>
 </section>
