@@ -47,13 +47,11 @@
 
                 <!-- COLLAPSE -->
                 <div class="collapse navbar-collapse" id="navbarMain">
+
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            /* ==========================================
-                               ADMIN NAVIGATION
-                            =========================================== */
                             if (roleName == "admin")
                             {
                                 <li class="nav-item dropdown">
@@ -114,19 +112,11 @@
                                     <a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a>
                                 </li>
                             }
-
-                            /* ==========================================
-                               CUSTOMER NAVIGATION
-                            =========================================== */
                             else if (roleName == "customer")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
                             }
-
-                            /* ==========================================
-                               WORKER NAVIGATION
-                            =========================================== */
                             else if (roleName == "worker")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerDashboard" asp-action="Index">Dashboard</a></li>
@@ -135,17 +125,28 @@
                                 <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="MyJobs">My Jobs</a></li>
                             }
                         }
+
                     </ul>
 
                     <!-- RIGHT SIDE BUTTONS -->
                     <div class="d-flex align-items-center gap-2">
 
-                        <!-- THEME TOGGLE -->
+                        <!-- ✅ LANGUAGE DROPDOWN (ADDED ONLY) -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                🌐
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item lang-btn" data-lang="en">English</button></li>
+                                <li><button class="dropdown-item lang-btn" data-lang="ar">العربية</button></li>
+                            </ul>
+                        </div>
+
+                        <!-- THEME TOGGLE (UNCHANGED) -->
                         <button id="themeToggle" class="btn btn-outline-light btn-sm">
                             <span id="themeIcon">🌙</span>
                         </button>
 
-                        <!-- ACCOUNT DROPDOWN -->
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             <div class="dropdown">
@@ -169,6 +170,7 @@
                         {
                             <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">Login</a>
                         }
+
                     </div>
 
                 </div>
@@ -176,35 +178,21 @@
         </nav>
     </header>
 
-
-
-    <!-- ==========================================
-         PAGE CONTENT
-    =========================================== -->
+    <!-- PAGE CONTENT -->
     <main class="container-fluid flex-grow-1 py-4">
         @RenderBody()
     </main>
 
-
-
-    <!-- ==========================================
-         FOOTER
-    =========================================== -->
+    <!-- FOOTER -->
     <footer class="footer text-center mt-auto">
         <div class="container py-3">
             © 2025 - Homeix
         </div>
     </footer>
 
-
-
-    <!-- ==========================================
-         SCRIPTS
-    =========================================== -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Fix body spacing below fixed navbar -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const nav = document.getElementById("mainNavbar");
@@ -212,13 +200,35 @@
         });
     </script>
 
-    <!-- THEME TOGGLE SCRIPT -->
+    <!-- ✅ LANGUAGE SCRIPT (ADDED ONLY) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const root = document.documentElement;
+            const lang = localStorage.getItem("lang") || "en";
+
+            applyLang(lang);
+
+            document.querySelectorAll(".lang-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const selected = btn.dataset.lang;
+                    localStorage.setItem("lang", selected);
+                    applyLang(selected);
+                });
+            });
+
+            function applyLang(lang) {
+                root.lang = lang;
+                root.dir = lang === "ar" ? "rtl" : "ltr";
+            }
+        });
+    </script>
+
+    <!-- THEME TOGGLE SCRIPT (UNTOUCHED) -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
             const icon = document.getElementById("themeIcon");
             const btn = document.getElementById("themeToggle");
-
             const saved = localStorage.getItem("theme") || "light";
 
             if (saved === "dark") {
