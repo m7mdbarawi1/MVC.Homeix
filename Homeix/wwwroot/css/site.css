@@ -292,3 +292,123 @@ html.dark-theme #chatbot-box {
 }
 
 /* END OF FILE */
+
+/* ==========================================
+   HOMEIX ADMIN DASHBOARD
+========================================== */
+
+.admin-card {
+    background: var(--light-card);
+    color: var(--light-text);
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    border: 1px solid var(--light-border);
+    transition: all 0.35s ease;
+}
+
+html.dark-theme .admin-card {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+/* Icons */
+.admin-icon {
+    font-size: 3rem;
+    color: var(--gold);
+}
+
+/* Hover Interaction */
+.admin-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--gold);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Button inside */
+.admin-card .btn {
+    margin-top: 15px;
+}
+
+/* Text consistency */
+.admin-card h5,
+.admin-card p {
+    color: inherit;
+}
+
+/* ==========================================
+   HOMEIX CUSTOMER DASHBOARD
+========================================== */
+
+.dashboard-card {
+    background: var(--light-card);
+    color: var(--light-text);
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    border: 1px solid var(--light-border);
+    transition: all 0.35s ease;
+}
+
+html.dark-theme .dashboard-card {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+/* Icons */
+.dashboard-icon {
+    font-size: 3rem;
+    color: var(--gold);
+}
+
+/* Hover */
+.dashboard-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--gold);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure text always visible */
+.dashboard-card h5,
+.dashboard-card p {
+    color: inherit;
+}
+
+
+/* ==========================================
+   HOMEIX DASHBOARD CARDS (SHARED)
+========================================== */
+
+.dashboard-card {
+    background: var(--light-card);
+    color: var(--light-text);
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    border: 1px solid var(--light-border);
+    transition: all 0.35s ease;
+}
+
+html.dark-theme .dashboard-card {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+.dashboard-icon {
+    font-size: 3rem;
+    color: var(--gold);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--gold);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+
+.dashboard-card h5,
+.dashboard-card p {
+    color: inherit;
+}

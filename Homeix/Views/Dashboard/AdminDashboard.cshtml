@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Homeix Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+
+    <!-- ================= HEADER ================= -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2">
+            <i class="bi bi-speedometer2 me-2"></i> Homeix Admin Dashboard
+        </h1>
+        <p class="text-muted">
+            Manage users, content, payments, and platform operations from one secure place.
+        </p>
+    </div>
+
+    <!-- ================= ADMIN MODULES ================= -->
+    <div class="row g-4">
+
+        <!-- USERS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card h-100">
+                <i class="bi bi-people admin-icon"></i>
+                <h5 class="fw-bold mt-3">User Management</h5>
+                <p>
+                    Control customers, workers, admins, roles, and approvals.
+                </p>
+                <a asp-controller="Users" asp-action="Index" class="btn btn-accent btn-sm">
+                    Manage Users
+                </a>
+            </div>
+        </div>
+
+        <!-- POSTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card h-100">
+                <i class="bi bi-file-text admin-icon"></i>
+                <h5 class="fw-bold mt-3">Posts & Content</h5>
+                <p>
+                    Review customer posts, worker posts, categories, and media.
+                </p>
+                <a asp-controller="CustomerPosts" asp-action="Index" class="btn btn-accent btn-sm">
+                    Manage Content
+                </a>
+            </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card h-100">
+                <i class="bi bi-credit-card admin-icon"></i>
+                <h5 class="fw-bold mt-3">Payments & Subscriptions</h5>
+                <p>
+                    Monitor payments, plans, subscriptions, and revenue.
+                </p>
+                <a asp-controller="Payments" asp-action="Index" class="btn btn-accent btn-sm">
+                    View Payments
+                </a>
+            </div>
+        </div>
+
+        <!-- RATINGS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card h-100">
+                <i class="bi bi-star admin-icon"></i>
+                <h5 class="fw-bold mt-3">Ratings & Reviews</h5>
+                <p>
+                    Moderate worker ratings and customer feedback.
+                </p>
+                <a asp-controller="Ratings" asp-action="Index" class="btn btn-accent btn-sm">
+                    View Ratings
+                </a>
+            </div>
+        </div>
+
+        <!-- JOB TRACKING -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card h-100">
+                <i class="bi bi-briefcase admin-icon"></i>
+                <h5 class="fw-bold mt-3">Job Progress</h5>
+                <p>
+                    Track active jobs, statuses, disputes, and completion.
+                </p>
+                <a asp-controller="JobProgresses" asp-action="Index" class="btn btn-accent btn-sm">
+                    View Jobs
+                </a>
+            </div>
+        </div>
+
+        <!-- SYSTEM -->
+        <div class="col-lg-4 col-md-6">
+            <div class="admin-card h-100">
+                <i class="bi bi-gear admin-icon"></i>
+                <h5 class="fw-bold mt-3">System Settings</h5>
+                <p>
+                    Control platform configuration and advanced settings.
+                </p>
+                <a asp-controller="Dashboard" asp-action="Settings" class="btn btn-accent btn-sm">
+                    Settings
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>

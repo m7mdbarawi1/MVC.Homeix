@@ -1,0 +1,113 @@
+﻿@{
+    ViewData["Title"] = "Worker Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+
+    <!-- ================= HEADER ================= -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2">
+            <i class="bi bi-tools me-2"></i> Worker Dashboard
+        </h1>
+        <p class="text-muted">
+            Manage your posts, jobs, ads, and profile efficiently on Homeix.
+        </p>
+    </div>
+
+    <!-- ================= DASHBOARD MODULES ================= -->
+    <div class="row g-4">
+
+        <!-- MY POSTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-megaphone dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">My Service Posts</h5>
+                <p>
+                    Create and manage your service posts.
+                </p>
+                <a asp-controller="WorkerPosts" asp-action="MyPosts"
+                   class="btn btn-accent btn-sm">
+                    Manage Posts
+                </a>
+            </div>
+        </div>
+
+        <!-- JOB REQUESTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-clipboard-data dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">Job Requests</h5>
+                <p>
+                    Review incoming customer job requests.
+                </p>
+                <a asp-controller="JobProgresses" asp-action="MyJobs"
+                   class="btn btn-accent btn-sm">
+                    View Jobs
+                </a>
+            </div>
+        </div>
+
+        <!-- ADVERTISEMENTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-badge-ad dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">My Advertisements</h5>
+                <p>
+                    Promote your services to reach more customers.
+                </p>
+                <a asp-controller="Advertisements" asp-action="MyAds"
+                   class="btn btn-accent btn-sm">
+                    Manage Ads
+                </a>
+            </div>
+        </div>
+
+        <!-- RATINGS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-star dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">My Ratings</h5>
+                <p>
+                    View customer feedback and performance ratings.
+                </p>
+                <a asp-controller="Ratings" asp-action="MyRatings"
+                   class="btn btn-accent btn-sm">
+                    View Ratings
+                </a>
+            </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-credit-card dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">Payments</h5>
+                <p>
+                    Track your earnings and payment history.
+                </p>
+                <a asp-controller="Payments" asp-action="MyPayments"
+                   class="btn btn-accent btn-sm">
+                    View Payments
+                </a>
+            </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-person-circle dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">My Profile</h5>
+                <p>
+                    Edit your profile, skills, and availability.
+                </p>
+                <a asp-controller="Account" asp-action="MyProfile"
+                   class="btn btn-accent btn-sm">
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>

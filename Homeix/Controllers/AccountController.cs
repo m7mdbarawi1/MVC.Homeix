@@ -62,15 +62,32 @@ namespace Homeix.Controllers
                 new Claim("UserId", user.UserId.ToString())
             };
 
-            await HttpContext.SignInAsync("HomeixAuth",
+            await HttpContext.SignInAsync(
+                "HomeixAuth",
                 new ClaimsPrincipal(new ClaimsIdentity(claims, "HomeixAuth")),
-                new AuthenticationProperties { IsPersistent = true });
+                new AuthenticationProperties { IsPersistent = true }
+            );
 
+            // ✅ 1. Respect returnUrl FIRST
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
 
+            // ✅ 2. Role-based dashboard redirect
+            switch (user.Role.RoleName)
+            {
+                case "admin":
+                    return RedirectToAction("AdminDashboard", "Dashboard");
+
+                case "customer":
+                    return RedirectToAction("CustomerDashboard", "Dashboard");
+
+                case "worker":
+                    return RedirectToAction("WorkerDashboard", "Dashboard");
+            }
+
+            // ✅ 3. Fallback
             return RedirectToAction("Index", "Home");
         }
 
@@ -171,28 +188,24 @@ namespace Homeix.Controllers
             if (!string.IsNullOrWhiteSpace(NewPassword))
                 dbUser.PasswordHash = HashPassword(NewPassword);
 
-            // Upload profile image
             if (ProfileImage != null)
             {
                 string folder = Path.Combine(_env.WebRootPath, "uploads/profile");
-
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
 
                 string fileName = $"{Guid.NewGuid()}_{ProfileImage.FileName}";
                 string path = Path.Combine(folder, fileName);
 
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await ProfileImage.CopyToAsync(stream);
-                }
+                using var stream = new FileStream(path, FileMode.Create);
+                await ProfileImage.CopyToAsync(stream);
 
                 dbUser.ProfilePicture = fileName;
             }
 
             await _context.SaveChangesAsync();
 
-            // Refresh authentication
+            // Refresh auth
             await HttpContext.SignOutAsync("HomeixAuth");
 
             var claims = new List<Claim>
@@ -203,27 +216,25 @@ namespace Homeix.Controllers
                 new Claim("UserId", dbUser.UserId.ToString())
             };
 
-            await HttpContext.SignInAsync("HomeixAuth",
+            await HttpContext.SignInAsync(
+                "HomeixAuth",
                 new ClaimsPrincipal(new ClaimsIdentity(claims, "HomeixAuth")),
-                new AuthenticationProperties { IsPersistent = true });
+                new AuthenticationProperties { IsPersistent = true }
+            );
 
             ViewBag.Success = "Profile updated successfully.";
             return View(dbUser);
         }
 
         // =============================================================
-        // LOGOUT (GET)
+        // LOGOUT
         // =============================================================
-        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("HomeixAuth");
             return RedirectToAction("Login");
         }
 
-        // =============================================================
-        // LOGOUT (POST)
-        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogoutPost()
@@ -244,8 +255,8 @@ namespace Homeix.Controllers
                 return RedirectToAction("Login");
 
             int userId = int.Parse(idClaim.Value);
-            var user = await _context.Users.FindAsync(userId);
 
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound();
 
@@ -257,13 +268,14 @@ namespace Homeix.Controllers
         }
 
         // =============================================================
-        // PASSWORD HASHING (SHA256)
+        // PASSWORD HASHING
         // =============================================================
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();
-            var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hash);
+            return Convert.ToBase64String(
+                sha.ComputeHash(Encoding.UTF8.GetBytes(password))
+            );
         }
     }
 }

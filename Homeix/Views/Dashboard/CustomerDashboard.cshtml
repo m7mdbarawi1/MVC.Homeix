@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Customer Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+
+    <!-- ================= HEADER ================= -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2">
+            <i class="bi bi-house-heart me-2"></i> Welcome to Homeix
+        </h1>
+        <p class="text-muted">
+            Manage your services, requests, favorites, and jobs in one place.
+        </p>
+    </div>
+
+    <!-- ================= DASHBOARD MODULES ================= -->
+    <div class="row g-4">
+
+        <!-- BROWSE SERVICES -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-search dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">Browse Services</h5>
+                <p>
+                    Discover trusted workers and services near you.
+                </p>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-accent btn-sm">
+                    Explore
+                </a>
+            </div>
+        </div>
+
+        <!-- MY REQUESTS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-clipboard-check dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">My Requests</h5>
+                <p>
+                    Track your service requests and their status.
+                </p>
+                <a asp-controller="CustomerPosts" asp-action="MyPosts" class="btn btn-accent btn-sm">
+                    View Requests
+                </a>
+            </div>
+        </div>
+
+        <!-- JOB PROGRESS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-briefcase dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">Job Progress</h5>
+                <p>
+                    Monitor active jobs and completed services.
+                </p>
+                <a asp-controller="JobProgresses" asp-action="MyJobs" class="btn btn-accent btn-sm">
+                    Track Jobs
+                </a>
+            </div>
+        </div>
+
+        <!-- FAVORITES -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-heart dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">Favorites</h5>
+                <p>
+                    Access your saved workers and services.
+                </p>
+                <a asp-controller="FavoritePosts" asp-action="Index" class="btn btn-accent btn-sm">
+                    View Favorites
+                </a>
+            </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-person-circle dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">My Profile</h5>
+                <p>
+                    Update personal information and preferences.
+                </p>
+                <a asp-controller="Account" asp-action="MyProfile" class="btn btn-accent btn-sm">
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- SUPPORT -->
+        <div class="col-lg-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <i class="bi bi-headset dashboard-icon"></i>
+                <h5 class="fw-bold mt-3">Support</h5>
+                <p>
+                    Contact support for help or report issues.
+                </p>
+                <a asp-controller="Messages" asp-action="Index" class="btn btn-accent btn-sm">
+                    Get Support
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
