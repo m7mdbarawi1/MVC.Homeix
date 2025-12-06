@@ -1,6 +1,7 @@
 ﻿using Homeix.Data;
 using Homeix.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -265,6 +266,25 @@ namespace Homeix.Controllers
 
             await HttpContext.SignOutAsync("HomeixAuth");
             return RedirectToAction("Login");
+        }
+
+        [AllowAnonymous]
+        public IActionResult HomeRedirect()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("admin"))
+                    return RedirectToAction("AdminDashboard", "Dashboard");
+
+                if (User.IsInRole("customer"))
+                    return RedirectToAction("CustomerDashboard", "Dashboard");
+
+                if (User.IsInRole("worker"))
+                    return RedirectToAction("WorkerDashboard", "Dashboard");
+            }
+
+            // Not logged in → landing page
+            return RedirectToAction("Index", "Home");
         }
 
         // =============================================================
