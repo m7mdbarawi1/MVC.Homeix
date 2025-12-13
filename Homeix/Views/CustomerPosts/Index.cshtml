@@ -1,89 +1,429 @@
 ﻿@model IEnumerable<Homeix.Models.CustomerPost>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Customer Posts Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="container mt-5 mb-5">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PriceRangeMin)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PriceRangeMax)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostCategory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PriceRangeMin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PriceRangeMax)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostCategory.PostCategoryId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CustomerPostId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CustomerPostId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CustomerPostId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <!-- ================= HEADER ================= -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2">
+            <i class="bi bi-file-post me-2"></i> Customer Posts Management
+        </h1>
+        <p class="text-muted">
+            Manage customer service requests, job postings, and marketplace listings.
+        </p>
+    </div>
+
+    <!-- ================= ACTIONS BAR ================= -->
+    <div class="card bg-light border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary rounded-pill p-2">
+                        <i class="bi bi-newspaper me-1"></i> Total Posts: @Model.Count()
+                    </span>
+                    <span class="ms-3 text-muted">
+                        <i class="bi bi-info-circle me-1"></i> Review and manage customer service requests
+                    </span>
+                </div>
+                <div class="btn-group">
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Create New Post
+                    </a>
+                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Export Data</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-filter me-2"></i>Filter Options</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= CUSTOMER POSTS TABLE ================= -->
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-table me-2"></i>Customer Service Requests
+                </h5>
+                <div class="d-flex gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="statusFilter" data-bs-toggle="dropdown">
+                            <i class="bi bi-funnel me-1"></i>Status
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">All Posts</a></li>
+                            <li><a class="dropdown-item" href="#"><span class="badge bg-success me-2">●</span>Active</a></li>
+                            <li><a class="dropdown-item" href="#"><span class="badge bg-warning me-2">●</span>Pending</a></li>
+                            <li><a class="dropdown-item" href="#"><span class="badge bg-danger me-2">●</span>Closed</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="sortFilter" data-bs-toggle="dropdown">
+                            <i class="bi bi-sort-down me-1"></i>Sort
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Newest First</a></li>
+                            <li><a class="dropdown-item" href="#">Oldest First</a></li>
+                            <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+                            <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">
+                                <i class="bi bi-card-heading me-1"></i>
+                                @Html.DisplayNameFor(model => model.Title)
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                @Html.DisplayNameFor(model => model.Location)
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-cash-coin me-1"></i>
+                                Price Range
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-activity me-1"></i>
+                                @Html.DisplayNameFor(model => model.Status)
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-calendar me-1"></i>
+                                @Html.DisplayNameFor(model => model.CreatedAt)
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-tags me-1"></i>
+                                @Html.DisplayNameFor(model => model.PostCategory)
+                            </th>
+                            <th class="pe-4 py-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                                                <i class="bi bi-postcard text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="fw-bold mb-0">@Html.DisplayFor(modelItem => item.Title)</h6>
+                                            <small class="text-muted text-truncate d-block" style="max-width: 200px;">
+                                                @Html.DisplayFor(modelItem => item.Description)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-geo-alt text-muted me-2"></i>
+                                        <span class="fw-semibold">@Html.DisplayFor(modelItem => item.Location)</span>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning bg-opacity-10 rounded p-2 me-3">
+                                            <i class="bi bi-currency-dollar text-warning"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">$@Html.DisplayFor(modelItem => item.PriceRangeMin) - $@Html.DisplayFor(modelItem => item.PriceRangeMax)</div>
+                                            <small class="text-muted">Budget range</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    @{
+                                        var statusBadgeClass = item.Status switch
+                                        {
+                                            "Active" => "bg-success",
+                                            "Pending" => "bg-warning",
+                                            "Closed" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+
+                                        var statusIcon = item.Status switch
+                                        {
+                                            "Active" => "check-circle",
+                                            "Pending" => "clock",
+                                            "Closed" => "lock",
+                                            _ => "question-circle"
+                                        };
+                                    }
+                                    <span class="badge @statusBadgeClass bg-opacity-10 border border-@statusBadgeClass.Replace("bg-", "") border-opacity-25 rounded-pill px-3 py-2">
+                                        <i class="bi bi-@statusIcon me-1"></i>@item.Status
+                                    </span>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="bi bi-calendar3 text-info"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">@item.CreatedAt.ToString("MMM dd")</div>
+                                            <small class="text-muted">@item.CreatedAt.ToString("hh:mm tt")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-10 rounded-circle p-2 me-3">
+                                            <i class="bi bi-tag text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">Category @Html.DisplayFor(modelItem => item.PostCategory.PostCategoryId)</div>
+                                            <small class="text-muted">Post Category</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="pe-4 py-3 text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.CustomerPostId" class="btn btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.CustomerPostId" class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.CustomerPostId" class="btn btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                    <div class="mt-2">
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill px-2 py-1">
+                                                <i class="bi bi-check-circle me-1"></i>Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-pill px-2 py-1">
+                                                <i class="bi bi-x-circle me-1"></i>Inactive
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="bi bi-person-circle me-1"></i>
+                    Showing posts from @Model.Select(p => p.User.UserId).Distinct().Count() different users
+                </div>
+                <nav aria-label="Table navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= QUICK STATS ================= -->
+    @if (Model.Any())
+    {
+        <div class="row g-4 mt-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Active Posts</h6>
+                                <h3 class="fw-bold">@Model.Count(p => p.IsActive)</h3>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-check-circle text-success fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Total Value</h6>
+                                <h3 class="fw-bold">
+                                    $@Model.Sum(p => p.PriceRangeMin + p.PriceRangeMax) / 2
+                                </h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-cash-stack text-primary fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Today's Posts</h6>
+                                <h3 class="fw-bold">
+                                    @Model.Count(p => p.CreatedAt.Date == DateTime.Today)
+                                </h3>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-lightning-charge text-warning fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Avg. Price</h6>
+                                <h3 class="fw-bold">
+                                    $@(Model.Any() ? (int)Model.Average(p => (p.PriceRangeMin + p.PriceRangeMax) / 2) : 0)
+                                </h3>
+                            </div>
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-graph-up text-info fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STATUS BREAKDOWN ================= -->
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pie-chart me-2"></i>Status Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @{
+                            var statusGroups = Model.GroupBy(p => p.Status ?? "Unknown")
+                            .Select(g => new { Status = g.Key, Count = g.Count() })
+                            .OrderByDescending(g => g.Count);
+                        }
+                        <div class="list-group list-group-flush">
+                            @foreach (var group in statusGroups)
+                            {
+                                var statusColor = group.Status switch
+                                {
+                                    "Active" => "success",
+                                    "Pending" => "warning",
+                                    "Closed" => "danger",
+                                    _ => "secondary"
+                                };
+
+                                var percentage = (group.Count * 100) / Model.Count();
+
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-@statusColor me-2">●</span>
+                                            <span class="fw-semibold">@group.Status</span>
+                                        </div>
+                                        <span class="fw-bold">@group.Count posts</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-@statusColor" role="progressbar" style="width: @percentage%"
+                                             aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-calendar-event me-2"></i>Recent Activity
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            @foreach (var item in Model.OrderByDescending(p => p.CreatedAt).Take(5))
+                            {
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-light rounded-circle p-2">
+                                                <i class="bi bi-person-circle text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-1">@item.Title</h6>
+                                                <small class="text-muted">@item.CreatedAt.ToString("hh:mm tt")</small>
+                                            </div>
+                                            <p class="mb-0 text-muted small">
+                                                User @item.User.UserId • $@item.PriceRangeMin - $@item.PriceRangeMax
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ================= EMPTY STATE ================= -->
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-lg">
+            <div class="card-body p-5 text-center">
+                <div class="py-5">
+                    <div class="bg-light rounded-circle d-inline-flex p-4 mb-4">
+                        <i class="bi bi-file-post text-muted fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">No Customer Posts Found</h3>
+                    <p class="text-muted mb-4">
+                        No customer service requests have been posted yet. Customers will appear here once they create job postings.
+                    </p>
+                    <a asp-action="Create" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Create First Post
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
