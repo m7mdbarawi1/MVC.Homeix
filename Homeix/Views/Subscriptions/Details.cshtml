@@ -1,48 +1,83 @@
 ﻿@model Homeix.Models.Subscription
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Subscription Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid mt-4">
 
-<div>
-    <h4>Subscription</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Plan)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Plan.PlanId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.UserId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.SubscriptionId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold">Subscription Details</h1>
+        </div>
+    </div>
+
+    <!-- Centered Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card shadow-sm">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                    <h5 class="mb-0">Details</h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <dl class="row mb-0">
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.StartDate)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.StartDate)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.EndDate)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.EndDate)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.Status)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Status)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.Plan)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Plan.PlanId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.User)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.User.UserId)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model?.SubscriptionId" class="btn btn-secondary">
+                        Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-primary">
+                        Back to List
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </div>

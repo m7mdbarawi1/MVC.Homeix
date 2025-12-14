@@ -1,42 +1,76 @@
 ﻿@model Homeix.Models.Message
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Message Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid mt-4">
 
-<div>
-    <h4>Message</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MessageText)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MessageText)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SentAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SentAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Conversation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Conversation.ConversationId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SenderUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SenderUser.UserId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.MessageId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold">Message Details</h1>
+        </div>
+    </div>
+
+    <!-- Centered Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card shadow-sm">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                    <h5 class="mb-0">Details</h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <dl class="row mb-0">
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.MessageText)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.MessageText)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.SentAt)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.SentAt)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.Conversation)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Conversation.ConversationId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.SenderUser)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.SenderUser.UserId)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model?.MessageId" class="btn btn-secondary">
+                        Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-primary">
+                        Back to List
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </div>

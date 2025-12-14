@@ -1,59 +1,100 @@
 ﻿@model Homeix.Models.RatingCustomerPost
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Customer Rating";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid mt-4">
 
-<h4>RatingCustomerPost</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="RatingCustomerPostId" />
-            <div class="form-group">
-                <label asp-for="JobProgressId" class="control-label"></label>
-                <select asp-for="JobProgressId" class="form-control" asp-items="ViewBag.JobProgressId"></select>
-                <span asp-validation-for="JobProgressId" class="text-danger"></span>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1>Edit Customer Rating</h1>
+        </div>
+    </div>
+
+    <!-- Centered Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <input type="hidden" asp-for="RatingCustomerPostId" />
+
+                        <!-- Job Progress -->
+                        <div class="mb-3">
+                            <label asp-for="JobProgressId" class="form-label"></label>
+                            <select asp-for="JobProgressId"
+                                    class="form-control"
+                                    asp-items="ViewBag.JobProgressId">
+                            </select>
+                            <span asp-validation-for="JobProgressId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Rater -->
+                        <div class="mb-3">
+                            <label asp-for="RaterUserId" class="form-label"></label>
+                            <select asp-for="RaterUserId"
+                                    class="form-control"
+                                    asp-items="ViewBag.RaterUserId">
+                            </select>
+                            <span asp-validation-for="RaterUserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Rated User -->
+                        <div class="mb-3">
+                            <label asp-for="RatedUserId" class="form-label"></label>
+                            <select asp-for="RatedUserId"
+                                    class="form-control"
+                                    asp-items="ViewBag.RatedUserId">
+                            </select>
+                            <span asp-validation-for="RatedUserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Rating Value -->
+                        <div class="mb-3">
+                            <label asp-for="RatingValue" class="form-label"></label>
+                            <input asp-for="RatingValue" type="number" min="1" max="5" class="form-control" />
+                            <span asp-validation-for="RatingValue" class="text-danger"></span>
+                        </div>
+
+                        <!-- Review -->
+                        <div class="mb-3">
+                            <label asp-for="Review" class="form-label"></label>
+                            <textarea asp-for="Review" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Review" class="text-danger"></span>
+                        </div>
+
+                        <!-- Created At -->
+                        <div class="mb-3">
+                            <label asp-for="CreatedAt" class="form-label"></label>
+                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Save
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Back
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="RaterUserId" class="control-label"></label>
-                <select asp-for="RaterUserId" class="form-control" asp-items="ViewBag.RaterUserId"></select>
-                <span asp-validation-for="RaterUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RatedUserId" class="control-label"></label>
-                <select asp-for="RatedUserId" class="form-control" asp-items="ViewBag.RatedUserId"></select>
-                <span asp-validation-for="RatedUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RatingValue" class="control-label"></label>
-                <input asp-for="RatingValue" class="form-control" />
-                <span asp-validation-for="RatingValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Review" class="control-label"></label>
-                <input asp-for="Review" class="form-control" />
-                <span asp-validation-for="Review" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

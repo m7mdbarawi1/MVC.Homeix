@@ -1,587 +1,113 @@
 ﻿@model IEnumerable<Homeix.Models.Payment>
 
 @{
-    ViewData["Title"] = "Payments Management";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Payments";
 }
 
-<div class="container mt-5 mb-5">
+<div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">
-            <i class="bi bi-cash-stack me-2"></i> Payments Management
-        </h1>
-        <p class="text-muted">
-            Monitor, track, and manage all platform transactions and payments.
-        </p>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
     </div>
 
-    <!-- ================= ACTIONS BAR ================= -->
-    <div class="card bg-light border-0 shadow-sm mb-4">
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="badge bg-primary rounded-pill p-2">
-                        <i class="bi bi-currency-dollar me-1"></i> Total Payments: @Model.Count()
-                    </span>
-                    <span class="ms-3 text-muted">
-                        <i class="bi bi-info-circle me-1"></i> Track revenue, transactions, and payment statuses
-                    </span>
-                </div>
-                <div class="btn-group">
-                    <a asp-action="Create" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-2"></i>Record New Payment
-                    </a>
-                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
-                        <span class="visually-hidden">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Export Report</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up me-2"></i>View Analytics</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-receipt me-2"></i>Generate Invoice</a></li>
-                    </ul>
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search payments...">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= PAYMENTS TABLE ================= -->
-    <div class="card border-0 shadow-lg">
-        <div class="card-header bg-primary text-white py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-table me-2"></i>Transaction History
-                </h5>
-                <div class="d-flex gap-2">
-                    <div class="dropdown">
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="statusFilter" data-bs-toggle="dropdown">
-                            <i class="bi bi-funnel me-1"></i>Status
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">All Payments</a></li>
-                            <li><a class="dropdown-item" href="#"><span class="badge bg-success me-2">●</span>Completed</a></li>
-                            <li><a class="dropdown-item" href="#"><span class="badge bg-warning me-2">●</span>Pending</a></li>
-                            <li><a class="dropdown-item" href="#"><span class="badge bg-danger me-2">●</span>Failed</a></li>
-                            <li><a class="dropdown-item" href="#"><span class="badge bg-info me-2">●</span>Refunded</a></li>
-                        </ul>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dateFilter" data-bs-toggle="dropdown">
-                            <i class="bi bi-calendar me-1"></i>Date Range
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Today</a></li>
-                            <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                            <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
-                            <li><a class="dropdown-item" href="#">This Month</a></li>
-                            <li><a class="dropdown-item" href="#">All Time</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 py-3">
-                                <i class="bi bi-currency-dollar me-1"></i>
-                                @Html.DisplayNameFor(model => model.Amount)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-calendar me-1"></i>
-                                @Html.DisplayNameFor(model => model.PaymentDate)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-activity me-1"></i>
-                                @Html.DisplayNameFor(model => model.Status)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-credit-card me-1"></i>
-                                @Html.DisplayNameFor(model => model.PaymentMethod)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-clock-history me-1"></i>
-                                Subscription
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-person-circle me-1"></i>
-                                @Html.DisplayNameFor(model => model.User)
-                            </th>
-                            <th class="pe-4 py-3 text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr class="border-top">
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-success bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-cash-coin text-success"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">$@Html.DisplayFor(modelItem => item.Amount)</h6>
-                                            <small class="text-muted">Payment #@item.PaymentId</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-calendar3 text-primary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">@item.PaymentDate.ToString("MMM dd, yyyy")</h6>
-                                            <small class="text-muted">@item.PaymentDate.ToString("hh:mm tt")</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    @{
-                                        var statusBadgeClass = item.Status switch
-                                        {
-                                            "Completed" => "bg-success",
-                                            "Pending" => "bg-warning",
-                                            "Failed" => "bg-danger",
-                                            "Refunded" => "bg-info",
-                                            "Processing" => "bg-primary",
-                                            _ => "bg-secondary"
-                                        };
-
-                                        var statusIcon = item.Status switch
-                                        {
-                                            "Completed" => "check-circle",
-                                            "Pending" => "clock",
-                                            "Failed" => "x-circle",
-                                            "Refunded" => "arrow-counterclockwise",
-                                            "Processing" => "arrow-repeat",
-                                            _ => "question-circle"
-                                        };
-                                    }
-                                    <span class="badge @statusBadgeClass bg-opacity-10 border border-@statusBadgeClass.Replace("bg-", "") border-opacity-25 rounded-pill px-3 py-2">
-                                        <i class="bi bi-@statusIcon me-1"></i>@item.Status
-                                    </span>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-credit-card text-warning"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">Method #@Html.DisplayFor(modelItem => item.PaymentMethod.PaymentMethodId)</h6>
-                                            <small class="text-muted">Payment Method</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-clock-history text-info"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">Subscription #@Html.DisplayFor(modelItem => item.Subscription.SubscriptionId)</h6>
-                                            <small class="text-muted">Recurring Plan</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-secondary bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-person-fill text-secondary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">User @Html.DisplayFor(modelItem => item.User.UserId)</h6>
-                                            <small class="text-muted">Payer</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.PaymentId" class="btn btn-outline-primary btn-sm" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-outline-info btn-sm" title="View Details">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.PaymentId" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
-                                    <div class="mt-2">
-                                        <span class="badge bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill px-2 py-1">
-                                            <i class="bi bi-receipt me-1"></i>Transaction
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer bg-light py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted small">
-                    <i class="bi bi-graph-up me-1"></i>
-                    Total Revenue: $@Model.Sum(p => p.Amount) •
-                    @Model.Select(p => p.User.UserId).Distinct().Count() payers
-                </div>
-                <nav aria-label="Table navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= QUICK STATS ================= -->
-    @if (Model.Any())
-    {
-        <div class="row g-4 mt-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Total Revenue</h6>
-                                <h3 class="fw-bold">
-                                    $@Model.Sum(p => p.Amount)
-                                </h3>
-                            </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-cash-stack text-success fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Today's Payments</h6>
-                                <h3 class="fw-bold">
-                                    @Model.Count(p => p.PaymentDate.Date == DateTime.Today)
-                                </h3>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-calendar-day text-primary fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Avg. Payment</h6>
-                                <h3 class="fw-bold">
-                                    $@(Model.Any() ? (int)Model.Average(p => p.Amount) : 0)
-                                </h3>
-                            </div>
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-graph-up text-warning fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Success Rate</h6>
-                                <h3 class="fw-bold">
-                                    @{
-                                        var successRate = Model.Any() ?
-                                        (int)((Model.Count(p => p.Status == "Completed") * 100) / Model.Count()) : 0;
-                                    }
-                                    @successRate%
-                                </h3>
-                            </div>
-                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-percent text-info fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= PAYMENT ANALYSIS ================= -->
-        <div class="row mt-4">
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-pie-chart me-2"></i>Payment Status Distribution
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        @{
-                            var statusGroups = Model.GroupBy(p => p.Status)
-                            .Select(g => new { Status = g.Key, Count = g.Count(), Total = g.Sum(p => p.Amount) })
-                            .OrderByDescending(g => g.Count);
-                        }
-                        <div class="list-group list-group-flush">
-                            @foreach (var group in statusGroups)
-                            {
-                                var statusColor = group.Status switch
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Amount)</th>
+                                    <th>@Html.DisplayNameFor(model => model.PaymentDate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Status)</th>
+                                    <th>@Html.DisplayNameFor(model => model.PaymentMethod)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Subscription)</th>
+                                    <th>@Html.DisplayNameFor(model => model.User)</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTable">
+                                @if (Model != null && Model.Any())
                                 {
-                                    "Completed" => "success",
-                                    "Pending" => "warning",
-                                    "Failed" => "danger",
-                                    "Refunded" => "info",
-                                    "Processing" => "primary",
-                                    _ => "secondary"
-                                };
-
-                                var percentage = (group.Count * 100) / Model.Count();
-
-                                <div class="list-group-item border-0 px-0 py-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <span class="badge bg-@statusColor me-2">●</span>
-                                            <span class="fw-semibold">@group.Status</span>
-                                        </div>
-                                        <div>
-                                            <span class="fw-bold me-2">@group.Count payments</span>
-                                            <span class="text-muted">$@group.Total</span>
-                                        </div>
-                                    </div>
-                                    <div class="progress" style="height: 8px;">
-                                        <div class="progress-bar bg-@statusColor" role="progressbar" style="width: @percentage%"
-                                             aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-trophy me-2"></i>Top Paying Users
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @{
-                                var topPayers = Model
-                                .GroupBy(p => p.User.UserId)
-                                .Select(g => new { UserId = g.Key, Count = g.Count(), Total = g.Sum(p => p.Amount) })
-                                .OrderByDescending(g => g.Total)
-                                .Take(5);
-
-                                int payerRank = 1;
-                            }
-                            @foreach (var payer in topPayers)
-                            {
-                                var rankClass = payerRank <= 3 ? "bg-warning bg-opacity-10" : "bg-secondary bg-opacity-10";
-
-                                <div class="list-group-item border-0 px-0 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="rounded-circle p-2 @rankClass">
-                                                @if (payerRank <= 3)
-                                                {
-                                                    <i class="bi bi-award-fill text-warning"></i>
-                                                }
-                                                else
-                                                {
-                                                    <span class="fw-bold">#@payerRank</span>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0">User @payer.UserId</h6>
-                                                <div>
-                                                    <span class="badge bg-success me-1">$@payer.Total</span>
-                                                    <span class="badge bg-primary">@payer.Count payments</span>
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Amount</td>
+                                            <td>@item.PaymentDate</td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    @item.Status
+                                                </span>
+                                            </td>
+                                            <td>@item.PaymentMethod?.PaymentMethodId</td>
+                                            <td>@item.Subscription?.SubscriptionId</td>
+                                            <td>@item.User?.UserId</td>
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-id="@item.PaymentId" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.PaymentId" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
                                                 </div>
-                                            </div>
-                                            <small class="text-muted">Top contributor</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                payerRank++;
-                            }
-                        </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            No payments found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- ================= RECENT TRANSACTIONS ================= -->
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-clock-history me-2"></i>Recent Transactions
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                    @foreach (var item in Model.OrderByDescending(p => p.PaymentDate).Take(6))
-                    {
-                        var statusColor = item.Status switch
-                        {
-                            "Completed" => "success",
-                            "Pending" => "warning",
-                            "Failed" => "danger",
-                            "Refunded" => "info",
-                            "Processing" => "primary",
-                            _ => "secondary"
-                        };
-
-                        <div class="col">
-                            <div class="card border h-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                                <i class="bi bi-person-fill text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-0">User @item.User.UserId</h6>
-                                                <small class="text-muted">Payer</small>
-                                            </div>
-                                        </div>
-                                        <span class="badge bg-@statusColor bg-opacity-10 border border-@statusColor border-opacity-25">
-                                            @item.Status
-                                        </span>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="bi bi-cash-coin text-muted me-2"></i>
-                                            <span class="fw-bold fs-5">$@item.Amount</span>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-credit-card text-muted me-2"></i>
-                                            <span class="text-muted">Method #@item.PaymentMethod.PaymentMethodId</span>
-                                        </div>
-                                        <div class="d-flex align-items-center mt-1">
-                                            <i class="bi bi-clock text-muted me-2"></i>
-                                            <small class="text-muted">@item.PaymentDate.ToString("MMM dd, hh:mm tt")</small>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="bi bi-receipt me-1"></i>
-                                            Payment #@item.PaymentId
-                                        </small>
-                                        <div class="btn-group btn-group-sm">
-                                            <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@item.PaymentId" class="btn btn-outline-secondary btn-sm">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= REVENUE TIMELINE ================= -->
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-graph-up-arrow me-2"></i>Daily Revenue Trend
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group list-group-flush">
-                    @{
-                        var dailyRevenue = Model
-                        .GroupBy(p => p.PaymentDate.Date)
-                        .Select(g => new { Date = g.Key, Count = g.Count(), Total = g.Sum(p => p.Amount) })
-                        .OrderByDescending(g => g.Date)
-                        .Take(7);
-                    }
-                    @foreach (var day in dailyRevenue.OrderBy(g => g.Date))
-                    {
-                        var maxAmount = dailyRevenue.Max(d => d.Total);
-                        var percentage = maxAmount > 0 ? (int)((day.Total * 100) / maxAmount) : 0;
-
-                        <div class="list-group-item border-0 px-0 py-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-calendar-day text-muted me-2"></i>
-                                    <span class="fw-semibold">@day.Date.ToString("MMM dd, yyyy")</span>
-                                </div>
-                                <div class="text-end">
-                                    <div class="fw-bold">$@day.Total</div>
-                                    <small class="text-muted">@day.Count payments</small>
-                                </div>
-                            </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%"
-                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- ================= EMPTY STATE ================= -->
-    @if (!Model.Any())
-    {
-        <div class="card border-0 shadow-lg">
-            <div class="card-body p-5 text-center">
-                <div class="py-5">
-                    <div class="bg-light rounded-circle d-inline-flex p-4 mb-4">
-                        <i class="bi bi-cash-stack text-muted fs-1"></i>
-                    </div>
-                    <h3 class="fw-bold mb-3">No Payments Found</h3>
-                    <p class="text-muted mb-4">
-                        No payment transactions have been recorded yet. Payments will appear here once users start making transactions.
-                    </p>
-                    <a asp-action="Create" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>Record First Payment
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#paymentsTable tr");
+
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? "" : "none";
+                });
+            });
+        });
+    </script>
+}

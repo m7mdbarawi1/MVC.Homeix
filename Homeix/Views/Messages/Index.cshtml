@@ -1,465 +1,107 @@
 ﻿@model IEnumerable<Homeix.Models.Message>
 
 @{
-    ViewData["Title"] = "Messages Management";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Messages";
 }
 
-<div class="container mt-5 mb-5">
+<div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">
-            <i class="bi bi-chat-text me-2"></i> Messages Management
-        </h1>
-        <p class="text-muted">
-            Monitor, review, and manage all platform messages and conversations.
-        </p>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
     </div>
 
-    <!-- ================= ACTIONS BAR ================= -->
-    <div class="card bg-light border-0 shadow-sm mb-4">
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="badge bg-primary rounded-pill p-2">
-                        <i class="bi bi-chat-quote me-1"></i> Total Messages: @Model.Count()
-                    </span>
-                    <span class="ms-3 text-muted">
-                        <i class="bi bi-info-circle me-1"></i> Review message content and conversation history
-                    </span>
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search messages...">
                 </div>
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>Send New Message
-                </a>
             </div>
         </div>
     </div>
 
-    <!-- ================= MESSAGES TABLE ================= -->
-    <div class="card border-0 shadow-lg">
-        <div class="card-header bg-primary text-white py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-chat-left-text me-2"></i>Message History
-                </h5>
-                <div class="d-flex gap-2">
-                    <div class="dropdown">
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="timeFilter" data-bs-toggle="dropdown">
-                            <i class="bi bi-calendar me-1"></i>Time Range
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Last 24 Hours</a></li>
-                            <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                            <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
-                            <li><a class="dropdown-item" href="#">All Time</a></li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-light btn-sm">
-                        <i class="bi bi-search me-1"></i>Search
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 py-3">
-                                <i class="bi bi-chat me-1"></i>
-                                Message Content
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-person-circle me-1"></i>
-                                @Html.DisplayNameFor(model => model.SenderUser)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-chat-dots me-1"></i>
-                                @Html.DisplayNameFor(model => model.Conversation)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-clock me-1"></i>
-                                @Html.DisplayNameFor(model => model.SentAt)
-                            </th>
-                            <th class="pe-4 py-3 text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr class="border-top">
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-start">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-chat-left text-primary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-1">Message #@item.MessageId</h6>
-                                            <p class="mb-0 text-muted bg-light bg-opacity-50 p-2 rounded border-start border-primary border-3">
-                                                @if (item.MessageText.Length > 100)
-                                                {
-                                                    @item.MessageText.Substring(0, 100)
-
-                                                    <text>...</text>
-                                                }
-                                                else
-                                                {
-                                                    @item.MessageText
-                                                }
-                                            </p>
-                                            <small class="text-muted">
-                                                @item.MessageText.Length characters
-                                            </small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-success bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-person-fill text-success"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">User @Html.DisplayFor(modelItem => item.SenderUser.UserId)</h6>
-                                            <small class="text-muted">Message Sender</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-chat-dots text-info"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">Conversation #@Html.DisplayFor(modelItem => item.Conversation.ConversationId)</h6>
-                                            <small class="text-muted">Chat Thread</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-clock-history text-warning"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">@item.SentAt.ToString("MMM dd, yyyy")</h6>
-                                            <small class="text-muted">@item.SentAt.ToString("hh:mm tt")</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.MessageId" class="btn btn-outline-primary btn-sm" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a asp-action="Details" asp-route-id="@item.MessageId" class="btn btn-outline-info btn-sm" title="View Details">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.MessageId" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
-                                    <div class="mt-2">
-                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1">
-                                            <i class="bi bi-chat-left-text me-1"></i>Message
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer bg-light py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted small">
-                    <i class="bi bi-chat-square-text me-1"></i>
-                    @Model.Select(m => m.Conversation.ConversationId).Distinct().Count() conversations •
-                    @Model.Select(m => m.SenderUser.UserId).Distinct().Count() senders
-                </div>
-                <nav aria-label="Table navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= QUICK STATS ================= -->
-    @if (Model.Any())
-    {
-        <div class="row g-4 mt-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Total Messages</h6>
-                                <h3 class="fw-bold text-primary">@Model.Count()</h3>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-chat-dots text-primary fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Today's Messages</h6>
-                                <h3 class="fw-bold text-success">
-                                    @Model.Count(m => m.SentAt.Date == DateTime.Today)
-                                </h3>
-                            </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-calendar-day text-success fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Active Senders</h6>
-                                <h3 class="fw-bold text-warning">
-                                    @Model.Select(m => m.SenderUser.UserId).Distinct().Count()
-                                </h3>
-                            </div>
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-people text-warning fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Avg. Length</h6>
-                                <h3 class="fw-bold text-info">
-                                    @(Model.Any() ? (int)Model.Average(m => m.MessageText.Length) : 0) chars
-                                </h3>
-                            </div>
-                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-text-paragraph text-info fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= MESSAGE ACTIVITY ================= -->
-        <div class="row mt-4">
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-graph-up me-2"></i>Message Volume by Hour
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @{
-                                var hourlyGroups = Model
-                                .GroupBy(m => m.SentAt.Hour)
-                                .Select(g => new { Hour = g.Key, Count = g.Count() })
-                                .OrderBy(g => g.Hour)
-                                .Take(8);
-                            }
-                            @foreach (var hourGroup in hourlyGroups)
-                            {
-                                var hourName = hourGroup.Hour == 0 ? "12 AM" :
-                                hourGroup.Hour == 12 ? "12 PM" :
-                                hourGroup.Hour > 12 ? $"{hourGroup.Hour - 12} PM" : $"{hourGroup.Hour} AM";
-                                var percentage = (hourGroup.Count * 100) / (Model.Count() > 0 ? Model.Count() : 1);
-
-                                <div class="list-group-item border-0 px-0 py-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-clock text-muted me-2"></i>
-                                            <span class="fw-semibold">@hourName</span>
-                                        </div>
-                                        <span class="fw-bold">@hourGroup.Count messages</span>
-                                    </div>
-                                    <div class="progress" style="height: 8px;">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: @percentage%"
-                                             aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-trophy me-2"></i>Top Message Senders
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @{
-                                var topSenders = Model
-                                .GroupBy(m => m.SenderUser.UserId)
-                                .Select(g => new { UserId = g.Key, Count = g.Count() })
-                                .OrderByDescending(g => g.Count)
-                                .Take(5);
-
-                                int senderRank = 1;
-                            }
-                            @foreach (var sender in topSenders)
-                            {
-                                var rankClass = senderRank <= 3 ? "bg-warning bg-opacity-10" : "bg-secondary bg-opacity-10";
-
-                                <div class="list-group-item border-0 px-0 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="rounded-circle p-2 @rankClass">
-                                                @if (senderRank <= 3)
-                                                {
-                                                    <i class="bi bi-trophy-fill text-warning"></i>
-                                                }
-                                                else
-                                                {
-                                                    <span class="fw-bold text-secondary">#@senderRank</span>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0">User @sender.UserId</h6>
-                                                <span class="badge bg-primary rounded-pill">@sender.Count messages</span>
-                                            </div>
-                                            <small class="text-muted">Active communicator</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                senderRank++;
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= RECENT MESSAGES PREVIEW ================= -->
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-chat-left-quote me-2"></i>Recent Message Preview
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                    @foreach (var item in Model.OrderByDescending(m => m.SentAt).Take(6))
-                    {
-                        <div class="col">
-                            <div class="card border h-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                                <i class="bi bi-person-fill text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-0">User @item.SenderUser.UserId</h6>
-                                                <small class="text-muted">Sender</small>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted">@item.SentAt.ToString("hh:mm tt")</small>
-                                    </div>
-                                    <div class="mb-3 p-2 bg-light bg-opacity-50 rounded border">
-                                        <p class="mb-0 text-muted small" style="line-height: 1.4;">
-                                            @if (item.MessageText.Length > 120)
-                                            {
-                                                @item.MessageText.Substring(0, 120)
-
-                                                <text>...</text>
-                                            }
-                                            else
-                                            {
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.MessageText)</th>
+                                    <th>@Html.DisplayNameFor(model => model.SentAt)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Conversation)</th>
+                                    <th>@Html.DisplayNameFor(model => model.SenderUser)</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesTable">
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="text-truncate" style="max-width: 350px;">
                                                 @item.MessageText
-                                            }
-                                        </p>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <small class="text-muted">
-                                                <i class="bi bi-chat-dots me-1"></i>
-                                                Conversation #@item.Conversation.ConversationId
-                                            </small>
-                                        </div>
-                                        <div class="btn-group btn-group-sm">
-                                            <a asp-action="Details" asp-route-id="@item.MessageId" class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@item.MessageId" class="btn btn-outline-secondary btn-sm">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- ================= EMPTY STATE ================= -->
-    @if (!Model.Any())
-    {
-        <div class="card border-0 shadow-lg">
-            <div class="card-body p-5 text-center">
-                <div class="py-5">
-                    <div class="bg-light rounded-circle d-inline-flex p-4 mb-4">
-                        <i class="bi bi-chat-left-text text-muted fs-1"></i>
+                                            </td>
+                                            <td>@item.SentAt.ToString("g")</td>
+                                            <td>@item.Conversation?.ConversationId</td>
+                                            <td>@item.SenderUser?.UserId</td>
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-id="@item.MessageId" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@item.MessageId" class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.MessageId" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">
+                                            No messages found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <h3 class="fw-bold mb-3">No Messages Found</h3>
-                    <p class="text-muted mb-4">
-                        No messages have been sent yet. Messages will appear here once users start communicating.
-                    </p>
-                    <a asp-action="Create" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>Send First Message
-                    </a>
                 </div>
             </div>
         </div>
-    }
+    </div>
+
 </div>
 
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#messagesTable tr");
+
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? "" : "none";
+                });
+            });
+        });
+    </script>
+}

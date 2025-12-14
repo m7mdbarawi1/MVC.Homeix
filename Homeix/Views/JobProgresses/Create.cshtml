@@ -1,65 +1,110 @@
 ﻿@model Homeix.Models.JobProgress
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Job Progress";
 }
 
-<h1>Create</h1>
+<div class="container-fluid mt-4">
 
-<h4>JobProgress</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CustomerPostId" class="control-label"></label>
-                <select asp-for="CustomerPostId" class ="form-control" asp-items="ViewBag.CustomerPostId"></select>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">Create Job Progress</h1>
+        </div>
+    </div>
+
+    <!-- Centered Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Customer Post -->
+                        <div class="mb-3">
+                            <label asp-for="CustomerPostId" class="form-label"></label>
+                            <select asp-for="CustomerPostId"
+                                    class="form-select"
+                                    asp-items="ViewBag.CustomerPostId">
+                            </select>
+                            <span asp-validation-for="CustomerPostId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Requested By -->
+                        <div class="mb-3">
+                            <label asp-for="RequestedByUserId" class="form-label"></label>
+                            <select asp-for="RequestedByUserId"
+                                    class="form-select"
+                                    asp-items="ViewBag.RequestedByUserId">
+                            </select>
+                            <span asp-validation-for="RequestedByUserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Assigned To -->
+                        <div class="mb-3">
+                            <label asp-for="AssignedToUserId" class="form-label"></label>
+                            <select asp-for="AssignedToUserId"
+                                    class="form-select"
+                                    asp-items="ViewBag.AssignedToUserId">
+                            </select>
+                            <span asp-validation-for="AssignedToUserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label"></label>
+                            <input asp-for="Status" class="form-control" />
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <!-- Started At -->
+                        <div class="mb-3">
+                            <label asp-for="StartedAt" class="form-label"></label>
+                            <input asp-for="StartedAt" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartedAt" class="text-danger"></span>
+                        </div>
+
+                        <!-- Completed At -->
+                        <div class="mb-3">
+                            <label asp-for="CompletedAt" class="form-label"></label>
+                            <input asp-for="CompletedAt" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="CompletedAt" class="text-danger"></span>
+                        </div>
+
+                        <!-- Ratings -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" asp-for="IsRatedByCustomer" />
+                            <label class="form-check-label" asp-for="IsRatedByCustomer"></label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" asp-for="IsRatedByWorker" />
+                            <label class="form-check-label" asp-for="IsRatedByWorker"></label>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Create
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Back
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="RequestedByUserId" class="control-label"></label>
-                <select asp-for="RequestedByUserId" class ="form-control" asp-items="ViewBag.RequestedByUserId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AssignedToUserId" class="control-label"></label>
-                <select asp-for="AssignedToUserId" class ="form-control" asp-items="ViewBag.AssignedToUserId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartedAt" class="control-label"></label>
-                <input asp-for="StartedAt" class="form-control" />
-                <span asp-validation-for="StartedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CompletedAt" class="control-label"></label>
-                <input asp-for="CompletedAt" class="form-control" />
-                <span asp-validation-for="CompletedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsRatedByCustomer" /> @Html.DisplayNameFor(model => model.IsRatedByCustomer)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsRatedByWorker" /> @Html.DisplayNameFor(model => model.IsRatedByWorker)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

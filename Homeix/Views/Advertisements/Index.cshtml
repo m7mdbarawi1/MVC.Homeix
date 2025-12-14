@@ -1,290 +1,118 @@
 ﻿@model IEnumerable<Homeix.Models.Advertisement>
 
 @{
-    ViewData["Title"] = "Advertisement Management";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Advertisements";
 }
 
-<div class="container mt-5 mb-5">
+<div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">
-            <i class="bi bi-megaphone me-2"></i> Advertisement Management
-        </h1>
-        <p class="text-muted">
-            Manage platform advertisements, banners, and promotional content.
-        </p>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
     </div>
 
-    <!-- ================= ACTIONS BAR ================= -->
-    <div class="card bg-light border-0 shadow-sm mb-4">
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="badge bg-primary rounded-pill p-2">
-                        <i class="bi bi-collection me-1"></i> Total: @Model.Count()
-                    </span>
-                    <span class="ms-3 text-muted">
-                        <i class="bi bi-info-circle me-1"></i> Manage all platform advertisements
-                    </span>
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search advertisements...">
                 </div>
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>Create New Ad
-                </a>
             </div>
         </div>
     </div>
 
-    <!-- ================= ADVERTISEMENTS TABLE ================= -->
-    <div class="card border-0 shadow-lg">
-        <div class="card-header bg-primary text-white py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-table me-2"></i>Active Advertisements
-                </h5>
-                <div class="dropdown">
-                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown">
-                        <i class="bi bi-filter me-1"></i>Filter
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">All Ads</a></li>
-                        <li><a class="dropdown-item" href="#">Active Only</a></li>
-                        <li><a class="dropdown-item" href="#">Expired</a></li>
-                    </ul>
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Title)</th>
+                                    <th>@Html.DisplayNameFor(model => model.ImagePath)</th>
+                                    <th>@Html.DisplayNameFor(model => model.StartDate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.EndDate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.IsActive)</th>
+                                    <th>@Html.DisplayNameFor(model => model.CreatedByUser)</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adsTable">
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Title</td>
+                                            <td>@item.ImagePath</td>
+                                            <td>@item.StartDate.ToString("d")</td>
+                                            <td>@item.EndDate.ToString("d")</td>
+                                            <td>
+                                                @if (item.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                }
+                                            </td>
+                                            <td>@item.CreatedByUser?.UserId</td>
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-id="@item.AdId" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@item.AdId" class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.AdId" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            No advertisements found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 py-3">
-                                <i class="bi bi-card-heading me-1"></i>
-                                @Html.DisplayNameFor(model => model.Title)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-image me-1"></i>
-                                @Html.DisplayNameFor(model => model.ImagePath)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-calendar-start me-1"></i>
-                                @Html.DisplayNameFor(model => model.StartDate)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-calendar-end me-1"></i>
-                                @Html.DisplayNameFor(model => model.EndDate)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-power me-1"></i>
-                                @Html.DisplayNameFor(model => model.IsActive)
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-person me-1"></i>
-                                @Html.DisplayNameFor(model => model.CreatedByUser)
-                            </th>
-                            <th class="pe-4 py-3 text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr class="border-top">
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-megaphone text-info"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">@Html.DisplayFor(modelItem => item.Title)</h6>
-                                            <small class="text-muted">Ad ID: @item.AdId</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    @if (!string.IsNullOrEmpty(item.ImagePath))
-                                    {
-                                        <span class="badge bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill px-3 py-1">
-                                            <i class="bi bi-check-circle me-1"></i>Image Uploaded
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-pill px-3 py-1">
-                                            <i class="bi bi-exclamation-triangle me-1"></i>No Image
-                                        </span>
-                                    }
-                                </td>
-                                <td class="py-3">
-                                    <span class="badge bg-info bg-opacity-10 border border-info border-opacity-25 px-3 py-1">
-                                        @Html.DisplayFor(modelItem => item.StartDate)
-                                    </span>
-                                </td>
-                                <td class="py-3">
-                                    <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 px-3 py-1">
-                                        @Html.DisplayFor(modelItem => item.EndDate)
-                                    </span>
-                                </td>
-                                <td class="py-3">
-                                    @if (item.IsActive)
-                                    {
-                                        <span class="badge bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill px-3 py-2">
-                                            <i class="bi bi-check-circle me-1"></i>Active
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-pill px-3 py-2">
-                                            <i class="bi bi-x-circle me-1"></i>Inactive
-                                        </span>
-                                    }
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-secondary bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-person text-secondary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-2">
-                                            <small class="fw-semibold">User @Html.DisplayFor(modelItem => item.CreatedByUser.UserId)</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.AdId" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a asp-action="Details" asp-route-id="@item.AdId" class="btn btn-outline-info btn-sm">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.AdId" class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer bg-light py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted small">
-                    <i class="bi bi-clock-history me-1"></i>
-                    Last updated: @DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")
-                </div>
-                <nav aria-label="Table navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </nav>
             </div>
         </div>
     </div>
 
-    <!-- ================= QUICK STATS ================= -->
-    @if (Model.Any())
-    {
-        <div class="row g-4 mt-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Active Ads</h6>
-                                <h3 class="fw-bold">@Model.Count(a => a.IsActive)</h3>
-                            </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-check-circle text-success fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Expiring Soon</h6>
-                                <h3 class="fw-bold">0</h3>
-                            </div>
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">With Images</h6>
-                                <h3 class="fw-bold">@Model.Count(a => !string.IsNullOrEmpty(a.ImagePath))</h3>
-                            </div>
-                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-image text-info fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Total Ads</h6>
-                                <h3 class="fw-bold">@Model.Count()</h3>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-collection text-primary fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- ================= EMPTY STATE ================= -->
-    @if (!Model.Any())
-    {
-        <div class="card border-0 shadow-lg">
-            <div class="card-body p-5 text-center">
-                <div class="py-5">
-                    <div class="bg-light rounded-circle d-inline-flex p-4 mb-4">
-                        <i class="bi bi-megaphone text-muted fs-1"></i>
-                    </div>
-                    <h3 class="fw-bold mb-3">No Advertisements Found</h3>
-                    <p class="text-muted mb-4">
-                        You haven't created any advertisements yet. Start promoting your platform by creating your first ad campaign.
-                    </p>
-                    <a asp-action="Create" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>Create First Advertisement
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#adsTable tr");
+
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? "" : "none";
+                });
+            });
+        });
+    </script>
+}
