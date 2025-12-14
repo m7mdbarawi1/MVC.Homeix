@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,148 +18,181 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: CustomerPosts
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.CustomerPosts.Include(c => c.PostCategory).Include(c => c.User);
-            return View(await hOMEIXDbContext.ToListAsync());
-        }
-
-        // GET: CustomerPosts/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var customerPost = await _context.CustomerPosts
+            var posts = await _context.CustomerPosts
                 .Include(c => c.PostCategory)
                 .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.CustomerPostId == id);
-            if (customerPost == null)
-            {
-                return NotFound();
-            }
+                .ToListAsync();
 
-            return View(customerPost);
+            return View(posts);
         }
 
+        // ========================
         // GET: CustomerPosts/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["PostCategoryId"] = new SelectList(_context.PostCategories, "PostCategoryId", "PostCategoryId");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ReloadDropdowns();
             return View();
         }
 
+        // ========================
         // POST: CustomerPosts/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerPostId,UserId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,Status,CreatedAt,IsActive")] CustomerPost customerPost)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "UserId," +
+                "PostCategoryId," +
+                "Title," +
+                "Description," +
+                "Location," +
+                "PriceRangeMin," +
+                "PriceRangeMax"
+            )]
+            CustomerPost customerPost)
         {
-            if (ModelState.IsValid)
+            // ✅ ModelState now works correctly
+            if (!ModelState.IsValid)
             {
-                _context.Add(customerPost);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ReloadDropdowns(customerPost);
+                return View(customerPost);
             }
-            ViewData["PostCategoryId"] = new SelectList(_context.PostCategories, "PostCategoryId", "PostCategoryId", customerPost.PostCategoryId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", customerPost.UserId);
-            return View(customerPost);
+
+            // =========================
+            // System-managed fields
+            // =========================
+            customerPost.CreatedAt = DateTime.Now;
+            customerPost.Status = "Open";
+            customerPost.IsActive = true;
+
+            _context.CustomerPosts.Add(customerPost);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: CustomerPosts/Edit/5
+        // ========================
+        // GET: CustomerPosts/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var customerPost = await _context.CustomerPosts.FindAsync(id);
-            if (customerPost == null)
-            {
+            var post = await _context.CustomerPosts.FindAsync(id);
+            if (post == null)
                 return NotFound();
-            }
-            ViewData["PostCategoryId"] = new SelectList(_context.PostCategories, "PostCategoryId", "PostCategoryId", customerPost.PostCategoryId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", customerPost.UserId);
-            return View(customerPost);
+
+            ReloadDropdowns(post);
+            return View(post);
         }
 
-        // POST: CustomerPosts/Edit/5
+        // ========================
+        // POST: CustomerPosts/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CustomerPostId,UserId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,Status,CreatedAt,IsActive")] CustomerPost customerPost)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind(
+                "CustomerPostId," +
+                "UserId," +
+                "PostCategoryId," +
+                "Title," +
+                "Description," +
+                "Location," +
+                "PriceRangeMin," +
+                "PriceRangeMax," +
+                "IsActive"
+            )]
+            CustomerPost customerPost)
         {
             if (id != customerPost.CustomerPostId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                ReloadDropdowns(customerPost);
+                return View(customerPost);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(customerPost);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CustomerPostExists(customerPost.CustomerPostId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["PostCategoryId"] = new SelectList(_context.PostCategories, "PostCategoryId", "PostCategoryId", customerPost.PostCategoryId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", customerPost.UserId);
-            return View(customerPost);
+            var existing = await _context.CustomerPosts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.CustomerPostId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // ✅ Preserve system fields
+            customerPost.CreatedAt = existing.CreatedAt;
+            customerPost.Status = existing.Status;
+
+            _context.Update(customerPost);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: CustomerPosts/Delete/5
+        // ========================
+        // GET: CustomerPosts/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var customerPost = await _context.CustomerPosts
+            var post = await _context.CustomerPosts
                 .Include(c => c.PostCategory)
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.CustomerPostId == id);
-            if (customerPost == null)
-            {
-                return NotFound();
-            }
 
-            return View(customerPost);
+            if (post == null)
+                return NotFound();
+
+            return View(post);
         }
 
-        // POST: CustomerPosts/Delete/5
+        // ========================
+        // POST: CustomerPosts/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var customerPost = await _context.CustomerPosts.FindAsync(id);
-            if (customerPost != null)
+            var post = await _context.CustomerPosts.FindAsync(id);
+            if (post != null)
             {
-                _context.CustomerPosts.Remove(customerPost);
+                _context.CustomerPosts.Remove(post);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CustomerPostExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void ReloadDropdowns(CustomerPost? post = null)
         {
-            return _context.CustomerPosts.Any(e => e.CustomerPostId == id);
+            ViewData["UserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "UserId",
+                post?.UserId
+            );
+
+            ViewData["PostCategoryId"] = new SelectList(
+                _context.PostCategories,
+                "PostCategoryId",
+                "PostCategoryId",
+                post?.PostCategoryId
+            );
         }
     }
 }

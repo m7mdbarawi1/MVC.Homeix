@@ -2,56 +2,76 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("CustomerPost")]
-public partial class CustomerPost
+namespace Homeix.Models
 {
-    [Key]
-    [Column("CustomerPostID")]
-    public int CustomerPostId { get; set; }
+    [Table("CustomerPost")]
+    public class CustomerPost
+    {
+        [Key]
+        [Column("CustomerPostID")]
+        public int CustomerPostId { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
+        // =========================
+        // Foreign Keys
+        // =========================
+        [Required]
+        [Column("UserID")]
+        public int UserId { get; set; }
 
-    [Column("PostCategoryID")]
-    public int PostCategoryId { get; set; }
+        [Required]
+        [Column("PostCategoryID")]
+        public int PostCategoryId { get; set; }
 
-    [StringLength(200)]
-    public string Title { get; set; } = null!;
+        // =========================
+        // User-input fields
+        // =========================
+        [Required]
+        [StringLength(200)]
+        public string Title { get; set; } = string.Empty;
 
-    public string Description { get; set; } = null!;
+        [Required]
+        public string Description { get; set; } = string.Empty;
 
-    [StringLength(200)]
-    public string Location { get; set; } = null!;
+        [Required]
+        [StringLength(200)]
+        public string Location { get; set; } = string.Empty;
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal? PriceRangeMin { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? PriceRangeMin { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal? PriceRangeMax { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? PriceRangeMax { get; set; }
 
-    [StringLength(50)]
-    public string Status { get; set; } = null!;
+        // =========================
+        // System-controlled fields
+        // =========================
+        [Required]
+        [StringLength(50)]
+        [BindNever]                       // ✅ FIX: prevent POST validation issues
+        public string Status { get; set; } = "Open";
 
-    [Column(TypeName = "datetime")]
-    public DateTime CreatedAt { get; set; }
+        [Column(TypeName = "datetime")]
+        [BindNever]                       // ✅ FIX
+        public DateTime CreatedAt { get; set; }
 
-    public bool IsActive { get; set; }
+        [BindNever]                       // ✅ FIX
+        public bool IsActive { get; set; } = true;
 
-    [InverseProperty("CustomerPost")]
-    public virtual ICollection<JobProgress> JobProgresses { get; set; } = new List<JobProgress>();
+        // =========================
+        // Navigation properties
+        // =========================
+        public virtual User User { get; set; } = null!;
+        public virtual PostCategory PostCategory { get; set; } = null!;
 
-    [InverseProperty("CustomerPost")]
-    public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
+        // =========================
+        // Related collections
+        // =========================
+        public virtual ICollection<Offer> Offers { get; set; }
+            = new HashSet<Offer>();
 
-    [ForeignKey("PostCategoryId")]
-    [InverseProperty("CustomerPosts")]
-    public virtual PostCategory PostCategory { get; set; } = null!;
-
-    [ForeignKey("UserId")]
-    [InverseProperty("CustomerPosts")]
-    public virtual User User { get; set; } = null!;
+        public virtual ICollection<JobProgress> JobProgresses { get; set; }
+            = new HashSet<JobProgress>();
+    }
 }
