@@ -1,53 +1,660 @@
 ﻿@model IEnumerable<Homeix.Models.PostMedium>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Media Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="container mt-5 mb-5">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PostType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MediaPath)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UploadedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MediaPath)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UploadedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MediaId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MediaId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MediaId">Delete</a>
-            </td>
-        </tr>
+    <!-- ================= HEADER ================= -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold mb-2">
+            <i class="bi bi-images me-2"></i> Media Management
+        </h1>
+        <p class="text-muted">
+            Manage, organize, and track all media files attached to posts and content.
+        </p>
+    </div>
+
+    <!-- ================= ACTIONS BAR ================= -->
+    <div class="card bg-light border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary rounded-pill p-2">
+                        <i class="bi bi-collection me-1"></i> Total Media: @Model.Count()
+                    </span>
+                    <span class="ms-3 text-muted">
+                        <i class="bi bi-info-circle me-1"></i> Manage images, videos, and attached files
+                    </span>
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Upload New Media
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MEDIA TABLE ================= -->
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-table me-2"></i>Media Library
+                </h5>
+                <div class="d-flex gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="typeFilter" data-bs-toggle="dropdown">
+                            <i class="bi bi-funnel me-1"></i>Media Type
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">All Media</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-image text-info me-2"></i>Images</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-text text-success me-2"></i>Documents</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-play text-warning me-2"></i>Videos</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-music text-danger me-2"></i>Audio</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-light btn-sm">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">
+                                <i class="bi bi-file-earmark me-1"></i>
+                                Media Preview
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-tag me-1"></i>
+                                @Html.DisplayNameFor(model => model.PostType)
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-postcard me-1"></i>
+                                @Html.DisplayNameFor(model => model.PostId)
+                            </th>
+                            <th class="py-3">
+                                <i class="bi bi-calendar me-1"></i>
+                                @Html.DisplayNameFor(model => model.UploadedAt)
+                            </th>
+                            <th class="pe-4 py-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            @{
+                                                var mediaIcon = GetMediaIcon(item.MediaPath);
+                                                var mediaColor = GetMediaColor(item.MediaPath);
+                                                var fileType = GetFileType(item.MediaPath);
+                                            }
+                                            <div class="@mediaColor.Replace("text-", "bg-") bg-opacity-10 rounded-circle p-2">
+                                                <i class="bi bi-@mediaIcon @mediaColor"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="fw-bold mb-0">@GetFileName(item.MediaPath)</h6>
+                                            <small class="text-muted">
+                                                <span class="badge bg-secondary bg-opacity-10 border border-secondary border-opacity-25 rounded-pill px-2 py-1">
+                                                    @fileType
+                                                </span>
+                                                • Media #@item.MediaId
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    @{
+                                        var postTypeBadgeClass = item.PostType switch
+                                        {
+                                            "CustomerPost" => "bg-info",
+                                            "WorkerPost" => "bg-success",
+                                            "Advertisement" => "bg-warning",
+                                            _ => "bg-primary"
+                                        };
+
+                                        var postTypeIcon = item.PostType switch
+                                        {
+                                            "CustomerPost" => "person",
+                                            "WorkerPost" => "briefcase",
+                                            "Advertisement" => "megaphone",
+                                            _ => "file-earmark"
+                                        };
+                                    }
+                                    <span class="badge @postTypeBadgeClass bg-opacity-10 border border-@postTypeBadgeClass.Replace("bg-", "") border-opacity-25 rounded-pill px-3 py-2">
+                                        <i class="bi bi-@postTypeIcon me-1"></i>@item.PostType
+                                    </span>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2">
+                                                <i class="bi bi-123 text-warning"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="fw-bold mb-0">Post #@item.PostId</h6>
+                                            <small class="text-muted">Linked Content</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                                                <i class="bi bi-clock-history text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="fw-bold mb-0">@item.UploadedAt.ToString("MMM dd, yyyy")</h6>
+                                            <small class="text-muted">@item.UploadedAt.ToString("hh:mm tt")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="pe-4 py-3 text-end">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.MediaId" class="btn btn-outline-primary btn-sm" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.MediaId" class="btn btn-outline-info btn-sm" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.MediaId" class="btn btn-outline-danger btn-sm" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="badge @mediaColor.Replace("text-", "bg-") bg-opacity-10 border border-@mediaColor.Replace("text-", "") border-opacity-25 rounded-pill px-2 py-1">
+                                            <i class="bi bi-@mediaIcon me-1"></i>@fileType
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="bi bi-hdd me-1"></i>
+                    @GetTotalFileSize() • @Model.Select(m => m.PostType).Distinct().Count() post types
+                </div>
+                <nav aria-label="Table navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= QUICK STATS ================= -->
+    @if (Model.Any())
+    {
+        <div class="row g-4 mt-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Total Media</h6>
+                                <h3 class="fw-bold">@Model.Count()</h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-collection text-primary fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Images</h6>
+                                <h3 class="fw-bold">
+                                    @Model.Count(m =>
+                                             m.MediaPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".bmp", StringComparison.OrdinalIgnoreCase))
+                                </h3>
+                            </div>
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-image text-info fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Documents</h6>
+                                <h3 class="fw-bold">
+                                    @Model.Count(m =>
+                                             m.MediaPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) ||
+                                             m.MediaPath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                                </h3>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-file-earmark-text text-success fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">Today's Uploads</h6>
+                                <h3 class="fw-bold">
+                                    @Model.Count(m => m.UploadedAt.Date == DateTime.Today)
+                                </h3>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-calendar-day text-warning fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MEDIA ANALYSIS ================= -->
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pie-chart me-2"></i>Media Type Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            @{
+                                var mediaTypeGroups = Model
+                                .Select(m => new
+                                {
+                                    Media = m,
+                                    Type = GetFileType(m.MediaPath),
+                                    Color = GetMediaColor(m.MediaPath)
+                                })
+                                .GroupBy(x => x.Type)
+                                .Select(g => new { Type = g.Key, Count = g.Count(), Color = g.First().Color })
+                                .OrderByDescending(g => g.Count);
+                            }
+                            @foreach (var group in mediaTypeGroups)
+                            {
+                                var percentage = (group.Count * 100) / Model.Count();
+
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle p-1 me-2 @group.Color.Replace("text-", "bg-") bg-opacity-25">
+                                                <i class="bi bi-circle-fill @group.Color"></i>
+                                            </div>
+                                            <span class="fw-semibold">@group.Type Files</span>
+                                        </div>
+                                        <span class="fw-bold">@group.Count files</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar @group.Color.Replace("text-", "bg-")" role="progressbar" style="width: @percentage%"
+                                             aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-diagram-3 me-2"></i>Post Type Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            @{
+                                var postTypeGroups = Model
+                                .GroupBy(m => m.PostType)
+                                .Select(g => new { Type = g.Key, Count = g.Count() })
+                                .OrderByDescending(g => g.Count);
+                            }
+                            @foreach (var group in postTypeGroups)
+                            {
+                                var typeColor = group.Type switch
+                                {
+                                    "CustomerPost" => "info",
+                                    "WorkerPost" => "success",
+                                    "Advertisement" => "warning",
+                                    _ => "primary"
+                                };
+
+                                var typeIcon = group.Type switch
+                                {
+                                    "CustomerPost" => "person",
+                                    "WorkerPost" => "briefcase",
+                                    "Advertisement" => "megaphone",
+                                    _ => "file-earmark"
+                                };
+
+                                var percentage = (group.Count * 100) / Model.Count();
+
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-@typeColor bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-@typeIcon text-@typeColor"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-semibold">@group.Type</span>
+                                                <span class="fw-bold">@group.Count media</span>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-@typeColor" role="progressbar" style="width: @percentage%"
+                                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MEDIA GALLERY ================= -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-grid me-2"></i>Recent Media Uploads
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var item in Model.OrderByDescending(m => m.UploadedAt).Take(6))
+                    {
+                        var mediaIcon = GetMediaIcon(item.MediaPath);
+                        var mediaColor = GetMediaColor(item.MediaPath);
+                        var fileType = GetFileType(item.MediaPath);
+                        var fileName = GetFileName(item.MediaPath);
+
+                        <div class="col">
+                            <div class="card border h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="@mediaColor.Replace("text-", "bg-") bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-@mediaIcon @mediaColor"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 180px;">@fileName</h6>
+                                                <small class="text-muted">@fileType</small>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-secondary bg-opacity-10 border border-secondary border-opacity-25">
+                                            #@item.MediaId
+                                        </span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-tag text-muted me-2"></i>
+                                            <span class="fw-semibold">@item.PostType</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-123 text-muted me-2"></i>
+                                            <small class="text-muted">Post #@item.PostId</small>
+                                        </div>
+                                        <div class="d-flex align-items-center mt-1">
+                                            <i class="bi bi-clock text-muted me-2"></i>
+                                            <small class="text-muted">@item.UploadedAt.ToString("MMM dd, hh:mm tt")</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-file-earmark me-1"></i>
+                                            @GetFileExtension(item.MediaPath)
+                                        </small>
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-action="Details" asp-route-id="@item.MediaId" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.MediaId" class="btn btn-outline-secondary btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= UPLOAD ACTIVITY ================= -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up-arrow me-2"></i>Upload Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    @{
+                        var dailyUploads = Model
+                        .GroupBy(m => m.UploadedAt.Date)
+                        .Select(g => new { Date = g.Key, Count = g.Count() })
+                        .OrderByDescending(g => g.Date)
+                        .Take(5);
+                    }
+                    @foreach (var day in dailyUploads.OrderBy(g => g.Date))
+                    {
+                        var maxUploads = dailyUploads.Max(d => d.Count);
+                        var percentage = maxUploads > 0 ? (int)((day.Count * 100) / maxUploads) : 0;
+
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-calendar-day text-muted me-2"></i>
+                                    <span class="fw-semibold">@day.Date.ToString("MMM dd, yyyy")</span>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold">@day.Count uploads</div>
+                                    <small class="text-muted">@GetMediaTypesForDay(day.Date)</small>
+                                </div>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: @percentage%"
+                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ================= EMPTY STATE ================= -->
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-lg">
+            <div class="card-body p-5 text-center">
+                <div class="py-5">
+                    <div class="bg-light rounded-circle d-inline-flex p-4 mb-4">
+                        <i class="bi bi-images text-muted fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">No Media Files Found</h3>
+                    <p class="text-muted mb-4">
+                        No media files have been uploaded yet. Media will appear here once users start attaching files to posts.
+                    </p>
+                    <a asp-action="Create" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Upload First Media
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+@functions {
+    // Helper function to get media icon based on file extension
+    string GetMediaIcon(string mediaPath)
+    {
+        if (string.IsNullOrEmpty(mediaPath))
+            return "file-earmark";
+
+        var extension = Path.GetExtension(mediaPath).ToLower();
+
+        return extension switch
+        {
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".svg" => "image",
+            ".mp4" or ".avi" or ".mov" or ".wmv" or ".flv" => "file-play",
+            ".mp3" or ".wav" or ".ogg" or ".m4a" => "file-music",
+            ".pdf" => "file-pdf",
+            ".doc" or ".docx" => "file-word",
+            ".xls" or ".xlsx" => "file-excel",
+            ".ppt" or ".pptx" => "file-ppt",
+            ".txt" => "file-text",
+            ".zip" or ".rar" or ".7z" => "file-zip",
+            _ => "file-earmark"
+        };
+    }
+
+    // Helper function to get media color based on file type
+    string GetMediaColor(string mediaPath)
+    {
+        if (string.IsNullOrEmpty(mediaPath))
+            return "text-secondary";
+
+        var extension = Path.GetExtension(mediaPath).ToLower();
+
+        return extension switch
+        {
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".svg" => "text-info",
+            ".mp4" or ".avi" or ".mov" or ".wmv" or ".flv" => "text-warning",
+            ".mp3" or ".wav" or ".ogg" or ".m4a" => "text-danger",
+            ".pdf" => "text-danger",
+            ".doc" or ".docx" => "text-primary",
+            ".xls" or ".xlsx" => "text-success",
+            ".ppt" or ".pptx" => "text-warning",
+            ".txt" => "text-secondary",
+            ".zip" or ".rar" or ".7z" => "text-dark",
+            _ => "text-secondary"
+        };
+    }
+
+    // Helper function to get file type name
+    string GetFileType(string mediaPath)
+    {
+        if (string.IsNullOrEmpty(mediaPath))
+            return "File";
+
+        var extension = Path.GetExtension(mediaPath).ToLower();
+
+        return extension switch
+        {
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".svg" => "Image",
+            ".mp4" or ".avi" or ".mov" or ".wmv" or ".flv" => "Video",
+            ".mp3" or ".wav" or ".ogg" or ".m4a" => "Audio",
+            ".pdf" => "PDF",
+            ".doc" or ".docx" => "Word",
+            ".xls" or ".xlsx" => "Excel",
+            ".ppt" or ".pptx" => "PowerPoint",
+            ".txt" => "Text",
+            ".zip" or ".rar" or ".7z" => "Archive",
+            _ => "File"
+        };
+    }
+
+    // Helper function to get file name without path
+    string GetFileName(string mediaPath)
+    {
+        if (string.IsNullOrEmpty(mediaPath))
+            return "No file";
+
+        var fileName = Path.GetFileName(mediaPath);
+        return fileName.Length > 30 ? fileName.Substring(0, 27) + "..." : fileName;
+    }
+
+    // Helper function to get file extension
+    string GetFileExtension(string mediaPath)
+    {
+        if (string.IsNullOrEmpty(mediaPath))
+            return "Unknown";
+
+        var extension = Path.GetExtension(mediaPath).ToUpper();
+        return extension.TrimStart('.');
+    }
+
+    // Helper function to get total file size (placeholder)
+    string GetTotalFileSize()
+    {
+        // In a real application, you would calculate actual file sizes
+        var fileCount = Model.Count();
+        var estimatedSize = fileCount * 2; // Placeholder: 2MB per file average
+        return $"{fileCount} files • ~{estimatedSize}MB";
+    }
+
+    // Helper function to get media types for a specific day
+    string GetMediaTypesForDay(DateTime date)
+    {
+        var dayMedia = Model.Where(m => m.UploadedAt.Date == date);
+        var imageCount = dayMedia.Count(m =>
+            m.MediaPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+            m.MediaPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+            m.MediaPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+        var docCount = dayMedia.Count(m =>
+            m.MediaPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ||
+            m.MediaPath.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) ||
+            m.MediaPath.EndsWith(".docx", StringComparison.OrdinalIgnoreCase));
+
+        if (imageCount > 0 && docCount > 0)
+            return $"{imageCount} images, {docCount} docs";
+        else if (imageCount > 0)
+            return $"{imageCount} images";
+        else if (docCount > 0)
+            return $"{docCount} docs";
+        else
+            return "Various files";
+    }
 }
-    </tbody>
-</table>

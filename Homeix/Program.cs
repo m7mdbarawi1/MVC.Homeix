@@ -19,9 +19,6 @@ builder.Services.AddAuthentication("HomeixAuth")
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
 
-        // 🔥 DO NOT SPECIFY LogoutPath because your action is LogoutPost, not Logout.
-        // options.LogoutPath = "/Account/Logout";  <-- REMOVE THIS LINE
-
         options.ExpireTimeSpan = TimeSpan.FromHours(5);
         options.SlidingExpiration = true;
     });
