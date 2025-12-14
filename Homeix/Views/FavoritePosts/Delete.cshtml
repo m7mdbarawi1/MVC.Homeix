@@ -1,45 +1,71 @@
 ﻿@model Homeix.Models.FavoritePost
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Favorite Post";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid mt-4">
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>FavoritePost</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AddedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AddedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.UserId)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="FavoritePostId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="text-danger">Delete Favorite Post</h1>
+            <p class="text-muted">Are you sure you want to remove this post from favorites?</p>
+        </div>
+    </div>
+
+    <!-- Centered Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-danger">
+
+                <!-- Card Header -->
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Confirm Deletion</h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <dl class="row">
+
+                        <dt class="col-sm-4 fw-bold">Post Type</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.PostType)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">Post ID</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.PostId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">Added At</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.AddedAt)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">User</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.User.UserId)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" asp-for="FavoritePostId" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,644 +1,111 @@
 ﻿@model IEnumerable<Homeix.Models.Subscription>
 
 @{
-    ViewData["Title"] = "Subscriptions Management";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Subscriptions";
 }
 
-<div class="container mt-5 mb-5">
+<div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">
-            <i class="bi bi-receipt me-2"></i> Subscriptions Management
-        </h1>
-        <p class="text-muted">
-            Manage active subscriptions, track renewals, and monitor subscription status.
-        </p>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
     </div>
 
-    <!-- ================= ACTIONS BAR ================= -->
-    <div class="card bg-light border-0 shadow-sm mb-4">
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="badge bg-primary rounded-pill p-2">
-                        <i class="bi bi-people me-1"></i> Total Subscriptions: @Model.Count()
-                    </span>
-                    <span class="ms-3 text-muted">
-                        <i class="bi bi-info-circle me-1"></i> Monitor all user subscriptions
-                    </span>
-                </div>
-                <div class="d-flex gap-2">
-                    <a asp-action="Create" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-2"></i>Create Subscription
-                    </a>
-                    <button class="btn btn-outline-primary">
-                        <i class="bi bi-download me-2"></i>Export
-                    </button>
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search subscriptions...">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= SUBSCRIPTIONS TABLE ================= -->
-    <div class="card border-0 shadow-lg">
-        <div class="card-header bg-primary text-white py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-table me-2"></i>Active Subscriptions
-                </h5>
-                <div class="d-flex gap-2">
-                    <div class="dropdown">
-                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="statusFilter" data-bs-toggle="dropdown">
-                            <i class="bi bi-funnel me-1"></i>Status Filter
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">All Status</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-check-circle text-success me-2"></i>Active Only</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-clock text-warning me-2"></i>Pending Only</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-x-circle text-danger me-2"></i>Expired Only</a></li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-light btn-sm">
-                        <i class="bi bi-search me-1"></i>Search
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 py-3">
-                                <i class="bi bi-person me-1"></i>
-                                User & Plan
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-calendar-start me-1"></i>
-                                Start Date
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-calendar-end me-1"></i>
-                                End Date
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-clock me-1"></i>
-                                Remaining Days
-                            </th>
-                            <th class="py-3">
-                                <i class="bi bi-circle-fill me-1"></i>
-                                Status
-                            </th>
-                            <th class="pe-4 py-3 text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            var statusColor = item.Status switch
-                            {
-                                "Active" => "success",
-                                "Pending" => "warning",
-                                "Expired" => "danger",
-                                "Cancelled" => "secondary",
-                                _ => "info"
-                            };
-                            
-                            var remainingDays = (item.EndDate - DateTime.Now).Days;
-                            var remainingColor = remainingDays switch
-                            {
-                                > 30 => "success",
-                                > 7 => "warning",
-                                _ => "danger"
-                            };
-                            
-                            var planColor = item.Plan?.PlanName switch
-                            {
-                                "Basic" => "info",
-                                "Standard" => "primary",
-                                "Premium" => "warning",
-                                "Enterprise" => "success",
-                                _ => "secondary"
-                            };
-
-                            <tr class="border-top">
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-person text-primary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">User @item.User.UserId</h6>
-                                            <div class="d-flex align-items-center mt-1">
-                                                <span class="badge bg-@planColor bg-opacity-10 border border-@planColor border-opacity-25 rounded-pill px-2 py-1 me-2">
-                                                    <i class="bi bi-credit-card me-1"></i>@item.Plan?.PlanName
-                                                </span>
-                                                <small class="text-muted">Sub ID: @item.SubscriptionId</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-calendar-plus text-info"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">@item.StartDate.ToString("MMM dd, yyyy")</h6>
-                                            <small class="text-muted">Started</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-calendar-check text-warning"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0">@item.EndDate.ToString("MMM dd, yyyy")</h6>
-                                            <small class="text-muted">Expires</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-@remainingColor bg-opacity-10 rounded-circle p-2">
-                                                <i class="bi bi-clock text-@remainingColor"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="fw-bold mb-0 text-@remainingColor">
-                                                @remainingDays days
-                                            </h6>
-                                            <small class="text-muted">remaining</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    <span class="badge bg-@statusColor bg-opacity-10 border border-@statusColor border-opacity-25 rounded-pill px-3 py-2">
-                                        <i class="bi bi-circle-fill me-1"></i>@item.Status
-                                    </span>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.SubscriptionId" class="btn btn-outline-primary btn-sm" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a asp-action="Details" asp-route-id="@item.SubscriptionId" class="btn btn-outline-info btn-sm" title="View Details">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.SubscriptionId" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
-                                    <div class="mt-2">
-                                        <small class="text-muted">
-                                            <i class="bi bi-calendar3 me-1"></i>
-                                            @((item.EndDate - item.StartDate).Days) days total
-                                        </small>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-footer bg-light py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted small">
-                    <i class="bi bi-graph-up me-1"></i>
-                    @Model.Count(s => s.Status == "Active") active • 
-                    @Model.Count(s => s.Status == "Pending") pending •
-                    @Model.Count(s => s.Status == "Expired") expired
-                </div>
-                <nav aria-label="Table navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= QUICK STATS ================= -->
-    @if (Model.Any())
-    {
-        <div class="row g-4 mt-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Active Subscriptions</h6>
-                                <h3 class="fw-bold text-success">
-                                    @Model.Count(s => s.Status == "Active")
-                                </h3>
-                            </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-check-circle text-success fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Expiring Soon (< 7 days)</h6>
-                                <h3 class="fw-bold text-warning">
-                                    @Model.Count(s => (s.EndDate - DateTime.Now).Days <= 7 && (s.EndDate - DateTime.Now).Days > 0 && s.Status == "Active")
-                                </h3>
-                            </div>
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Already Expired</h6>
-                                <h3 class="fw-bold text-danger">
-                                    @Model.Count(s => s.EndDate < DateTime.Now || s.Status == "Expired")
-                                </h3>
-                            </div>
-                            <div class="bg-danger bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-x-circle text-danger fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted mb-2">Total Subscriptions</h6>
-                                <h3 class="fw-bold">@Model.Count()</h3>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="bi bi-people text-primary fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= PLAN DISTRIBUTION ================= -->
-        <div class="row mt-4">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-pie-chart me-2"></i>Subscription Plan Distribution
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @{
-                                var planGroups = Model
-                                    .Where(s => s.Plan != null)
-                                    .GroupBy(s => s.Plan.PlanName)
-                                    .Select(g => new
-                                    {
-                                        PlanName = g.Key,
-                                        Count = g.Count(),
-                                        Percentage = (g.Count() * 100) / Model.Count()
-                                    })
-                                    .OrderByDescending(p => p.Count);
-
-                                var planColors = new Dictionary<string, string>
-                                {
-                                    { "Basic", "info" },
-                                    { "Standard", "primary" },
-                                    { "Premium", "warning" },
-                                    { "Enterprise", "success" }
-                                };
-                            }
-                            
-                            @foreach (var plan in planGroups)
-                            {
-                                var color = planColors.ContainsKey(plan.PlanName) ? planColors[plan.PlanName] : "secondary";
-                                
-                                <div class="col-md-6 mb-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="bg-@color bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="bi bi-credit-card text-@color"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0 fw-bold">@plan.PlanName</h6>
-                                                <span class="badge bg-@color bg-opacity-10 text-@color">
-                                                    @plan.Count subs (@plan.Percentage%)
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-@color" role="progressbar" 
-                                             style="width: @plan.Percentage%" 
-                                             aria-valuenow="@plan.Percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-clock-history me-2"></i>Upcoming Renewals
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @{
-                                var upcomingRenewals = Model
-                                    .Where(s => s.Status == "Active" && (s.EndDate - DateTime.Now).Days <= 30)
-                                    .OrderBy(s => s.EndDate)
-                                    .Take(5);
-                            }
-                            
-                            @foreach (var sub in upcomingRenewals)
-                            {
-                                var daysLeft = (sub.EndDate - DateTime.Now).Days;
-                                var urgencyColor = daysLeft <= 7 ? "danger" : daysLeft <= 15 ? "warning" : "info";
-                                
-                                <div class="list-group-item border-0 px-0 py-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <h6 class="mb-0 fw-bold">User @sub.User.UserId</h6>
-                                            <small class="text-muted">@sub.Plan?.PlanName Plan</small>
-                                        </div>
-                                        <span class="badge bg-@urgencyColor bg-opacity-10 text-@urgencyColor">
-                                            @daysLeft days
-                                        </span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            Ends: @sub.EndDate.ToString("MMM dd")
-                                        </small>
-                                        <a asp-action="Details" asp-route-id="@sub.SubscriptionId" class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            }
-                            
-                            @if (!upcomingRenewals.Any())
-                            {
-                                <div class="list-group-item border-0 px-0 py-3 text-center text-muted">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                    No upcoming renewals in next 30 days
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= RECENT SUBSCRIPTIONS ================= -->
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-clock me-2"></i>Recent Subscriptions
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                    @foreach (var item in Model.OrderByDescending(s => s.StartDate).Take(6))
-                    {
-                        var statusColor = item.Status switch
-                        {
-                            "Active" => "success",
-                            "Pending" => "warning",
-                            "Expired" => "danger",
-                            "Cancelled" => "secondary",
-                            _ => "info"
-                        };
-                        
-                        var planColor = item.Plan?.PlanName switch
-                        {
-                            "Basic" => "info",
-                            "Standard" => "primary",
-                            "Premium" => "warning",
-                            "Enterprise" => "success",
-                            _ => "secondary"
-                        };
-                        
-                        var daysLeft = (item.EndDate - DateTime.Now).Days;
-
-                        <div class="col">
-                            <div class="card border h-100">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                                <i class="bi bi-person text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold mb-0">User @item.User.UserId</h6>
-                                                <small class="text-muted">ID: @item.SubscriptionId</small>
-                                            </div>
-                                        </div>
-                                        <span class="badge bg-@statusColor bg-opacity-10 border border-@statusColor border-opacity-25">
-                                            @item.Status
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div class="bg-@planColor bg-opacity-10 rounded-circle p-1 me-2">
-                                                <i class="bi bi-credit-card text-@planColor"></i>
-                                            </div>
-                                            <span class="fw-bold">@item.Plan?.PlanName Plan</span>
-                                        </div>
-                                        
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <small class="text-muted d-block">Start Date</small>
-                                                <span class="fw-bold">@item.StartDate.ToString("MMM dd")</span>
-                                            </div>
-                                            <div class="col-6">
-                                                <small class="text-muted d-block">End Date</small>
-                                                <span class="fw-bold">@item.EndDate.ToString("MMM dd")</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="progress mb-3" style="height: 6px;">
-                                        @{
-                                            var totalDays = (item.EndDate - item.StartDate).Days;
-                                            var elapsedDays = (DateTime.Now - item.StartDate).Days;
-                                            var progressPercentage = Math.Min(Math.Max((elapsedDays * 100) / totalDays, 0), 100);
-                                        }
-                                        <div class="progress-bar bg-@statusColor" role="progressbar" 
-                                             style="width: @progressPercentage%" 
-                                             aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <small class="text-muted">
-                                                <i class="bi bi-calendar me-1"></i>
-                                                @daysLeft days left
-                                            </small>
-                                        </div>
-                                        <div class="btn-group btn-group-sm">
-                                            <a asp-action="Details" asp-route-id="@item.SubscriptionId" class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@item.SubscriptionId" class="btn btn-outline-secondary btn-sm">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= SUBSCRIPTION TIMELINE ================= -->
-        <div class="card border-0 shadow-sm mt-4">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-calendar-week me-2"></i>Monthly Subscription Activity
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>New Subscriptions</th>
-                                <th>Expired</th>
-                                <th>Renewed</th>
-                                <th>Active Count</th>
-                                <th>Growth</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{
-                                var monthlyData = Model
-                                    .GroupBy(s => new { s.StartDate.Year, s.StartDate.Month })
-                                    .Select(g => new
-                                    {
-                                        Month = new DateTime(g.Key.Year, g.Key.Month, 1),
-                                        NewCount = g.Count(),
-                                        ExpiredCount = g.Count(s => s.EndDate < DateTime.Now && s.EndDate.Month == g.Key.Month),
-                                        ActiveCount = g.Count(s => s.Status == "Active")
-                                    })
-                                    .OrderByDescending(m => m.Month)
-                                    .Take(6);
-                            }
-                            
-                            @foreach (var month in monthlyData)
-                            {
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <td class="fw-bold">@month.Month.ToString("MMM yyyy")</td>
-                                    <td>
-                                        <span class="badge bg-success bg-opacity-10 border border-success border-opacity-25">
-                                            @month.NewCount new
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-danger bg-opacity-10 border border-danger border-opacity-25">
-                                            @month.ExpiredCount expired
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info bg-opacity-10 border border-info border-opacity-25">
-                                            @(month.NewCount - month.ExpiredCount) renewed
-                                        </span>
-                                    </td>
-                                    <td class="fw-bold">@month.ActiveCount</td>
-                                    <td>
-                                        @{
-                                            var growthRate = month.NewCount > 0 ? ((month.NewCount - month.ExpiredCount) * 100) / month.NewCount : 0;
-                                            var growthColor = growthRate >= 0 ? "success" : "danger";
-                                        }
-                                        <span class="text-@growthColor fw-bold">
-                                            @growthRate%
-                                        </span>
-                                    </td>
+                                    <th>@Html.DisplayNameFor(model => model.StartDate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.EndDate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Status)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Plan)</th>
+                                    <th>@Html.DisplayNameFor(model => model.User)</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- ================= EMPTY STATE ================= -->
-    @if (!Model.Any())
-    {
-        <div class="card border-0 shadow-lg">
-            <div class="card-body p-5 text-center">
-                <div class="py-5">
-                    <div class="bg-light rounded-circle d-inline-flex p-4 mb-4">
-                        <i class="bi bi-receipt text-muted fs-1"></i>
+                            </thead>
+                            <tbody id="subscriptionsTable">
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.StartDate</td>
+                                            <td>@item.EndDate</td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">
+                                                    @item.Status
+                                                </span>
+                                            </td>
+                                            <td>@item.Plan?.PlanId</td>
+                                            <td>@item.User?.UserId</td>
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-id="@item.SubscriptionId" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@item.SubscriptionId" class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.SubscriptionId" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            No subscriptions found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <h3 class="fw-bold mb-3">No Subscriptions Found</h3>
-                    <p class="text-muted mb-4">
-                        No user subscriptions have been created yet. Users will appear here once they subscribe to your plans.
-                    </p>
-                    <a asp-action="Create" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>Create First Subscription
-                    </a>
                 </div>
             </div>
         </div>
-    }
+    </div>
+
 </div>
 
-<style>
-    .progress-bar {
-        font-size: 0.75rem;
-        line-height: 20px;
-        padding: 0 5px;
-    }
-    
-    .list-group-item:hover {
-        background-color: rgba(var(--primary-rgb), 0.05);
-    }
-    
-    .progress {
-        background-color: rgba(0, 0, 0, 0.1);
-    }
-</style>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#subscriptionsTable tr");
+
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? "" : "none";
+                });
+            });
+        });
+    </script>
+}

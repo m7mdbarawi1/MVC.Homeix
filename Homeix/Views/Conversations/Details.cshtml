@@ -1,36 +1,69 @@
 ﻿@model Homeix.Models.Conversation
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Conversation Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid mt-4">
 
-<div>
-    <h4>Conversation</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User1)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User1.UserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User2)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User2.UserId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ConversationId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold">Conversation Details</h1>
+        </div>
+    </div>
+
+    <!-- Centered Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow-sm">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                    <h5 class="mb-0">Details</h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <dl class="row mb-0">
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.CreatedAt)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CreatedAt)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.User1)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.User1.UserId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.User2)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.User2.UserId)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model?.ConversationId" class="btn btn-secondary">
+                        Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-primary">
+                        Back to List
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </div>

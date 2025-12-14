@@ -1,66 +1,104 @@
 ﻿@model Homeix.Models.JobProgress
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Job Progress Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid mt-4">
 
-<div>
-    <h4>JobProgress</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CompletedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CompletedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsRatedByCustomer)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsRatedByCustomer)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsRatedByWorker)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsRatedByWorker)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedToUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedToUser.UserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerPost)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerPost.CustomerPostId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequestedByUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequestedByUser.UserId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.JobProgressId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold">Job Progress Details</h1>
+        </div>
+    </div>
+
+    <!-- Centered Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card shadow-sm">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                    <h5 class="mb-0">Details</h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <dl class="row mb-0">
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.Status)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Status)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.StartedAt)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.StartedAt)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.CompletedAt)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CompletedAt)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.IsRatedByCustomer)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.IsRatedByCustomer)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.IsRatedByWorker)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.IsRatedByWorker)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.AssignedToUser)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.AssignedToUser.UserId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.CustomerPost)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CustomerPost.CustomerPostId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.RequestedByUser)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.RequestedByUser.UserId)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model?.JobProgressId" class="btn btn-secondary">
+                        Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-primary">
+                        Back to List
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </div>

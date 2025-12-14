@@ -1,51 +1,76 @@
 ﻿@model Homeix.Models.Offer
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Offer";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid mt-4">
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Offer</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProposedPrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProposedPrice)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerPost)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerPost.CustomerPostId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.UserId)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="OfferId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="text-danger">Delete Offer</h1>
+            <p class="text-muted">Are you sure you want to delete this offer?</p>
+        </div>
+    </div>
+
+    <!-- Centered Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-danger">
+
+                <!-- Card Header -->
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Confirm Deletion</h5>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <dl class="row">
+
+                        <dt class="col-sm-4 fw-bold">Proposed Price</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.ProposedPrice)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">Status</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Status)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">Created At</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CreatedAt)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">Customer Post</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CustomerPost.CustomerPostId)
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">User</dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.User.UserId)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" asp-for="OfferId" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>

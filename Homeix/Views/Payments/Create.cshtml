@@ -1,55 +1,104 @@
 ﻿@model Homeix.Models.Payment
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Payment";
 }
 
-<h1>Create</h1>
+<div class="container-fluid mt-4">
 
-<h4>Payment</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">Create Payment</h1>
+        </div>
+    </div>
+
+    <!-- Centered Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- User -->
+                        <div class="mb-3">
+                            <label asp-for="UserId" class="form-label"></label>
+                            <select asp-for="UserId"
+                                    class="form-select"
+                                    asp-items="ViewBag.UserId">
+                            </select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Subscription -->
+                        <div class="mb-3">
+                            <label asp-for="SubscriptionId" class="form-label"></label>
+                            <select asp-for="SubscriptionId"
+                                    class="form-select"
+                                    asp-items="ViewBag.SubscriptionId">
+                            </select>
+                            <span asp-validation-for="SubscriptionId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="mb-3">
+                            <label asp-for="PaymentMethodId" class="form-label"></label>
+                            <select asp-for="PaymentMethodId"
+                                    class="form-select"
+                                    asp-items="ViewBag.PaymentMethodId">
+                            </select>
+                            <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="mb-3">
+                            <label asp-for="Amount" class="form-label"></label>
+                            <input asp-for="Amount"
+                                   type="number"
+                                   step="0.01"
+                                   class="form-control" />
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+
+                        <!-- Payment Date -->
+                        <div class="mb-3">
+                            <label asp-for="PaymentDate" class="form-label"></label>
+                            <input asp-for="PaymentDate"
+                                   type="datetime-local"
+                                   class="form-control" />
+                            <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label"></label>
+                            <input asp-for="Status" class="form-control" />
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Create
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Back
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="SubscriptionId" class="control-label"></label>
-                <select asp-for="SubscriptionId" class ="form-control" asp-items="ViewBag.SubscriptionId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="PaymentMethodId" class="control-label"></label>
-                <select asp-for="PaymentMethodId" class ="form-control" asp-items="ViewBag.PaymentMethodId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PaymentDate" class="control-label"></label>
-                <input asp-for="PaymentDate" class="form-control" />
-                <span asp-validation-for="PaymentDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

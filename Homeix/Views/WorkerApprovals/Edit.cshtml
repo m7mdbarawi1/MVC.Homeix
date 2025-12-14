@@ -1,59 +1,97 @@
 ﻿@model Homeix.Models.WorkerApproval
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Worker Approval";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid mt-4">
 
-<h4>WorkerApproval</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ApprovalId" />
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1>Edit Worker Approval</h1>
+        </div>
+    </div>
+
+    <!-- Centered Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <input type="hidden" asp-for="ApprovalId" />
+
+                        <!-- Worker -->
+                        <div class="mb-3">
+                            <label asp-for="UserId" class="form-label"></label>
+                            <select asp-for="UserId"
+                                    class="form-control"
+                                    asp-items="ViewBag.UserId">
+                            </select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Reviewed By -->
+                        <div class="mb-3">
+                            <label asp-for="ReviewedByUserId" class="form-label"></label>
+                            <select asp-for="ReviewedByUserId"
+                                    class="form-control"
+                                    asp-items="ViewBag.ReviewedByUserId">
+                            </select>
+                            <span asp-validation-for="ReviewedByUserId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label"></label>
+                            <input asp-for="Status" class="form-control" />
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <!-- Requested At -->
+                        <div class="mb-3">
+                            <label asp-for="RequestedAt" class="form-label"></label>
+                            <input asp-for="RequestedAt" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="RequestedAt" class="text-danger"></span>
+                        </div>
+
+                        <!-- Reviewed At -->
+                        <div class="mb-3">
+                            <label asp-for="ReviewedAt" class="form-label"></label>
+                            <input asp-for="ReviewedAt" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="ReviewedAt" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Save
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Back
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ReviewedByUserId" class="control-label"></label>
-                <select asp-for="ReviewedByUserId" class="form-control" asp-items="ViewBag.ReviewedByUserId"></select>
-                <span asp-validation-for="ReviewedByUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RequestedAt" class="control-label"></label>
-                <input asp-for="RequestedAt" class="form-control" />
-                <span asp-validation-for="RequestedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReviewedAt" class="control-label"></label>
-                <input asp-for="ReviewedAt" class="form-control" />
-                <span asp-validation-for="ReviewedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
