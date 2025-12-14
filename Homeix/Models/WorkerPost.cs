@@ -1,48 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Homeix.Models;
-
-[Table("WorkerPost")]
-public partial class WorkerPost
+namespace Homeix.Models
 {
-    [Key]
-    [Column("WorkerPostID")]
-    public int WorkerPostId { get; set; }
+    [Table("WorkerPost")]
+    public partial class WorkerPost
+    {
+        [Key]
+        [Column("WorkerPostID")]
+        public int WorkerPostId { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
+        [Required]
+        [Column("UserID")]
+        public int UserId { get; set; }
 
-    [Column("PostCategoryID")]
-    public int PostCategoryId { get; set; }
+        [Required]
+        [Column("PostCategoryID")]
+        public int PostCategoryId { get; set; }
 
-    [StringLength(200)]
-    public string Title { get; set; } = null!;
+        [Required]
+        [StringLength(200)]
+        public string Title { get; set; } = string.Empty;
 
-    public string Description { get; set; } = null!;
+        [Required]
+        public string Description { get; set; } = string.Empty;
 
-    [StringLength(200)]
-    public string Location { get; set; } = null!;
+        [Required]
+        [StringLength(200)]
+        public string Location { get; set; } = string.Empty;
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal? PriceRangeMin { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? PriceRangeMin { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal? PriceRangeMax { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? PriceRangeMax { get; set; }
 
-    [Column(TypeName = "datetime")]
-    public DateTime CreatedAt { get; set; }
+        // System-managed field
+        [Column(TypeName = "datetime")]
+        public DateTime CreatedAt { get; set; }
 
-    public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-    [ForeignKey("PostCategoryId")]
-    [InverseProperty("WorkerPosts")]
-    public virtual PostCategory PostCategory { get; set; } = null!;
-
-    [ForeignKey("UserId")]
-    [InverseProperty("WorkerPosts")]
-    public virtual User User { get; set; } = null!;
+        // Navigation
+        public virtual PostCategory? PostCategory { get; set; }
+        public virtual User? User { get; set; }
+    }
 }
