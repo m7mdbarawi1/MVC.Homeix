@@ -1,38 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("Offer")]
-public partial class Offer
+namespace Homeix.Models
 {
-    [Key]
-    [Column("OfferID")]
-    public int OfferId { get; set; }
+    [Table("Offer")]
+    public class Offer
+    {
+        [Key]
+        [Column("OfferID")]
+        public int OfferId { get; set; }
 
-    [Column("CustomerPostID")]
-    public int CustomerPostId { get; set; }
+        // =========================
+        // Foreign keys
+        // =========================
+        [Required]
+        [Column("CustomerPostID")]
+        public int CustomerPostId { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
+        [Required]
+        [Column("UserID")]
+        public int UserId { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal ProposedPrice { get; set; }
+        // =========================
+        // User input
+        // =========================
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal ProposedPrice { get; set; }
 
-    [StringLength(50)]
-    public string Status { get; set; } = null!;
+        // =========================
+        // System-managed
+        // =========================
+        [Required]
+        [StringLength(50)]
+        [BindNever]
+        public string Status { get; set; } = "Pending";
 
-    [Column(TypeName = "datetime")]
-    public DateTime CreatedAt { get; set; }
+        [Column(TypeName = "datetime")]
+        [BindNever]
+        public DateTime CreatedAt { get; set; }
 
-    [ForeignKey("CustomerPostId")]
-    [InverseProperty("Offers")]
-    public virtual CustomerPost CustomerPost { get; set; } = null!;
-
-    [ForeignKey("UserId")]
-    [InverseProperty("Offers")]
-    public virtual User User { get; set; } = null!;
+        // =========================
+        // Navigation
+        // =========================
+        public virtual CustomerPost? CustomerPost { get; set; }
+        public virtual User? User { get; set; }
+    }
 }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,148 +18,175 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: WorkerApprovals
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.WorkerApprovals.Include(w => w.ReviewedByUser).Include(w => w.User);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var approvals = await _context.WorkerApprovals
+                .Include(w => w.User)
+                .Include(w => w.ReviewedByUser)
+                .ToListAsync();
+
+            return View(approvals);
         }
 
-        // GET: WorkerApprovals/Details/5
+        // ========================
+        // GET: WorkerApprovals/Details
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var workerApproval = await _context.WorkerApprovals
-                .Include(w => w.ReviewedByUser)
+            var approval = await _context.WorkerApprovals
                 .Include(w => w.User)
+                .Include(w => w.ReviewedByUser)
                 .FirstOrDefaultAsync(m => m.ApprovalId == id);
-            if (workerApproval == null)
-            {
-                return NotFound();
-            }
 
-            return View(workerApproval);
+            if (approval == null)
+                return NotFound();
+
+            return View(approval);
         }
 
+        // ========================
         // GET: WorkerApprovals/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["ReviewedByUserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            LoadUsers();
             return View();
         }
 
+        // ========================
         // POST: WorkerApprovals/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ApprovalId,UserId,ReviewedByUserId,Status,Notes,RequestedAt,ReviewedAt")] WorkerApproval workerApproval)
+        public async Task<IActionResult> Create(
+            [Bind("UserId,Notes")]
+            WorkerApproval workerApproval)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(workerApproval);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                LoadUsers(workerApproval.UserId);
+                return View(workerApproval);
             }
-            ViewData["ReviewedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", workerApproval.ReviewedByUserId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", workerApproval.UserId);
-            return View(workerApproval);
+
+            // ======================
+            // System values
+            // ======================
+            workerApproval.Status = "Pending";
+            workerApproval.RequestedAt = DateTime.Now;
+
+            _context.WorkerApprovals.Add(workerApproval);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: WorkerApprovals/Edit/5
+        // ========================
+        // GET: WorkerApprovals/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var workerApproval = await _context.WorkerApprovals.FindAsync(id);
-            if (workerApproval == null)
-            {
+            var approval = await _context.WorkerApprovals.FindAsync(id);
+            if (approval == null)
                 return NotFound();
-            }
-            ViewData["ReviewedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", workerApproval.ReviewedByUserId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", workerApproval.UserId);
-            return View(workerApproval);
+
+            LoadUsers(approval.UserId);
+            return View(approval);
         }
 
-        // POST: WorkerApprovals/Edit/5
+        // ========================
+        // POST: WorkerApprovals/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ApprovalId,UserId,ReviewedByUserId,Status,Notes,RequestedAt,ReviewedAt")] WorkerApproval workerApproval)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("ApprovalId,UserId,Notes")]
+            WorkerApproval workerApproval)
         {
             if (id != workerApproval.ApprovalId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                LoadUsers(workerApproval.UserId);
+                return View(workerApproval);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(workerApproval);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!WorkerApprovalExists(workerApproval.ApprovalId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ReviewedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", workerApproval.ReviewedByUserId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", workerApproval.UserId);
-            return View(workerApproval);
+            var existing = await _context.WorkerApprovals
+                .AsNoTracking()
+                .FirstOrDefaultAsync(w => w.ApprovalId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // Preserve system fields
+            workerApproval.Status = existing.Status;
+            workerApproval.RequestedAt = existing.RequestedAt;
+            workerApproval.ReviewedAt = existing.ReviewedAt;
+            workerApproval.ReviewedByUserId = existing.ReviewedByUserId;
+
+            _context.Update(workerApproval);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: WorkerApprovals/Delete/5
+        // ========================
+        // GET: WorkerApprovals/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var workerApproval = await _context.WorkerApprovals
-                .Include(w => w.ReviewedByUser)
+            var approval = await _context.WorkerApprovals
                 .Include(w => w.User)
+                .Include(w => w.ReviewedByUser)
                 .FirstOrDefaultAsync(m => m.ApprovalId == id);
-            if (workerApproval == null)
-            {
-                return NotFound();
-            }
 
-            return View(workerApproval);
+            if (approval == null)
+                return NotFound();
+
+            return View(approval);
         }
 
-        // POST: WorkerApprovals/Delete/5
+        // ========================
+        // POST: WorkerApprovals/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var workerApproval = await _context.WorkerApprovals.FindAsync(id);
-            if (workerApproval != null)
+            var approval = await _context.WorkerApprovals.FindAsync(id);
+            if (approval != null)
             {
-                _context.WorkerApprovals.Remove(workerApproval);
+                _context.WorkerApprovals.Remove(approval);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool WorkerApprovalExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void LoadUsers(int? selectedUserId = null)
         {
-            return _context.WorkerApprovals.Any(e => e.ApprovalId == id);
+            ViewData["UserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "FullName",
+                selectedUserId
+            );
         }
     }
 }

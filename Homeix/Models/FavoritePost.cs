@@ -1,31 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("FavoritePost")]
-public partial class FavoritePost
+namespace Homeix.Models
 {
-    [Key]
-    [Column("FavoritePostID")]
-    public int FavoritePostId { get; set; }
+    [Table("FavoritePost")]
+    public class FavoritePost
+    {
+        [Key]
+        [Column("FavoritePostID")]
+        public int FavoritePostId { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
+        // =========================
+        // Foreign Key
+        // =========================
+        [Required]
+        [Column("UserID")]
+        public int UserId { get; set; }
 
-    [StringLength(20)]
-    public string? PostType { get; set; }
+        // =========================
+        // User-input fields
+        // =========================
+        [Required]
+        [StringLength(20)]
+        public string PostType { get; set; } = string.Empty;
 
-    [Column("PostID")]
-    public int PostId { get; set; }
+        [Required]
+        [Column("PostID")]
+        public int PostId { get; set; }
 
-    [Column(TypeName = "datetime")]
-    public DateTime AddedAt { get; set; }
+        // =========================
+        // System-managed field
+        // =========================
+        [Column(TypeName = "datetime")]
+        [BindNever]
+        public DateTime AddedAt { get; set; }
 
-    [ForeignKey("UserId")]
-    [InverseProperty("FavoritePosts")]
-    public virtual User User { get; set; } = null!;
+        // =========================
+        // Navigation
+        // =========================
+        [ForeignKey(nameof(UserId))]
+        public virtual User? User { get; set; }
+    }
 }

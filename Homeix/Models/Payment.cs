@@ -1,45 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("Payment")]
-public partial class Payment
+namespace Homeix.Models
 {
-    [Key]
-    [Column("PaymentID")]
-    public int PaymentId { get; set; }
+    [Table("Payment")]
+    public class Payment
+    {
+        [Key]
+        [Column("PaymentID")]
+        public int PaymentId { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
+        // =========================
+        // Foreign Keys
+        // =========================
+        [Required]
+        [Column("UserID")]
+        public int UserId { get; set; }
 
-    [Column("SubscriptionID")]
-    public int SubscriptionId { get; set; }
+        [Required]
+        [Column("SubscriptionID")]
+        public int SubscriptionId { get; set; }
 
-    [Column("PaymentMethodID")]
-    public int PaymentMethodId { get; set; }
+        [Required]
+        [Column("PaymentMethodID")]
+        public int PaymentMethodId { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal Amount { get; set; }
+        // =========================
+        // User input
+        // =========================
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Amount { get; set; }
 
-    [Column(TypeName = "datetime")]
-    public DateTime PaymentDate { get; set; }
+        // =========================
+        // System-managed
+        // =========================
+        [Column(TypeName = "datetime")]
+        [BindNever]
+        public DateTime PaymentDate { get; set; }
 
-    [StringLength(50)]
-    public string Status { get; set; } = null!;
+        [StringLength(50)]
+        [BindNever]
+        public string Status { get; set; } = "Completed";
 
-    [ForeignKey("PaymentMethodId")]
-    [InverseProperty("Payments")]
-    public virtual PaymentMethod PaymentMethod { get; set; } = null!;
-
-    [ForeignKey("SubscriptionId")]
-    [InverseProperty("Payments")]
-    public virtual Subscription Subscription { get; set; } = null!;
-
-    [ForeignKey("UserId")]
-    [InverseProperty("Payments")]
-    public virtual User User { get; set; } = null!;
+        // =========================
+        // Navigation
+        // =========================
+        public virtual PaymentMethod PaymentMethod { get; set; } = null!;
+        public virtual Subscription Subscription { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
+    }
 }

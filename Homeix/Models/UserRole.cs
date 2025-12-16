@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Homeix.Models;
-
-[Table("UserRole")]
-public partial class UserRole
+namespace Homeix.Models
 {
-    [Key]
-    [Column("RoleID")]
-    public int RoleId { get; set; }
+    [Table("UserRole")]
+    public class UserRole
+    {
+        [Key]
+        [Column("RoleID")]
+        public int RoleId { get; set; }
 
-    [StringLength(50)]
-    public string RoleName { get; set; } = null!;
+        [Required]
+        [StringLength(50)]
+        public string RoleName { get; set; } = string.Empty;
 
-    [InverseProperty("Role")]
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+        // Navigation
+        public virtual ICollection<User> Users { get; set; }
+            = new List<User>();
+    }
 }

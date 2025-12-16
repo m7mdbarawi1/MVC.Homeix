@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,154 +17,174 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: RatingCustomerPosts
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.RatingCustomerPosts.Include(r => r.JobProgress).Include(r => r.RatedUser).Include(r => r.RaterUser);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var ratings = await _context.RatingCustomerPosts
+                .Include(r => r.JobProgress)
+                .Include(r => r.RatedUser)
+                .Include(r => r.RaterUser)
+                .ToListAsync();
+
+            return View(ratings);
         }
 
-        // GET: RatingCustomerPosts/Details/5
+        // ========================
+        // GET: RatingCustomerPosts/Details
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var ratingCustomerPost = await _context.RatingCustomerPosts
+            var rating = await _context.RatingCustomerPosts
                 .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
                 .FirstOrDefaultAsync(m => m.RatingCustomerPostId == id);
-            if (ratingCustomerPost == null)
-            {
-                return NotFound();
-            }
 
-            return View(ratingCustomerPost);
+            if (rating == null)
+                return NotFound();
+
+            return View(rating);
         }
 
+        // ========================
         // GET: RatingCustomerPosts/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["JobProgressId"] = new SelectList(_context.JobProgresses, "JobProgressId", "JobProgressId");
-            ViewData["RatedUserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            ViewData["RaterUserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            LoadDropdowns();
             return View();
         }
 
+        // ========================
         // POST: RatingCustomerPosts/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RatingCustomerPostId,JobProgressId,RaterUserId,RatedUserId,RatingValue,Review,CreatedAt")] RatingCustomerPost ratingCustomerPost)
+        public async Task<IActionResult> Create(
+            [Bind("JobProgressId,RaterUserId,RatedUserId,RatingValue,Review")]
+            RatingCustomerPost rating)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(ratingCustomerPost);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                LoadDropdowns(rating);
+                return View(rating);
             }
-            ViewData["JobProgressId"] = new SelectList(_context.JobProgresses, "JobProgressId", "JobProgressId", ratingCustomerPost.JobProgressId);
-            ViewData["RatedUserId"] = new SelectList(_context.Users, "UserId", "UserId", ratingCustomerPost.RatedUserId);
-            ViewData["RaterUserId"] = new SelectList(_context.Users, "UserId", "UserId", ratingCustomerPost.RaterUserId);
-            return View(ratingCustomerPost);
+
+            // ✅ system-managed
+            rating.CreatedAt = DateTime.Now;
+
+            _context.RatingCustomerPosts.Add(rating);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: RatingCustomerPosts/Edit/5
+        // ========================
+        // GET: RatingCustomerPosts/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var ratingCustomerPost = await _context.RatingCustomerPosts.FindAsync(id);
-            if (ratingCustomerPost == null)
-            {
+            var rating = await _context.RatingCustomerPosts.FindAsync(id);
+            if (rating == null)
                 return NotFound();
-            }
-            ViewData["JobProgressId"] = new SelectList(_context.JobProgresses, "JobProgressId", "JobProgressId", ratingCustomerPost.JobProgressId);
-            ViewData["RatedUserId"] = new SelectList(_context.Users, "UserId", "UserId", ratingCustomerPost.RatedUserId);
-            ViewData["RaterUserId"] = new SelectList(_context.Users, "UserId", "UserId", ratingCustomerPost.RaterUserId);
-            return View(ratingCustomerPost);
+
+            LoadDropdowns(rating);
+            return View(rating);
         }
 
-        // POST: RatingCustomerPosts/Edit/5
+        // ========================
+        // POST: RatingCustomerPosts/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RatingCustomerPostId,JobProgressId,RaterUserId,RatedUserId,RatingValue,Review,CreatedAt")] RatingCustomerPost ratingCustomerPost)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("RatingCustomerPostId,JobProgressId,RaterUserId,RatedUserId,RatingValue,Review")]
+            RatingCustomerPost rating)
         {
-            if (id != ratingCustomerPost.RatingCustomerPostId)
-            {
+            if (id != rating.RatingCustomerPostId)
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                LoadDropdowns(rating);
+                return View(rating);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(ratingCustomerPost);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RatingCustomerPostExists(ratingCustomerPost.RatingCustomerPostId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["JobProgressId"] = new SelectList(_context.JobProgresses, "JobProgressId", "JobProgressId", ratingCustomerPost.JobProgressId);
-            ViewData["RatedUserId"] = new SelectList(_context.Users, "UserId", "UserId", ratingCustomerPost.RatedUserId);
-            ViewData["RaterUserId"] = new SelectList(_context.Users, "UserId", "UserId", ratingCustomerPost.RaterUserId);
-            return View(ratingCustomerPost);
+            var existing = await _context.RatingCustomerPosts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.RatingCustomerPostId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // ✅ preserve system field
+            rating.CreatedAt = existing.CreatedAt;
+
+            _context.Update(rating);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: RatingCustomerPosts/Delete/5
+        // ========================
+        // GET: RatingCustomerPosts/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var ratingCustomerPost = await _context.RatingCustomerPosts
+            var rating = await _context.RatingCustomerPosts
                 .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
                 .FirstOrDefaultAsync(m => m.RatingCustomerPostId == id);
-            if (ratingCustomerPost == null)
-            {
-                return NotFound();
-            }
 
-            return View(ratingCustomerPost);
+            if (rating == null)
+                return NotFound();
+
+            return View(rating);
         }
 
-        // POST: RatingCustomerPosts/Delete/5
+        // ========================
+        // POST: RatingCustomerPosts/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ratingCustomerPost = await _context.RatingCustomerPosts.FindAsync(id);
-            if (ratingCustomerPost != null)
+            var rating = await _context.RatingCustomerPosts.FindAsync(id);
+            if (rating != null)
             {
-                _context.RatingCustomerPosts.Remove(ratingCustomerPost);
+                _context.RatingCustomerPosts.Remove(rating);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RatingCustomerPostExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void LoadDropdowns(RatingCustomerPost? rating = null)
         {
-            return _context.RatingCustomerPosts.Any(e => e.RatingCustomerPostId == id);
+            ViewData["JobProgressId"] =
+                new SelectList(_context.JobProgresses, "JobProgressId", "JobProgressId", rating?.JobProgressId);
+
+            ViewData["RatedUserId"] =
+                new SelectList(_context.Users, "UserId", "UserId", rating?.RatedUserId);
+
+            ViewData["RaterUserId"] =
+                new SelectList(_context.Users, "UserId", "UserId", rating?.RaterUserId);
         }
     }
 }

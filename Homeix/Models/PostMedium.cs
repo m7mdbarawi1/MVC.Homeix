@@ -1,26 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-public partial class PostMedium
+namespace Homeix.Models
 {
-    [Key]
-    [Column("MediaID")]
-    public int MediaId { get; set; }
+    [Table("PostMedia")] // ✅ EXACT DB TABLE NAME
+    public class PostMedium
+    {
+        [Key]
+        [Column("MediaID")]
+        public int MediaId { get; set; }
 
-    [StringLength(20)]
-    public string PostType { get; set; } = null!;
+        [Required]
+        [StringLength(20)]
+        public string PostType { get; set; } = string.Empty;
 
-    [Column("PostID")]
-    public int PostId { get; set; }
+        [Required]
+        [Column("PostID")]
+        public int PostId { get; set; }
 
-    [StringLength(255)]
-    public string MediaPath { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        public string MediaPath { get; set; } = string.Empty;
 
-    [Column(TypeName = "datetime")]
-    public DateTime UploadedAt { get; set; }
+        [Column(TypeName = "datetime")]
+        [BindNever] // system-managed
+        public DateTime UploadedAt { get; set; }
+    }
 }

@@ -49,21 +49,21 @@ namespace Homeix.Models
         // =========================
         [Required]
         [StringLength(50)]
-        [BindNever]                       // ✅ FIX: prevent POST validation issues
+        [BindNever]
         public string Status { get; set; } = "Open";
 
         [Column(TypeName = "datetime")]
-        [BindNever]                       // ✅ FIX
+        [BindNever]
         public DateTime CreatedAt { get; set; }
 
-        [BindNever]                       // ✅ FIX
+        [BindNever]
         public bool IsActive { get; set; } = true;
 
         // =========================
-        // Navigation properties
+        // Navigation
         // =========================
-        public virtual User User { get; set; } = null!;
-        public virtual PostCategory PostCategory { get; set; } = null!;
+        public virtual User? User { get; set; }
+        public virtual PostCategory? PostCategory { get; set; }
 
         // =========================
         // Related collections
