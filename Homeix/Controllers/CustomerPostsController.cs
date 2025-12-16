@@ -57,7 +57,6 @@ namespace Homeix.Controllers
             )]
             CustomerPost customerPost)
         {
-            // ✅ ModelState now works correctly
             if (!ModelState.IsValid)
             {
                 ReloadDropdowns(customerPost);
@@ -129,7 +128,9 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // ✅ Preserve system fields
+            // =========================
+            // Preserve system fields
+            // =========================
             customerPost.CreatedAt = existing.CreatedAt;
             customerPost.Status = existing.Status;
 

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,131 +18,144 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: Conversations
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.Conversations.Include(c => c.User1).Include(c => c.User2);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var conversations = await _context.Conversations
+                .Include(c => c.User1)
+                .Include(c => c.User2)
+                .ToListAsync();
+
+            return View(conversations);
         }
 
+        // ========================
         // GET: Conversations/Details/5
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var conversation = await _context.Conversations
                 .Include(c => c.User1)
                 .Include(c => c.User2)
-                .FirstOrDefaultAsync(m => m.ConversationId == id);
+                .FirstOrDefaultAsync(c => c.ConversationId == id);
+
             if (conversation == null)
-            {
                 return NotFound();
-            }
 
             return View(conversation);
         }
 
+        // ========================
         // GET: Conversations/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["User1Id"] = new SelectList(_context.Users, "UserId", "UserId");
-            ViewData["User2Id"] = new SelectList(_context.Users, "UserId", "UserId");
+            LoadUsersDropdowns();
             return View();
         }
 
+        // ========================
         // POST: Conversations/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ConversationId,User1Id,User2Id,CreatedAt")] Conversation conversation)
+        public async Task<IActionResult> Create(
+            [Bind("User1Id,User2Id")]
+            Conversation conversation)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(conversation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                LoadUsersDropdowns(conversation.User1Id, conversation.User2Id);
+                return View(conversation);
             }
-            ViewData["User1Id"] = new SelectList(_context.Users, "UserId", "UserId", conversation.User1Id);
-            ViewData["User2Id"] = new SelectList(_context.Users, "UserId", "UserId", conversation.User2Id);
-            return View(conversation);
+
+            // ✅ System-managed field
+            conversation.CreatedAt = DateTime.Now;
+
+            _context.Conversations.Add(conversation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
+        // ========================
         // GET: Conversations/Edit/5
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var conversation = await _context.Conversations.FindAsync(id);
             if (conversation == null)
-            {
                 return NotFound();
-            }
-            ViewData["User1Id"] = new SelectList(_context.Users, "UserId", "UserId", conversation.User1Id);
-            ViewData["User2Id"] = new SelectList(_context.Users, "UserId", "UserId", conversation.User2Id);
+
+            LoadUsersDropdowns(conversation.User1Id, conversation.User2Id);
             return View(conversation);
         }
 
+        // ========================
         // POST: Conversations/Edit/5
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ConversationId,User1Id,User2Id,CreatedAt")] Conversation conversation)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("ConversationId,User1Id,User2Id")]
+            Conversation conversation)
         {
             if (id != conversation.ConversationId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                LoadUsersDropdowns(conversation.User1Id, conversation.User2Id);
+                return View(conversation);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(conversation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ConversationExists(conversation.ConversationId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["User1Id"] = new SelectList(_context.Users, "UserId", "UserId", conversation.User1Id);
-            ViewData["User2Id"] = new SelectList(_context.Users, "UserId", "UserId", conversation.User2Id);
-            return View(conversation);
+            var existing = await _context.Conversations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.ConversationId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // ✅ Preserve CreatedAt
+            conversation.CreatedAt = existing.CreatedAt;
+
+            _context.Update(conversation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
+        // ========================
         // GET: Conversations/Delete/5
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var conversation = await _context.Conversations
                 .Include(c => c.User1)
                 .Include(c => c.User2)
-                .FirstOrDefaultAsync(m => m.ConversationId == id);
+                .FirstOrDefaultAsync(c => c.ConversationId == id);
+
             if (conversation == null)
-            {
                 return NotFound();
-            }
 
             return View(conversation);
         }
 
+        // ========================
         // POST: Conversations/Delete/5
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -152,15 +164,22 @@ namespace Homeix.Controllers
             if (conversation != null)
             {
                 _context.Conversations.Remove(conversation);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ConversationExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void LoadUsersDropdowns(int? user1Id = null, int? user2Id = null)
         {
-            return _context.Conversations.Any(e => e.ConversationId == id);
+            ViewData["User1Id"] =
+                new SelectList(_context.Users, "UserId", "UserId", user1Id);
+
+            ViewData["User2Id"] =
+                new SelectList(_context.Users, "UserId", "UserId", user2Id);
         }
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,131 +18,157 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: Messages
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.Messages.Include(m => m.Conversation).Include(m => m.SenderUser);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var messages = await _context.Messages
+                .Include(m => m.Conversation)
+                .Include(m => m.SenderUser)
+                .ToListAsync();
+
+            return View(messages);
         }
 
+        // ========================
         // GET: Messages/Details/5
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var message = await _context.Messages
                 .Include(m => m.Conversation)
                 .Include(m => m.SenderUser)
                 .FirstOrDefaultAsync(m => m.MessageId == id);
+
             if (message == null)
-            {
                 return NotFound();
-            }
 
             return View(message);
         }
 
+        // ========================
         // GET: Messages/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["ConversationId"] = new SelectList(_context.Conversations, "ConversationId", "ConversationId");
-            ViewData["SenderUserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ReloadDropdowns();
             return View();
         }
 
+        // ========================
         // POST: Messages/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MessageId,ConversationId,SenderUserId,MessageText,SentAt")] Message message)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "ConversationId," +
+                "SenderUserId," +
+                "MessageText"
+            )]
+            Message message)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(message);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ReloadDropdowns(message);
+                return View(message);
             }
-            ViewData["ConversationId"] = new SelectList(_context.Conversations, "ConversationId", "ConversationId", message.ConversationId);
-            ViewData["SenderUserId"] = new SelectList(_context.Users, "UserId", "UserId", message.SenderUserId);
-            return View(message);
+
+            // =========================
+            // System-managed fields
+            // =========================
+            message.SentAt = DateTime.Now;
+
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Messages/Edit/5
+        // ========================
+        // GET: Messages/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var message = await _context.Messages.FindAsync(id);
             if (message == null)
-            {
                 return NotFound();
-            }
-            ViewData["ConversationId"] = new SelectList(_context.Conversations, "ConversationId", "ConversationId", message.ConversationId);
-            ViewData["SenderUserId"] = new SelectList(_context.Users, "UserId", "UserId", message.SenderUserId);
+
+            ReloadDropdowns(message);
             return View(message);
         }
 
-        // POST: Messages/Edit/5
+        // ========================
+        // POST: Messages/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MessageId,ConversationId,SenderUserId,MessageText,SentAt")] Message message)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind(
+                "MessageId," +
+                "ConversationId," +
+                "SenderUserId," +
+                "MessageText"
+            )]
+            Message message)
         {
             if (id != message.MessageId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                ReloadDropdowns(message);
+                return View(message);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(message);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MessageExists(message.MessageId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ConversationId"] = new SelectList(_context.Conversations, "ConversationId", "ConversationId", message.ConversationId);
-            ViewData["SenderUserId"] = new SelectList(_context.Users, "UserId", "UserId", message.SenderUserId);
-            return View(message);
+            var existing = await _context.Messages
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.MessageId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // =========================
+            // Preserve system fields
+            // =========================
+            message.SentAt = existing.SentAt;
+
+            _context.Update(message);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Messages/Delete/5
+        // ========================
+        // GET: Messages/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var message = await _context.Messages
                 .Include(m => m.Conversation)
                 .Include(m => m.SenderUser)
                 .FirstOrDefaultAsync(m => m.MessageId == id);
+
             if (message == null)
-            {
                 return NotFound();
-            }
 
             return View(message);
         }
 
-        // POST: Messages/Delete/5
+        // ========================
+        // POST: Messages/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -152,15 +177,30 @@ namespace Homeix.Controllers
             if (message != null)
             {
                 _context.Messages.Remove(message);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MessageExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void ReloadDropdowns(Message? message = null)
         {
-            return _context.Messages.Any(e => e.MessageId == id);
+            ViewData["ConversationId"] = new SelectList(
+                _context.Conversations,
+                "ConversationId",
+                "ConversationId",
+                message?.ConversationId
+            );
+
+            ViewData["SenderUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "UserId",
+                message?.SenderUserId
+            );
         }
     }
 }

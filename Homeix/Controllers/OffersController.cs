@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,131 +18,159 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: Offers
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.Offers.Include(o => o.CustomerPost).Include(o => o.User);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var offers = await _context.Offers
+                .Include(o => o.CustomerPost)
+                .Include(o => o.User)
+                .ToListAsync();
+
+            return View(offers);
         }
 
+        // ========================
         // GET: Offers/Details/5
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var offer = await _context.Offers
                 .Include(o => o.CustomerPost)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OfferId == id);
+                .FirstOrDefaultAsync(o => o.OfferId == id);
+
             if (offer == null)
-            {
                 return NotFound();
-            }
 
             return View(offer);
         }
 
+        // ========================
         // GET: Offers/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ReloadDropdowns();
             return View();
         }
 
+        // ========================
         // POST: Offers/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OfferId,CustomerPostId,UserId,ProposedPrice,Status,CreatedAt")] Offer offer)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "CustomerPostId," +
+                "UserId," +
+                "ProposedPrice"
+            )]
+            Offer offer)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(offer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ReloadDropdowns(offer);
+                return View(offer);
             }
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId", offer.CustomerPostId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", offer.UserId);
-            return View(offer);
+
+            // =========================
+            // System-managed fields
+            // =========================
+            offer.CreatedAt = DateTime.Now;
+            offer.Status = "Pending";
+
+            _context.Offers.Add(offer);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Offers/Edit/5
+        // ========================
+        // GET: Offers/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var offer = await _context.Offers.FindAsync(id);
             if (offer == null)
-            {
                 return NotFound();
-            }
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId", offer.CustomerPostId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", offer.UserId);
+
+            ReloadDropdowns(offer);
             return View(offer);
         }
 
-        // POST: Offers/Edit/5
+        // ========================
+        // POST: Offers/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OfferId,CustomerPostId,UserId,ProposedPrice,Status,CreatedAt")] Offer offer)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind(
+                "OfferId," +
+                "CustomerPostId," +
+                "UserId," +
+                "ProposedPrice," +
+                "Status"
+            )]
+            Offer offer)
         {
             if (id != offer.OfferId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                ReloadDropdowns(offer);
+                return View(offer);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(offer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OfferExists(offer.OfferId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId", offer.CustomerPostId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", offer.UserId);
-            return View(offer);
+            var existing = await _context.Offers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.OfferId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // =========================
+            // Preserve system fields
+            // =========================
+            offer.CreatedAt = existing.CreatedAt;
+
+            _context.Update(offer);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Offers/Delete/5
+        // ========================
+        // GET: Offers/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var offer = await _context.Offers
                 .Include(o => o.CustomerPost)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OfferId == id);
+                .FirstOrDefaultAsync(o => o.OfferId == id);
+
             if (offer == null)
-            {
                 return NotFound();
-            }
 
             return View(offer);
         }
 
-        // POST: Offers/Delete/5
+        // ========================
+        // POST: Offers/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -152,15 +179,30 @@ namespace Homeix.Controllers
             if (offer != null)
             {
                 _context.Offers.Remove(offer);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OfferExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void ReloadDropdowns(Offer? offer = null)
         {
-            return _context.Offers.Any(e => e.OfferId == id);
+            ViewData["CustomerPostId"] = new SelectList(
+                _context.CustomerPosts,
+                "CustomerPostId",
+                "CustomerPostId",
+                offer?.CustomerPostId
+            );
+
+            ViewData["UserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "UserId",
+                offer?.UserId
+            );
         }
     }
 }

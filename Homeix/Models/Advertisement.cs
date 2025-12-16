@@ -1,34 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Homeix.Models;
-
-[Table("Advertisement")]
-public partial class Advertisement
+namespace Homeix.Models
 {
-    [Key]
-    [Column("AdID")]
-    public int AdId { get; set; }
+    [Table("Advertisement")]
+    public class Advertisement
+    {
+        [Key]
+        [Column("AdID")]
+        public int AdId { get; set; }
 
-    [Column("CreatedByUserID")]
-    public int CreatedByUserId { get; set; }
+        [Required]
+        [Column("CreatedByUserID")]
+        public int CreatedByUserId { get; set; }
 
-    [StringLength(200)]
-    public string Title { get; set; } = null!;
+        [Required]
+        [StringLength(200)]
+        public string Title { get; set; } = string.Empty;
 
-    [StringLength(255)]
-    public string ImagePath { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        public string ImagePath { get; set; } = string.Empty;
 
-    public DateOnly StartDate { get; set; }
+        [Required]
+        [Column(TypeName = "date")]
+        public DateTime StartDate { get; set; }
 
-    public DateOnly EndDate { get; set; }
+        [Required]
+        [Column(TypeName = "date")]
+        public DateTime EndDate { get; set; }
 
-    public bool IsActive { get; set; }
+        public bool IsActive { get; set; }
 
-    [ForeignKey("CreatedByUserId")]
-    [InverseProperty("Advertisements")]
-    public virtual User CreatedByUser { get; set; } = null!;
+        // Navigation
+        [ForeignKey(nameof(CreatedByUserId))]
+        public virtual User? CreatedByUser { get; set; }
+    }
 }

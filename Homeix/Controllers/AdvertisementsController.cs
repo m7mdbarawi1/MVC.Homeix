@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,142 +18,153 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: Advertisements
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.Advertisements.Include(a => a.CreatedByUser);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var ads = await _context.Advertisements
+                .Include(a => a.CreatedByUser)
+                .ToListAsync();
+
+            return View(ads);
         }
 
+        // ========================
         // GET: Advertisements/Details/5
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var advertisement = await _context.Advertisements
                 .Include(a => a.CreatedByUser)
-                .FirstOrDefaultAsync(m => m.AdId == id);
+                .FirstOrDefaultAsync(a => a.AdId == id);
+
             if (advertisement == null)
-            {
                 return NotFound();
-            }
 
             return View(advertisement);
         }
 
+        // ========================
         // GET: Advertisements/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            LoadUsersDropdown();
             return View();
         }
 
+        // ========================
         // POST: Advertisements/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AdId,CreatedByUserId,Title,ImagePath,StartDate,EndDate,IsActive")] Advertisement advertisement)
+        public async Task<IActionResult> Create(
+            [Bind("CreatedByUserId,Title,ImagePath,StartDate,EndDate,IsActive")]
+            Advertisement advertisement)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(advertisement);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                LoadUsersDropdown(advertisement.CreatedByUserId);
+                return View(advertisement);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", advertisement.CreatedByUserId);
-            return View(advertisement);
+
+            _context.Advertisements.Add(advertisement);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
+        // ========================
         // GET: Advertisements/Edit/5
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var advertisement = await _context.Advertisements.FindAsync(id);
             if (advertisement == null)
-            {
                 return NotFound();
-            }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", advertisement.CreatedByUserId);
+
+            LoadUsersDropdown(advertisement.CreatedByUserId);
             return View(advertisement);
         }
 
+        // ========================
         // POST: Advertisements/Edit/5
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AdId,CreatedByUserId,Title,ImagePath,StartDate,EndDate,IsActive")] Advertisement advertisement)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("AdId,CreatedByUserId,Title,ImagePath,StartDate,EndDate,IsActive")]
+            Advertisement advertisement)
         {
             if (id != advertisement.AdId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                LoadUsersDropdown(advertisement.CreatedByUserId);
+                return View(advertisement);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(advertisement);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AdvertisementExists(advertisement.AdId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", advertisement.CreatedByUserId);
-            return View(advertisement);
+            _context.Update(advertisement);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
+        // ========================
         // GET: Advertisements/Delete/5
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var advertisement = await _context.Advertisements
                 .Include(a => a.CreatedByUser)
-                .FirstOrDefaultAsync(m => m.AdId == id);
+                .FirstOrDefaultAsync(a => a.AdId == id);
+
             if (advertisement == null)
-            {
                 return NotFound();
-            }
 
             return View(advertisement);
         }
 
+        // ========================
         // POST: Advertisements/Delete/5
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var advertisement = await _context.Advertisements.FindAsync(id);
+
             if (advertisement != null)
             {
                 _context.Advertisements.Remove(advertisement);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AdvertisementExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void LoadUsersDropdown(int? selectedUserId = null)
         {
-            return _context.Advertisements.Any(e => e.AdId == id);
+            ViewData["CreatedByUserId"] =
+                new SelectList(_context.Users,
+                               "UserId",
+                               "UserId",
+                               selectedUserId);
         }
     }
 }

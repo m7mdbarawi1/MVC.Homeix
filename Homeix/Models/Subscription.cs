@@ -2,38 +2,54 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("Subscription")]
-public partial class Subscription
+namespace Homeix.Models
 {
-    [Key]
-    [Column("SubscriptionID")]
-    public int SubscriptionId { get; set; }
+    [Table("Subscription")]
+    public class Subscription
+    {
+        [Key]
+        [Column("SubscriptionID")]
+        public int SubscriptionId { get; set; }
 
-    [Column("UserID")]
-    public int UserId { get; set; }
+        // =========================
+        // Foreign Keys (USER INPUT)
+        // =========================
+        [Required]
+        [Column("UserID")]
+        public int UserId { get; set; }
 
-    [Column("PlanID")]
-    public int PlanId { get; set; }
+        [Required]
+        [Column("PlanID")]
+        public int PlanId { get; set; }
 
-    public DateOnly StartDate { get; set; }
+        // =========================
+        // System-managed fields
+        // =========================
+        [Column(TypeName = "date")]
+        [BindNever] // ✅ FIX
+        public DateTime StartDate { get; set; }
 
-    public DateOnly EndDate { get; set; }
+        [Column(TypeName = "date")]
+        [BindNever] // ✅ FIX
+        public DateTime EndDate { get; set; }
 
-    [StringLength(50)]
-    public string Status { get; set; } = null!;
+        [Required]
+        [StringLength(50)]
+        [BindNever] // ✅ FIX
+        public string Status { get; set; } = "Active";
 
-    [InverseProperty("Subscription")]
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        // =========================
+        // Navigation
+        // =========================
+        public virtual ICollection<Payment> Payments { get; set; }
+            = new List<Payment>();
 
-    [ForeignKey("PlanId")]
-    [InverseProperty("Subscriptions")]
-    public virtual SubscriptionPlan Plan { get; set; } = null!;
+        [ForeignKey(nameof(PlanId))]
+        public virtual SubscriptionPlan Plan { get; set; } = null!;
 
-    [ForeignKey("UserId")]
-    [InverseProperty("Subscriptions")]
-    public virtual User User { get; set; } = null!;
+        [ForeignKey(nameof(UserId))]
+        public virtual User User { get; set; } = null!;
+    }
 }

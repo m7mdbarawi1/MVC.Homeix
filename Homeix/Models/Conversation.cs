@@ -2,34 +2,34 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Homeix.Models;
-
-[Table("Conversation")]
-public partial class Conversation
+namespace Homeix.Models
 {
-    [Key]
-    [Column("ConversationID")]
-    public int ConversationId { get; set; }
+    [Table("Conversation")]
+    public class Conversation
+    {
+        [Key]
+        [Column("ConversationID")]
+        public int ConversationId { get; set; }
 
-    [Column("User1ID")]
-    public int User1Id { get; set; }
+        [Required]
+        [Column("User1ID")]
+        public int User1Id { get; set; }
 
-    [Column("User2ID")]
-    public int User2Id { get; set; }
+        [Required]
+        [Column("User2ID")]
+        public int User2Id { get; set; }
 
-    [Column(TypeName = "datetime")]
-    public DateTime CreatedAt { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime CreatedAt { get; set; }
 
-    [InverseProperty("Conversation")]
-    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+        // Navigation
+        [ForeignKey(nameof(User1Id))]
+        public virtual User? User1 { get; set; }
 
-    [ForeignKey("User1Id")]
-    [InverseProperty("ConversationUser1s")]
-    public virtual User User1 { get; set; } = null!;
+        [ForeignKey(nameof(User2Id))]
+        public virtual User? User2 { get; set; }
 
-    [ForeignKey("User2Id")]
-    [InverseProperty("ConversationUser2s")]
-    public virtual User User2 { get; set; } = null!;
+        public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+    }
 }

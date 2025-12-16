@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,137 +16,124 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: UserRoles
+        // ========================
         public async Task<IActionResult> Index()
         {
             return View(await _context.UserRoles.ToListAsync());
         }
 
-        // GET: UserRoles/Details/5
+        // ========================
+        // GET: UserRoles/Details
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var userRole = await _context.UserRoles
+            var role = await _context.UserRoles
                 .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (userRole == null)
-            {
-                return NotFound();
-            }
 
-            return View(userRole);
+            if (role == null)
+                return NotFound();
+
+            return View(role);
         }
 
+        // ========================
         // GET: UserRoles/Create
+        // ========================
         public IActionResult Create()
         {
             return View();
         }
 
+        // ========================
         // POST: UserRoles/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RoleId,RoleName")] UserRole userRole)
+        public async Task<IActionResult> Create(
+            [Bind("RoleName")] UserRole userRole)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(userRole);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(userRole);
+            if (!ModelState.IsValid)
+                return View(userRole);
+
+            _context.UserRoles.Add(userRole);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: UserRoles/Edit/5
+        // ========================
+        // GET: UserRoles/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var userRole = await _context.UserRoles.FindAsync(id);
-            if (userRole == null)
-            {
+            var role = await _context.UserRoles.FindAsync(id);
+            if (role == null)
                 return NotFound();
-            }
-            return View(userRole);
+
+            return View(role);
         }
 
-        // POST: UserRoles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // ========================
+        // POST: UserRoles/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RoleId,RoleName")] UserRole userRole)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("RoleId,RoleName")] UserRole userRole)
         {
             if (id != userRole.RoleId)
-            {
                 return NotFound();
-            }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(userRole);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserRoleExists(userRole.RoleId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(userRole);
+            if (!ModelState.IsValid)
+                return View(userRole);
+
+            _context.Update(userRole);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: UserRoles/Delete/5
+        // ========================
+        // GET: UserRoles/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var userRole = await _context.UserRoles
+            var role = await _context.UserRoles
                 .FirstOrDefaultAsync(m => m.RoleId == id);
-            if (userRole == null)
-            {
-                return NotFound();
-            }
 
-            return View(userRole);
+            if (role == null)
+                return NotFound();
+
+            return View(role);
         }
 
-        // POST: UserRoles/Delete/5
+        // ========================
+        // POST: UserRoles/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var userRole = await _context.UserRoles.FindAsync(id);
-            if (userRole != null)
+            var role = await _context.UserRoles.FindAsync(id);
+            if (role != null)
             {
-                _context.UserRoles.Remove(userRole);
+                _context.UserRoles.Remove(role);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserRoleExists(int id)
-        {
-            return _context.UserRoles.Any(e => e.RoleId == id);
         }
     }
 }

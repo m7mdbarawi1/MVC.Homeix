@@ -1,24 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Homeix.Models;
-
-[Table("PostCategory")]
-public partial class PostCategory
+namespace Homeix.Models
 {
-    [Key]
-    [Column("PostCategoryID")]
-    public int PostCategoryId { get; set; }
+    [Table("PostCategory")]
+    public class PostCategory
+    {
+        [Key]
+        [Column("PostCategoryID")]
+        public int PostCategoryId { get; set; }
 
-    [StringLength(100)]
-    public string CategoryName { get; set; } = null!;
+        [Required]
+        [StringLength(100)]
+        public string CategoryName { get; set; } = string.Empty;
 
-    [InverseProperty("PostCategory")]
-    public virtual ICollection<CustomerPost> CustomerPosts { get; set; } = new List<CustomerPost>();
+        // Navigation
+        public virtual ICollection<CustomerPost> CustomerPosts { get; set; }
+            = new List<CustomerPost>();
 
-    [InverseProperty("PostCategory")]
-    public virtual ICollection<WorkerPost> WorkerPosts { get; set; } = new List<WorkerPost>();
+        public virtual ICollection<WorkerPost> WorkerPosts { get; set; }
+            = new List<WorkerPost>();
+    }
 }

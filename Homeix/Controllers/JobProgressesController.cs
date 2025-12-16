@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Models;
 using Homeix.Data;
+using Homeix.Models;
 
 namespace Homeix.Controllers
 {
@@ -19,137 +18,167 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: JobProgresses
+        // ========================
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.JobProgresses.Include(j => j.AssignedToUser).Include(j => j.CustomerPost).Include(j => j.RequestedByUser);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var jobs = await _context.JobProgresses
+                .Include(j => j.AssignedToUser)
+                .Include(j => j.CustomerPost)
+                .Include(j => j.RequestedByUser)
+                .ToListAsync();
+
+            return View(jobs);
         }
 
+        // ========================
         // GET: JobProgresses/Details/5
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var jobProgress = await _context.JobProgresses
                 .Include(j => j.AssignedToUser)
                 .Include(j => j.CustomerPost)
                 .Include(j => j.RequestedByUser)
-                .FirstOrDefaultAsync(m => m.JobProgressId == id);
+                .FirstOrDefaultAsync(j => j.JobProgressId == id);
+
             if (jobProgress == null)
-            {
                 return NotFound();
-            }
 
             return View(jobProgress);
         }
 
+        // ========================
         // GET: JobProgresses/Create
+        // ========================
         public IActionResult Create()
         {
-            ViewData["AssignedToUserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId");
-            ViewData["RequestedByUserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ReloadDropdowns();
             return View();
         }
 
+        // ========================
         // POST: JobProgresses/Create
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("JobProgressId,CustomerPostId,RequestedByUserId,AssignedToUserId,Status,StartedAt,CompletedAt,IsRatedByCustomer,IsRatedByWorker")] JobProgress jobProgress)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "CustomerPostId," +
+                "RequestedByUserId," +
+                "AssignedToUserId"
+            )]
+            JobProgress jobProgress)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(jobProgress);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ReloadDropdowns(jobProgress);
+                return View(jobProgress);
             }
-            ViewData["AssignedToUserId"] = new SelectList(_context.Users, "UserId", "UserId", jobProgress.AssignedToUserId);
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId", jobProgress.CustomerPostId);
-            ViewData["RequestedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", jobProgress.RequestedByUserId);
-            return View(jobProgress);
+
+            // =========================
+            // System-managed fields
+            // =========================
+            jobProgress.Status = "In Progress";
+            jobProgress.StartedAt = DateTime.Now;
+            jobProgress.IsRatedByCustomer = false;
+            jobProgress.IsRatedByWorker = false;
+
+            _context.JobProgresses.Add(jobProgress);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: JobProgresses/Edit/5
+        // ========================
+        // GET: JobProgresses/Edit
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var jobProgress = await _context.JobProgresses.FindAsync(id);
             if (jobProgress == null)
-            {
                 return NotFound();
-            }
-            ViewData["AssignedToUserId"] = new SelectList(_context.Users, "UserId", "UserId", jobProgress.AssignedToUserId);
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId", jobProgress.CustomerPostId);
-            ViewData["RequestedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", jobProgress.RequestedByUserId);
+
+            ReloadDropdowns(jobProgress);
             return View(jobProgress);
         }
 
-        // POST: JobProgresses/Edit/5
+        // ========================
+        // POST: JobProgresses/Edit
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("JobProgressId,CustomerPostId,RequestedByUserId,AssignedToUserId,Status,StartedAt,CompletedAt,IsRatedByCustomer,IsRatedByWorker")] JobProgress jobProgress)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind(
+                "JobProgressId," +
+                "CustomerPostId," +
+                "RequestedByUserId," +
+                "AssignedToUserId," +
+                "Status," +
+                "CompletedAt," +
+                "IsRatedByCustomer," +
+                "IsRatedByWorker"
+            )]
+            JobProgress jobProgress)
         {
             if (id != jobProgress.JobProgressId)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                ReloadDropdowns(jobProgress);
+                return View(jobProgress);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(jobProgress);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JobProgressExists(jobProgress.JobProgressId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AssignedToUserId"] = new SelectList(_context.Users, "UserId", "UserId", jobProgress.AssignedToUserId);
-            ViewData["CustomerPostId"] = new SelectList(_context.CustomerPosts, "CustomerPostId", "CustomerPostId", jobProgress.CustomerPostId);
-            ViewData["RequestedByUserId"] = new SelectList(_context.Users, "UserId", "UserId", jobProgress.RequestedByUserId);
-            return View(jobProgress);
+            var existing = await _context.JobProgresses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(j => j.JobProgressId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            // =========================
+            // Preserve system fields
+            // =========================
+            jobProgress.StartedAt = existing.StartedAt;
+
+            _context.Update(jobProgress);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: JobProgresses/Delete/5
+        // ========================
+        // GET: JobProgresses/Delete
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var jobProgress = await _context.JobProgresses
                 .Include(j => j.AssignedToUser)
                 .Include(j => j.CustomerPost)
                 .Include(j => j.RequestedByUser)
-                .FirstOrDefaultAsync(m => m.JobProgressId == id);
+                .FirstOrDefaultAsync(j => j.JobProgressId == id);
+
             if (jobProgress == null)
-            {
                 return NotFound();
-            }
 
             return View(jobProgress);
         }
 
-        // POST: JobProgresses/Delete/5
+        // ========================
+        // POST: JobProgresses/Delete
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -158,15 +187,37 @@ namespace Homeix.Controllers
             if (jobProgress != null)
             {
                 _context.JobProgresses.Remove(jobProgress);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool JobProgressExists(int id)
+        // ========================
+        // Helpers
+        // ========================
+        private void ReloadDropdowns(JobProgress? job = null)
         {
-            return _context.JobProgresses.Any(e => e.JobProgressId == id);
+            ViewData["CustomerPostId"] = new SelectList(
+                _context.CustomerPosts,
+                "CustomerPostId",
+                "CustomerPostId",
+                job?.CustomerPostId
+            );
+
+            ViewData["RequestedByUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "UserId",
+                job?.RequestedByUserId
+            );
+
+            ViewData["AssignedToUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "UserId",
+                job?.AssignedToUserId
+            );
         }
     }
 }

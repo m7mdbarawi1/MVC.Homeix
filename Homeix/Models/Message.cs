@@ -1,34 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("Message")]
-public partial class Message
+namespace Homeix.Models
 {
-    [Key]
-    [Column("MessageID")]
-    public int MessageId { get; set; }
+    [Table("Message")]
+    public class Message
+    {
+        [Key]
+        [Column("MessageID")]
+        public int MessageId { get; set; }
 
-    [Column("ConversationID")]
-    public int ConversationId { get; set; }
+        // =========================
+        // Foreign keys
+        // =========================
+        [Required]
+        [Column("ConversationID")]
+        public int ConversationId { get; set; }
 
-    [Column("SenderUserID")]
-    public int SenderUserId { get; set; }
+        [Required]
+        [Column("SenderUserID")]
+        public int SenderUserId { get; set; }
 
-    public string MessageText { get; set; } = null!;
+        // =========================
+        // User input
+        // =========================
+        [Required]
+        public string MessageText { get; set; } = string.Empty;
 
-    [Column(TypeName = "datetime")]
-    public DateTime SentAt { get; set; }
+        // =========================
+        // System-managed
+        // =========================
+        [Column(TypeName = "datetime")]
+        [BindNever]
+        public DateTime SentAt { get; set; }
 
-    [ForeignKey("ConversationId")]
-    [InverseProperty("Messages")]
-    public virtual Conversation Conversation { get; set; } = null!;
-
-    [ForeignKey("SenderUserId")]
-    [InverseProperty("Messages")]
-    public virtual User SenderUser { get; set; } = null!;
+        // =========================
+        // Navigation
+        // =========================
+        public virtual Conversation? Conversation { get; set; }
+        public virtual User? SenderUser { get; set; }
+    }
 }

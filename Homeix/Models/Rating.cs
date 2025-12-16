@@ -1,43 +1,57 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Homeix.Models;
-
-[Table("Rating")]
-public partial class Rating
+namespace Homeix.Models
 {
-    [Key]
-    [Column("RatingID")]
-    public int RatingId { get; set; }
+    [Table("Rating")]
+    public class Rating
+    {
+        [Key]
+        [Column("RatingID")]
+        public int RatingId { get; set; }
 
-    [Column("JobProgressID")]
-    public int JobProgressId { get; set; }
+        // =========================
+        // Foreign Keys
+        // =========================
+        [Required]
+        [Column("JobProgressID")]
+        public int JobProgressId { get; set; }
 
-    [Column("RaterUserID")]
-    public int RaterUserId { get; set; }
+        [Required]
+        [Column("RaterUserID")]
+        public int RaterUserId { get; set; }
 
-    [Column("RatedUserID")]
-    public int RatedUserId { get; set; }
+        [Required]
+        [Column("RatedUserID")]
+        public int RatedUserId { get; set; }
 
-    public int RatingValue { get; set; }
+        // =========================
+        // User-input fields
+        // =========================
+        [Range(1, 5)]
+        public int RatingValue { get; set; }
 
-    public string? Review { get; set; }
+        public string? Review { get; set; }
 
-    [Column(TypeName = "datetime")]
-    public DateTime CreatedAt { get; set; }
+        // =========================
+        // System-managed field
+        // =========================
+        [Column(TypeName = "datetime")]
+        [BindNever]                 // ✅ IMPORTANT
+        public DateTime CreatedAt { get; set; }
 
-    [ForeignKey("JobProgressId")]
-    [InverseProperty("Ratings")]
-    public virtual JobProgress JobProgress { get; set; } = null!;
+        // =========================
+        // Navigation properties
+        // =========================
+        [ForeignKey("JobProgressId")]
+        public virtual JobProgress JobProgress { get; set; } = null!;
 
-    [ForeignKey("RatedUserId")]
-    [InverseProperty("RatingRatedUsers")]
-    public virtual User RatedUser { get; set; } = null!;
+        [ForeignKey("RatedUserId")]
+        public virtual User RatedUser { get; set; } = null!;
 
-    [ForeignKey("RaterUserId")]
-    [InverseProperty("RatingRaterUsers")]
-    public virtual User RaterUser { get; set; } = null!;
+        [ForeignKey("RaterUserId")]
+        public virtual User RaterUser { get; set; } = null!;
+    }
 }
