@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Homeix.Controllers
 {
@@ -31,7 +29,7 @@ namespace Homeix.Controllers
         }
 
         // =============================================================
-        // LOGIN (POST)
+        // LOGIN (POST) - BCrypt 
         // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -43,13 +41,18 @@ namespace Homeix.Controllers
                 return View();
             }
 
-            string hashed = HashPassword(password);
-
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == email && u.PasswordHash == hashed);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
+            {
+                ViewBag.Error = "Invalid email or password.";
+                return View();
+            }
+
+            // BCrypt verify only
+            if (!VerifyPassword(password, user.PasswordHash))
             {
                 ViewBag.Error = "Invalid email or password.";
                 return View();
@@ -69,27 +72,18 @@ namespace Homeix.Controllers
                 new AuthenticationProperties { IsPersistent = true }
             );
 
-            // ✅ 1. Respect returnUrl FIRST
+            // Respect returnUrl FIRST
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
                 return Redirect(returnUrl);
-            }
 
-            // ✅ 2. Role-based dashboard redirect
-            switch (user.Role.RoleName)
+            // Role-based dashboard redirect
+            return user.Role.RoleName switch
             {
-                case "admin":
-                    return RedirectToAction("AdminDashboard", "Dashboard");
-
-                case "customer":
-                    return RedirectToAction("CustomerDashboard", "Dashboard");
-
-                case "worker":
-                    return RedirectToAction("WorkerDashboard", "Dashboard");
-            }
-
-            // ✅ 3. Fallback
-            return RedirectToAction("Index", "Home");
+                "admin" => RedirectToAction("AdminDashboard", "Dashboard"),
+                "customer" => RedirectToAction("CustomerDashboard", "Dashboard"),
+                "worker" => RedirectToAction("WorkerDashboard", "Dashboard"),
+                _ => RedirectToAction("Index", "Home")
+            };
         }
 
         // =============================================================
@@ -102,7 +96,7 @@ namespace Homeix.Controllers
         }
 
         // =============================================================
-        // REGISTER (POST)
+        // REGISTER (POST) - BCrypt 
         // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -138,7 +132,8 @@ namespace Homeix.Controllers
                 Email = email,
                 PhoneNumber = phone ?? "",
                 RoleId = roleId,
-                PasswordHash = HashPassword(password)
+                PasswordHash = HashPassword(password), // BCrypt
+                ProfilePicture = null
             };
 
             _context.Users.Add(user);
@@ -166,7 +161,7 @@ namespace Homeix.Controllers
         }
 
         // =============================================================
-        // MY PROFILE (POST)
+        // MY PROFILE (POST) - BCrypt 
         // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -187,7 +182,7 @@ namespace Homeix.Controllers
             dbUser.PhoneNumber = model.PhoneNumber;
 
             if (!string.IsNullOrWhiteSpace(NewPassword))
-                dbUser.PasswordHash = HashPassword(NewPassword);
+                dbUser.PasswordHash = HashPassword(NewPassword); // BCrypt
 
             if (ProfileImage != null)
             {
@@ -195,7 +190,9 @@ namespace Homeix.Controllers
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
 
-                string fileName = $"{Guid.NewGuid()}_{ProfileImage.FileName}";
+             
+                var ext = Path.GetExtension(ProfileImage.FileName);
+                string fileName = $"{Guid.NewGuid()}{ext}";
                 string path = Path.Combine(folder, fileName);
 
                 using var stream = new FileStream(path, FileMode.Create);
@@ -209,11 +206,13 @@ namespace Homeix.Controllers
             // Refresh auth
             await HttpContext.SignOutAsync("HomeixAuth");
 
+            var role = await _context.UserRoles.FindAsync(dbUser.RoleId);
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, dbUser.FullName),
                 new Claim(ClaimTypes.Email, dbUser.Email),
-                new Claim(ClaimTypes.Role, (await _context.UserRoles.FindAsync(dbUser.RoleId))!.RoleName),
+                new Claim(ClaimTypes.Role, role!.RoleName),
                 new Claim("UserId", dbUser.UserId.ToString())
             };
 
@@ -268,6 +267,9 @@ namespace Homeix.Controllers
             return RedirectToAction("Login");
         }
 
+        // =============================================================
+        // HOME REDIRECT
+        // =============================================================
         [AllowAnonymous]
         public IActionResult HomeRedirect()
         {
@@ -283,19 +285,27 @@ namespace Homeix.Controllers
                     return RedirectToAction("WorkerDashboard", "Dashboard");
             }
 
-            // Not logged in → landing page
             return RedirectToAction("Index", "Home");
         }
 
         // =============================================================
-        // PASSWORD HASHING
+        // PASSWORD HASHING / VERIFY (BCrypt)
         // =============================================================
         private string HashPassword(string password)
         {
-            using var sha = SHA256.Create();
-            return Convert.ToBase64String(
-                sha.ComputeHash(Encoding.UTF8.GetBytes(password))
-            );
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        private bool VerifyPassword(string password, string storedHash)
+        {
+            if (string.IsNullOrWhiteSpace(storedHash))
+                return false;
+
+            // BCrypt hashes start with $2a$ / $2b$ / $2y$
+            if (!(storedHash.StartsWith("$2a$") || storedHash.StartsWith("$2b$") || storedHash.StartsWith("$2y$")))
+                return false;
+
+            return BCrypt.Net.BCrypt.Verify(password, storedHash);
         }
     }
 }

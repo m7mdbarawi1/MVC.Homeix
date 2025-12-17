@@ -71,7 +71,7 @@ namespace Homeix.Controllers
             if (string.IsNullOrWhiteSpace(password))
                 ModelState.AddModelError("Password", "Password is required.");
 
-            // unique email check (very common cause of "failed")
+            // unique email check
             var emailExists = await _context.Users.AnyAsync(u => u.Email == email);
             if (emailExists)
                 ModelState.AddModelError("Email", "Email already exists.");
@@ -88,7 +88,7 @@ namespace Homeix.Controllers
                 FullName = fullName,
                 Email = email,
                 PhoneNumber = phoneNumber,
-                PasswordHash = HashPassword(password), // hash here
+                PasswordHash = HashPassword(password), //  BCrypt hash
                 ProfilePicture = null
             };
 
@@ -97,6 +97,7 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -187,7 +188,7 @@ namespace Homeix.Controllers
             ViewData["RoleId"] = new SelectList(
                 _context.UserRoles.AsNoTracking().OrderBy(r => r.RoleName),
                 "RoleId",
-                "RoleName",   //show RoleName not RoleId
+                "RoleName",   //show RoleName 
                 selectedRoleId
             );
         }
@@ -195,10 +196,10 @@ namespace Homeix.Controllers
         // Replace this with your real secure hashing method (BCrypt recommended)
         private string HashPassword(string password)
         {
-            // TEMP (for demo). Prefer BCrypt in real apps.
-            using var sha = System.Security.Cryptography.SHA256.Create();
-            var bytes = System.Text.Encoding.UTF8.GetBytes(password);
-            return Convert.ToBase64String(sha.ComputeHash(bytes));
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+       
         }
     }
-}
+
