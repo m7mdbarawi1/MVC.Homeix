@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Models;
 using Homeix.Data;
+using System.Linq;
+
 
 namespace Homeix.Controllers
 {
@@ -70,6 +72,13 @@ namespace Homeix.Controllers
 
             if (string.IsNullOrWhiteSpace(password))
                 ModelState.AddModelError("Password", "Password is required.");
+            if (!IsStrongPassword(password, out var passError))
+            {
+                ModelState.AddModelError("Password", passError);
+                LoadRolesDropdown(roleId);
+                return View();
+            }
+
 
             // unique email check
             var emailExists = await _context.Users.AnyAsync(u => u.Email == email);
@@ -199,7 +208,35 @@ namespace Homeix.Controllers
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
-       
+        private bool IsStrongPassword(string password, out string error)
+        {
+            error = "";
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                error = "Password is required.";
+                return false;
+            }
+
+            if (password.Length < 8)
+            {
+                error = "Password must be at least 8 characters.";
+                return false;
+            }
+
+            bool hasUpper = password.Any(char.IsUpper);
+            bool hasLower = password.Any(char.IsLower);
+            bool hasDigit = password.Any(char.IsDigit);
+            bool hasSpecial = password.Any(ch => "!@#$%^&*()_+-=[]{};':\",.<>/?\\|`~".Contains(ch));
+
+            if (!hasUpper) { error = "Password must contain at least 1 uppercase letter."; return false; }
+            if (!hasLower) { error = "Password must contain at least 1 lowercase letter."; return false; }
+            if (!hasDigit) { error = "Password must contain at least 1 number."; return false; }
+            if (!hasSpecial) { error = "Password must contain at least 1 special character."; return false; }
+
+            return true;
         }
+
     }
+}
 

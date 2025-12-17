@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Linq;
+
 
 namespace Homeix.Controllers
 {
@@ -102,6 +104,14 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string fullName, string email, string phone, string password, int roleId)
         {
+
+            if (!IsStrongPassword(password, out var passError))
+            {
+                ViewBag.Error = passError;
+                ViewBag.Roles = _context.UserRoles.ToList();
+                return View();
+            }
+
             if (string.IsNullOrWhiteSpace(fullName) ||
                 string.IsNullOrWhiteSpace(email) ||
                 string.IsNullOrWhiteSpace(password))
@@ -307,5 +317,34 @@ namespace Homeix.Controllers
 
             return BCrypt.Net.BCrypt.Verify(password, storedHash);
         }
+        private bool IsStrongPassword(string password, out string error)
+        {
+            error = "";
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                error = "Password is required.";
+                return false;
+            }
+
+            if (password.Length < 8)
+            {
+                error = "Password must be at least 8 characters.";
+                return false;
+            }
+
+            bool hasUpper = password.Any(char.IsUpper);
+            bool hasLower = password.Any(char.IsLower);
+            bool hasDigit = password.Any(char.IsDigit);
+            bool hasSpecial = password.Any(ch => "!@#$%^&*()_+-=[]{};':\",.<>/?\\|`~".Contains(ch));
+
+            if (!hasUpper) { error = "Password must contain at least 1 uppercase letter."; return false; }
+            if (!hasLower) { error = "Password must contain at least 1 lowercase letter."; return false; }
+            if (!hasDigit) { error = "Password must contain at least 1 number."; return false; }
+            if (!hasSpecial) { error = "Password must contain at least 1 special character."; return false; }
+
+            return true;
+        }
+
     }
 }
