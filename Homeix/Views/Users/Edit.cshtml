@@ -26,13 +26,14 @@
 
                         <!-- Role -->
                         <div class="mb-3">
-                            <label asp-for="RoleId" class="form-label"></label>
+                            <label class="form-label">Role</label>
                             <select asp-for="RoleId"
-                                    class="form-control"
+                                    class="form-select"
                                     asp-items="ViewBag.RoleId">
                             </select>
                             <span asp-validation-for="RoleId" class="text-danger"></span>
                         </div>
+
 
                         <!-- Full Name -->
                         <div class="mb-3">
@@ -55,12 +56,7 @@
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label asp-for="PasswordHash" class="form-label"></label>
-                            <input asp-for="PasswordHash" type="password" class="form-control" />
-                            <span asp-validation-for="PasswordHash" class="text-danger"></span>
-                        </div>
+                   
 
                         <!-- Profile Picture -->
                         <div class="mb-3">

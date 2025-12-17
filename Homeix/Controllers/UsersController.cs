@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -22,25 +21,25 @@ namespace Homeix.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            var hOMEIXDbContext = _context.Users.Include(u => u.Role);
-            return View(await hOMEIXDbContext.ToListAsync());
+            var users = await _context.Users
+                .Include(u => u.Role)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View(users);
         }
 
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var user = await _context.Users
                 .Include(u => u.Role)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.UserId == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+
+            if (user == null) return NotFound();
 
             return View(user);
         }
@@ -48,91 +47,119 @@ namespace Homeix.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.UserRoles, "RoleId", "RoleId");
+            LoadRolesDropdown();
             return View();
         }
 
         // POST: Users/Create
+        // NOTE: We do NOT bind UserId. It is IDENTITY.
+        // NOTE: We do NOT accept PasswordHash from UI. We accept a plain password and hash it.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,RoleId,FullName,Email,PhoneNumber,PasswordHash,ProfilePicture")] User user)
+        public async Task<IActionResult> Create(int roleId, string fullName, string email, string phoneNumber, string password)
         {
-            if (ModelState.IsValid)
+            // basic validation
+            if (string.IsNullOrWhiteSpace(fullName))
+                ModelState.AddModelError("FullName", "Full name is required.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                ModelState.AddModelError("Email", "Email is required.");
+
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                ModelState.AddModelError("PhoneNumber", "Phone number is required.");
+
+            if (string.IsNullOrWhiteSpace(password))
+                ModelState.AddModelError("Password", "Password is required.");
+
+            // unique email check (very common cause of "failed")
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == email);
+            if (emailExists)
+                ModelState.AddModelError("Email", "Email already exists.");
+
+            if (!ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                LoadRolesDropdown(roleId);
+                return View();
             }
-            ViewData["RoleId"] = new SelectList(_context.UserRoles, "RoleId", "RoleId", user.RoleId);
-            return View(user);
+
+            var user = new User
+            {
+                RoleId = roleId,
+                FullName = fullName,
+                Email = email,
+                PhoneNumber = phoneNumber,
+                PasswordHash = HashPassword(password), // hash here
+                ProfilePicture = null
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            ViewData["RoleId"] = new SelectList(_context.UserRoles, "RoleId", "RoleId", user.RoleId);
+            if (user == null) return NotFound();
+
+            LoadRolesDropdown(user.RoleId);
             return View(user);
         }
 
         // POST: Users/Edit/5
+        // NOTE: We load the existing user, then update only allowed fields.
+        // NOTE: We do NOT edit PasswordHash here.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,RoleId,FullName,Email,PhoneNumber,PasswordHash,ProfilePicture")] User user)
+        public async Task<IActionResult> Edit(int id, int roleId, string fullName, string email, string phoneNumber)
         {
-            if (id != user.UserId)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound();
+
+            if (string.IsNullOrWhiteSpace(fullName))
+                ModelState.AddModelError("FullName", "Full name is required.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                ModelState.AddModelError("Email", "Email is required.");
+
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                ModelState.AddModelError("PhoneNumber", "Phone number is required.");
+
+            // unique email check (ignore current user)
+            var emailUsed = await _context.Users.AnyAsync(u => u.Email == email && u.UserId != id);
+            if (emailUsed)
+                ModelState.AddModelError("Email", "Email already exists.");
+
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                LoadRolesDropdown(roleId);
+                return View(user);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.UserId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["RoleId"] = new SelectList(_context.UserRoles, "RoleId", "RoleId", user.RoleId);
-            return View(user);
+            user.RoleId = roleId;
+            user.FullName = fullName;
+            user.Email = email;
+            user.PhoneNumber = phoneNumber;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var user = await _context.Users
                 .Include(u => u.Role)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.UserId == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+
+            if (user == null) return NotFound();
 
             return View(user);
         }
@@ -146,15 +173,32 @@ namespace Homeix.Controllers
             if (user != null)
             {
                 _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(int id)
+        // ------------------------
+        // Helpers
+        // ------------------------
+        private void LoadRolesDropdown(int? selectedRoleId = null)
         {
-            return _context.Users.Any(e => e.UserId == id);
+            ViewData["RoleId"] = new SelectList(
+                _context.UserRoles.AsNoTracking().OrderBy(r => r.RoleName),
+                "RoleId",
+                "RoleName",   //show RoleName not RoleId
+                selectedRoleId
+            );
+        }
+
+        // Replace this with your real secure hashing method (BCrypt recommended)
+        private string HashPassword(string password)
+        {
+            // TEMP (for demo). Prefer BCrypt in real apps.
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var bytes = System.Text.Encoding.UTF8.GetBytes(password);
+            return Convert.ToBase64String(sha.ComputeHash(bytes));
         }
     }
 }
