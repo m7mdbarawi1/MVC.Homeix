@@ -24,11 +24,29 @@ namespace Homeix.Controllers
         public async Task<IActionResult> Index()
         {
             var posts = await _context.CustomerPosts
-                .Include(c => c.PostCategory)
-                .Include(c => c.User)
+                .Include(p => p.PostCategory)
+                .Include(p => p.User)
+                .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
             return View(posts);
+        }
+
+        // ========================
+        // GET: CustomerPosts/Details/5
+        // ========================
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var post = await _context.CustomerPosts
+                .Include(p => p.PostCategory)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.CustomerPostId == id);
+
+            if (post == null) return NotFound();
+
+            return View(post);
         }
 
         // ========================
@@ -36,7 +54,7 @@ namespace Homeix.Controllers
         // ========================
         public IActionResult Create()
         {
-            ReloadDropdowns();
+            LoadDropdowns();
             return View();
         }
 
@@ -45,27 +63,17 @@ namespace Homeix.Controllers
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind(
-                "UserId," +
-                "PostCategoryId," +
-                "Title," +
-                "Description," +
-                "Location," +
-                "PriceRangeMin," +
-                "PriceRangeMax"
-            )]
-            CustomerPost customerPost)
+        public async Task<IActionResult> Create([Bind(
+            "UserId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax"
+        )] CustomerPost customerPost)
         {
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(customerPost);
+                LoadDropdowns(customerPost);
                 return View(customerPost);
             }
 
-            // =========================
-            // System-managed fields
-            // =========================
+            // system-managed fields
             customerPost.CreatedAt = DateTime.Now;
             customerPost.Status = "Open";
             customerPost.IsActive = true;
@@ -77,90 +85,71 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // GET: CustomerPosts/Edit
+        // GET: CustomerPosts/Edit/5
         // ========================
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var post = await _context.CustomerPosts.FindAsync(id);
-            if (post == null)
-                return NotFound();
+            if (post == null) return NotFound();
 
-            ReloadDropdowns(post);
+            LoadDropdowns(post);
             return View(post);
         }
 
         // ========================
-        // POST: CustomerPosts/Edit
+        // POST: CustomerPosts/Edit/5
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind(
-                "CustomerPostId," +
-                "UserId," +
-                "PostCategoryId," +
-                "Title," +
-                "Description," +
-                "Location," +
-                "PriceRangeMin," +
-                "PriceRangeMax," +
-                "IsActive"
-            )]
-            CustomerPost customerPost)
+        public async Task<IActionResult> Edit(int id, [Bind(
+            "CustomerPostId,UserId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive"
+        )] CustomerPost customerPost)
         {
-            if (id != customerPost.CustomerPostId)
-                return NotFound();
+            if (id != customerPost.CustomerPostId) return NotFound();
 
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(customerPost);
+                LoadDropdowns(customerPost);
                 return View(customerPost);
             }
 
+            // Load existing row to preserve system fields
             var existing = await _context.CustomerPosts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (existing == null)
-                return NotFound();
+            if (existing == null) return NotFound();
 
-            // =========================
-            // Preserve system fields
-            // =========================
             customerPost.CreatedAt = existing.CreatedAt;
             customerPost.Status = existing.Status;
 
-            _context.Update(customerPost);
+            _context.CustomerPosts.Update(customerPost);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         // ========================
-        // GET: CustomerPosts/Delete
+        // GET: CustomerPosts/Delete/5
         // ========================
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var post = await _context.CustomerPosts
-                .Include(c => c.PostCategory)
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.CustomerPostId == id);
+                .Include(p => p.PostCategory)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (post == null)
-                return NotFound();
+            if (post == null) return NotFound();
 
             return View(post);
         }
 
         // ========================
-        // POST: CustomerPosts/Delete
+        // POST: CustomerPosts/Delete/5
         // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -179,19 +168,21 @@ namespace Homeix.Controllers
         // ========================
         // Helpers
         // ========================
-        private void ReloadDropdowns(CustomerPost? post = null)
+        private void LoadDropdowns(CustomerPost? post = null)
         {
+            // ✅ show FullName instead of UserId
             ViewData["UserId"] = new SelectList(
-                _context.Users,
+                _context.Users.AsNoTracking().OrderBy(u => u.FullName),
                 "UserId",
-                "UserId",
+                "FullName",
                 post?.UserId
             );
 
+            // ✅ show CategoryName instead of PostCategoryId
             ViewData["PostCategoryId"] = new SelectList(
-                _context.PostCategories,
+                _context.PostCategories.AsNoTracking().OrderBy(c => c.CategoryName),
                 "PostCategoryId",
-                "PostCategoryId",
+                "CategoryName",
                 post?.PostCategoryId
             );
         }

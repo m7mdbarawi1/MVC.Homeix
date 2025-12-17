@@ -44,11 +44,12 @@
                                     <th>@Html.DisplayNameFor(model => model.Status)</th>
                                     <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
                                     <th>@Html.DisplayNameFor(model => model.IsActive)</th>
-                                    <th>@Html.DisplayNameFor(model => model.PostCategory)</th>
-                                    <th>@Html.DisplayNameFor(model => model.User)</th>
+                                    <th>Post Category</th>
+                                    <th>User</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody id="postsTable">
                                 @if (Model != null && Model.Any())
                                 {
@@ -78,8 +79,11 @@
                                                     <span class="badge bg-secondary">Inactive</span>
                                                 }
                                             </td>
-                                            <td>@item.PostCategory?.PostCategoryId</td>
-                                            <td>@item.User?.UserId</td>
+
+                                            <!-- ✅ FIXED: Show names instead of IDs -->
+                                            <td>@(item.PostCategory?.CategoryName ?? "—")</td>
+                                            <td>@(item.User?.FullName ?? "—")</td>
+
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
                                                     <a asp-action="Edit" asp-route-id="@item.CustomerPostId" class="btn btn-secondary btn-sm">
