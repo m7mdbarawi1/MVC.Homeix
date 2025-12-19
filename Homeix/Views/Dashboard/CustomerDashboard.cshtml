@@ -1,107 +1,154 @@
-﻿@{
-    ViewData["Title"] = "Customer Dashboard";
+﻿@model IEnumerable<Homeix.Models.WorkerPost>
+
+@{
+    ViewData["Title"] = "Browse Services";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5 mb-5">
+<link href="~/css/workerposts/index.css" rel="stylesheet" />
 
-    <!-- ================= HEADER ================= -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">
-            <i class="bi bi-house-heart me-2"></i> Welcome to Homeix
-        </h1>
-        <p class="text-muted">
-            Manage your services, requests, favorites, and jobs in one place.
-        </p>
+<div class="container page-wrapper mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="page-title mb-0">Browse Services</h1>
+        <span id="resultCount" class="fw-bold text-secondary"></span>
     </div>
 
-    <!-- ================= DASHBOARD MODULES ================= -->
-    <div class="row g-4">
+    <!-- Filters -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" id="searchInput" class="form-control"
+                           placeholder="Search by title or description">
+                </div>
 
-        <!-- BROWSE SERVICES -->
-        <div class="col-lg-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <i class="bi bi-search dashboard-icon"></i>
-                <h5 class="fw-bold mt-3">Browse Services</h5>
-                <p>
-                    Discover trusted workers and services near you.
-                </p>
-                <a asp-controller="Home" asp-action="Index" class="btn btn-accent btn-sm">
-                    Explore
-                </a>
+                <div class="col-md-3">
+                    <select id="categoryFilter" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach (var cat in Model.Select(p => p.PostCategory?.CategoryName).Distinct())
+                        {
+                            if (!string.IsNullOrEmpty(cat))
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+                </div>
+
+                <div class="col-md-2">
+                    <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- MY REQUESTS -->
-        <div class="col-lg-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <i class="bi bi-clipboard-check dashboard-icon"></i>
-                <h5 class="fw-bold mt-3">My Requests</h5>
-                <p>
-                    Track your service requests and their status.
-                </p>
-                <a asp-controller="CustomerPosts" asp-action="MyPosts" class="btn btn-accent btn-sm">
-                    View Requests
+    <!-- Worker Posts Grid -->
+    <div class="row" id="postsGrid">
+        @foreach (var post in Model)
+        {
+            <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
+                <a asp-controller="WorkerPosts"
+                   asp-action="Details"
+                   asp-route-id="@post.WorkerPostId"
+                   class="card-link-wrapper">
+
+                    <div class="card h-100 shadow-sm post-card"
+                         data-title="@post.Title.ToLower()"
+                         data-description="@post.Description.ToLower()"
+                         data-category="@post.PostCategory?.CategoryName"
+                         data-minprice="@post.PriceRangeMin"
+                         data-maxprice="@post.PriceRangeMax">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title fw-bold mb-2">
+                                @post.Title
+                            </h5>
+
+                            <p class="card-text text-muted small text-truncate">
+                                @post.Description
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>📍 Location:</strong> @post.Location
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>📂 Category:</strong> @post.PostCategory?.CategoryName
+                            </p>
+
+                            <p class="fw-bold text-primary mb-2">
+                                💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
+                            </p>
+
+                            <p class="small text-muted mb-2">
+                                🕒 @post.CreatedAt.ToString("dd MMM yyyy")
+                            </p>
+
+                            <div class="mt-auto">
+                                <span class="badge bg-success">Available</span>
+                            </div>
+
+                        </div>
+                    </div>
                 </a>
             </div>
-        </div>
-
-        <!-- JOB PROGRESS -->
-        <div class="col-lg-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <i class="bi bi-briefcase dashboard-icon"></i>
-                <h5 class="fw-bold mt-3">Job Progress</h5>
-                <p>
-                    Monitor active jobs and completed services.
-                </p>
-                <a asp-controller="JobProgresses" asp-action="MyJobs" class="btn btn-accent btn-sm">
-                    Track Jobs
-                </a>
-            </div>
-        </div>
-
-        <!-- FAVORITES -->
-        <div class="col-lg-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <i class="bi bi-heart dashboard-icon"></i>
-                <h5 class="fw-bold mt-3">Favorites</h5>
-                <p>
-                    Access your saved workers and services.
-                </p>
-                <a asp-controller="FavoritePosts" asp-action="Index" class="btn btn-accent btn-sm">
-                    View Favorites
-                </a>
-            </div>
-        </div>
-
-        <!-- PROFILE -->
-        <div class="col-lg-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <i class="bi bi-person-circle dashboard-icon"></i>
-                <h5 class="fw-bold mt-3">My Profile</h5>
-                <p>
-                    Update personal information and preferences.
-                </p>
-                <a asp-controller="Account" asp-action="MyProfile" class="btn btn-accent btn-sm">
-                    Edit Profile
-                </a>
-            </div>
-        </div>
-
-        <!-- SUPPORT -->
-        <div class="col-lg-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <i class="bi bi-headset dashboard-icon"></i>
-                <h5 class="fw-bold mt-3">Support</h5>
-                <p>
-                    Contact support for help or report issues.
-                </p>
-                <a asp-controller="Messages" asp-action="Index" class="btn btn-accent btn-sm">
-                    Get Support
-                </a>
-            </div>
-        </div>
-
+        }
     </div>
 
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const searchInput = document.getElementById("searchInput");
+            const categoryFilter = document.getElementById("categoryFilter");
+            const minPriceInput = document.getElementById("minPrice");
+            const maxPriceInput = document.getElementById("maxPrice");
+            const cards = document.querySelectorAll(".post-card");
+            const resultCount = document.getElementById("resultCount");
+
+            function filterPosts() {
+                const term = searchInput.value.toLowerCase();
+                const category = categoryFilter.value;
+                const minPrice = parseFloat(minPriceInput.value) || 0;
+                const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+
+                let visible = 0;
+
+                cards.forEach(card => {
+                    const title = card.dataset.title || "";
+                    const desc = card.dataset.description || "";
+                    const cat = card.dataset.category || "";
+                    const min = parseFloat(card.dataset.minprice) || 0;
+                    const max = parseFloat(card.dataset.maxprice) || 0;
+
+                    const matchesSearch = title.includes(term) || desc.includes(term);
+                    const matchesCategory = category === "" || cat === category;
+                    const matchesPrice = min >= minPrice && max <= maxPrice;
+
+                    const show = matchesSearch && matchesCategory && matchesPrice;
+                    card.closest(".post-card-wrapper").style.display = show ? "" : "none";
+
+                    if (show) visible++;
+                });
+
+                resultCount.textContent = visible + " services found";
+            }
+
+            searchInput.addEventListener("input", filterPosts);
+            categoryFilter.addEventListener("change", filterPosts);
+            minPriceInput.addEventListener("input", filterPosts);
+            maxPriceInput.addEventListener("input", filterPosts);
+
+            filterPosts();
+        });
+    </script>
+}
