@@ -3,104 +3,118 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5 mb-5">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- ================= HEADER ================= -->
+<div class="container-fluid px-4 mt-4 mb-5">
+
     <div class="text-center mb-5">
-        <h1 class="fw-bold mb-2">
-            <i class="bi bi-speedometer2 me-2"></i> Homeix Admin Dashboard
+        <h1 class="fw-bold">
+            <i class="bi bi-graph-up-arrow me-2"></i> Admin Analytics Dashboard
         </h1>
-        <p class="text-muted">
-            Manage users, content, payments, and platform operations from one secure place.
-        </p>
+        <p class="text-muted">Real-time platform analytics</p>
     </div>
 
-    <!-- ================= ADMIN MODULES ================= -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm p-3">
+                <h6 class="text-muted fw-bold">Users by Role</h6>
+                <canvas id="usersChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm p-3">
+                <h6 class="text-muted fw-bold">Posts Overview</h6>
+                <canvas id="postsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm p-3">
+                <h6 class="text-muted fw-bold">Job Status</h6>
+                <canvas id="jobsChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
     <div class="row g-4">
 
-        <!-- USERS -->
-        <div class="col-lg-4 col-md-6">
-            <div class="admin-card h-100">
-                <i class="bi bi-people admin-icon"></i>
-                <h5 class="fw-bold mt-3">User Management</h5>
-                <p>
-                    Control customers, workers, admins, roles, and approvals.
-                </p>
-                <a asp-controller="Users" asp-action="Index" class="btn btn-accent btn-sm">
-                    Manage Users
-                </a>
+        <div class="col-lg-8">
+            <div class="card shadow-sm p-3">
+                <h6 class="text-muted fw-bold">Monthly Revenue (JD)</h6>
+                <canvas id="paymentsChart"></canvas>
             </div>
         </div>
 
-        <!-- POSTS -->
-        <div class="col-lg-4 col-md-6">
-            <div class="admin-card h-100">
-                <i class="bi bi-file-text admin-icon"></i>
-                <h5 class="fw-bold mt-3">Posts & Content</h5>
-                <p>
-                    Review customer posts, worker posts, categories, and media.
-                </p>
-                <a asp-controller="CustomerPosts" asp-action="Index" class="btn btn-accent btn-sm">
-                    Manage Content
-                </a>
-            </div>
-        </div>
-
-        <!-- PAYMENTS -->
-        <div class="col-lg-4 col-md-6">
-            <div class="admin-card h-100">
-                <i class="bi bi-credit-card admin-icon"></i>
-                <h5 class="fw-bold mt-3">Payments & Subscriptions</h5>
-                <p>
-                    Monitor payments, plans, subscriptions, and revenue.
-                </p>
-                <a asp-controller="Payments" asp-action="Index" class="btn btn-accent btn-sm">
-                    View Payments
-                </a>
-            </div>
-        </div>
-
-        <!-- RATINGS -->
-        <div class="col-lg-4 col-md-6">
-            <div class="admin-card h-100">
-                <i class="bi bi-star admin-icon"></i>
-                <h5 class="fw-bold mt-3">Ratings & Reviews</h5>
-                <p>
-                    Moderate worker ratings and customer feedback.
-                </p>
-                <a asp-controller="Ratings" asp-action="Index" class="btn btn-accent btn-sm">
-                    View Ratings
-                </a>
-            </div>
-        </div>
-
-        <!-- JOB TRACKING -->
-        <div class="col-lg-4 col-md-6">
-            <div class="admin-card h-100">
-                <i class="bi bi-briefcase admin-icon"></i>
-                <h5 class="fw-bold mt-3">Job Progress</h5>
-                <p>
-                    Track active jobs, statuses, disputes, and completion.
-                </p>
-                <a asp-controller="JobProgresses" asp-action="Index" class="btn btn-accent btn-sm">
-                    View Jobs
-                </a>
-            </div>
-        </div>
-
-        <!-- SYSTEM -->
-        <div class="col-lg-4 col-md-6">
-            <div class="admin-card h-100">
-                <i class="bi bi-gear admin-icon"></i>
-                <h5 class="fw-bold mt-3">System Settings</h5>
-                <p>
-                    Control platform configuration and advanced settings.
-                </p>
-                <a asp-controller="Dashboard" asp-action="Settings" class="btn btn-accent btn-sm">
-                    Settings
-                </a>
+        <div class="col-lg-4">
+            <div class="card shadow-sm p-3">
+                <h6 class="text-muted fw-bold">Ratings</h6>
+                <canvas id="ratingsChart"></canvas>
             </div>
         </div>
 
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        new Chart(document.getElementById('usersChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(ViewBag.UsersByRoleLabels ?? "[]"),
+                datasets: [{
+                    data: @Html.Raw(ViewBag.UsersByRoleCounts ?? "[]"),
+                    backgroundColor: '#0d6efd'
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('postsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Customer Posts', 'Worker Posts'],
+                datasets: [{
+                    data: [@ViewBag.CustomerPostsCount, @ViewBag.WorkerPostsCount],
+                    backgroundColor: ['#0dcaf0', '#ffc107']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('jobsChart'), {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(ViewBag.JobStatusLabels ?? "[]"),
+                datasets: [{
+                    data: @Html.Raw(ViewBag.JobStatusCounts ?? "[]"),
+                    backgroundColor: ['#0dcaf0', '#0d6efd', '#198754', '#dc3545']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('paymentsChart'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(ViewBag.PaymentMonths ?? "[]"),
+                datasets: [{
+                    data: @Html.Raw(ViewBag.PaymentTotals ?? "[]"),
+                    borderColor: '#6610f2',
+                    fill: true
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('ratingsChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(ViewBag.RatingLabels ?? "[]"),
+                datasets: [{
+                    data: @Html.Raw(ViewBag.RatingCounts ?? "[]"),
+                    backgroundColor: '#fd7e14'
+                }]
+            },
+            options: { indexAxis: 'y' }
+        });
+    </script>
+}

@@ -26,6 +26,7 @@ namespace Homeix.Controllers
             var approvals = await _context.WorkerApprovals
                 .Include(w => w.User)
                 .Include(w => w.ReviewedByUser)
+                .OrderByDescending(w => w.RequestedAt)
                 .ToListAsync();
 
             return View(approvals);
@@ -64,9 +65,7 @@ namespace Homeix.Controllers
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("UserId,Notes")]
-            WorkerApproval workerApproval)
+        public async Task<IActionResult> Create([Bind("UserId,Notes")] WorkerApproval workerApproval)
         {
             if (!ModelState.IsValid)
             {
@@ -74,11 +73,23 @@ namespace Homeix.Controllers
                 return View(workerApproval);
             }
 
-            // ======================
-            // System values
-            // ======================
+            // Prevent duplicate pending request for same user
+            bool exists = await _context.WorkerApprovals.AnyAsync(w =>
+                w.UserId == workerApproval.UserId &&
+                w.Status == "Pending");
+
+            if (exists)
+            {
+                ModelState.AddModelError("", "This user already has a pending approval request.");
+                LoadUsers(workerApproval.UserId);
+                return View(workerApproval);
+            }
+
+            // System-controlled fields
             workerApproval.Status = "Pending";
             workerApproval.RequestedAt = DateTime.Now;
+            workerApproval.ReviewedAt = null;
+            workerApproval.ReviewedByUserId = null;
 
             _context.WorkerApprovals.Add(workerApproval);
             await _context.SaveChangesAsync();
@@ -109,8 +120,7 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("ApprovalId,UserId,Notes")]
-            WorkerApproval workerApproval)
+            [Bind("ApprovalId,UserId,Notes")] WorkerApproval workerApproval)
         {
             if (id != workerApproval.ApprovalId)
                 return NotFound();
