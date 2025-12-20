@@ -39,19 +39,19 @@ namespace Homeix.Models
         // System-managed field
         // =========================
         [Column(TypeName = "datetime")]
-        [BindNever]                 // ✅ IMPORTANT
+        [BindNever] // ✅ PROTECT FROM POST
         public DateTime CreatedAt { get; set; }
 
         // =========================
-        // Navigation properties
+        // Navigation
         // =========================
-        [ForeignKey("JobProgressId")]
+        [ForeignKey(nameof(JobProgressId))]
         public virtual JobProgress JobProgress { get; set; } = null!;
 
-        [ForeignKey("RatedUserId")]
+        [ForeignKey(nameof(RatedUserId))]
         public virtual User RatedUser { get; set; } = null!;
 
-        [ForeignKey("RaterUserId")]
+        [ForeignKey(nameof(RaterUserId))]
         public virtual User RaterUser { get; set; } = null!;
     }
 }
