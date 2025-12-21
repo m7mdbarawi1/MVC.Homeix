@@ -25,15 +25,16 @@ namespace Homeix.Controllers
         {
             var ratings = await _context.RatingCustomerPosts
                 .Include(r => r.JobProgress)
-                .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
+                .Include(r => r.RatedUser)
+                .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
 
             return View(ratings);
         }
 
         // ========================
-        // GET: RatingCustomerPosts/Details
+        // GET: RatingCustomerPosts/Details/5
         // ========================
         public async Task<IActionResult> Details(int? id)
         {
@@ -42,9 +43,9 @@ namespace Homeix.Controllers
 
             var rating = await _context.RatingCustomerPosts
                 .Include(r => r.JobProgress)
-                .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
-                .FirstOrDefaultAsync(m => m.RatingCustomerPostId == id);
+                .Include(r => r.RatedUser)
+                .FirstOrDefaultAsync(r => r.RatingCustomerPostId == id);
 
             if (rating == null)
                 return NotFound();
@@ -70,21 +71,13 @@ namespace Homeix.Controllers
             [Bind("JobProgressId,RaterUserId,RatedUserId,RatingValue,Review")]
             RatingCustomerPost rating)
         {
-            if (rating.RaterUserId == rating.RatedUserId)
-            {
-                ModelState.AddModelError("", "You cannot rate yourself.");
-            }
-
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(rating);
                 return View(rating);
             }
 
-            // =========================
-            // SYSTEM FIELD
-            // =========================
-            rating.CreatedAt = DateTime.UtcNow;
+            rating.CreatedAt = DateTime.Now;
 
             _context.RatingCustomerPosts.Add(rating);
             await _context.SaveChangesAsync();
@@ -93,7 +86,7 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // GET: RatingCustomerPosts/Edit
+        // GET: RatingCustomerPosts/Edit/5
         // ========================
         public async Task<IActionResult> Edit(int? id)
         {
@@ -121,11 +114,6 @@ namespace Homeix.Controllers
             if (id != rating.RatingCustomerPostId)
                 return NotFound();
 
-            if (rating.RaterUserId == rating.RatedUserId)
-            {
-                ModelState.AddModelError("", "You cannot rate yourself.");
-            }
-
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(rating);
@@ -139,7 +127,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // Preserve system field
             rating.CreatedAt = existing.CreatedAt;
 
             _context.Update(rating);
@@ -149,7 +136,7 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // GET: RatingCustomerPosts/Delete
+        // GET: RatingCustomerPosts/Delete/5
         // ========================
         public async Task<IActionResult> Delete(int? id)
         {
@@ -158,9 +145,9 @@ namespace Homeix.Controllers
 
             var rating = await _context.RatingCustomerPosts
                 .Include(r => r.JobProgress)
-                .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
-                .FirstOrDefaultAsync(m => m.RatingCustomerPostId == id);
+                .Include(r => r.RatedUser)
+                .FirstOrDefaultAsync(r => r.RatingCustomerPostId == id);
 
             if (rating == null)
                 return NotFound();
@@ -190,23 +177,26 @@ namespace Homeix.Controllers
         // ========================
         private void LoadDropdowns(RatingCustomerPost? rating = null)
         {
-            ViewData["JobProgressId"] =
-                new SelectList(_context.JobProgresses,
-                    "JobProgressId",
-                    "JobProgressId",
-                    rating?.JobProgressId);
+            ViewData["JobProgressId"] = new SelectList(
+                _context.JobProgresses,
+                "JobProgressId",
+                "JobProgressId",
+                rating?.JobProgressId
+            );
 
-            ViewData["RatedUserId"] =
-                new SelectList(_context.Users,
-                    "UserId",
-                    "FullName",   // ✅ UX
-                    rating?.RatedUserId);
+            ViewData["RaterUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "FullName",
+                rating?.RaterUserId
+            );
 
-            ViewData["RaterUserId"] =
-                new SelectList(_context.Users,
-                    "UserId",
-                    "FullName",   // ✅ UX
-                    rating?.RaterUserId);
+            ViewData["RatedUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "FullName",
+                rating?.RatedUserId
+            );
         }
     }
 }

@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Create Rating";
+    int? selJob = ViewData["SelectedJobProgressId"] as int?;
+    int? selRater = ViewData["SelectedRaterUserId"] as int?;
+    int? selRated = ViewData["SelectedRatedUserId"] as int?;
 }
 
 <div class="container-fluid mt-4">
@@ -19,37 +22,52 @@
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Show ALL validation errors -->
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                         <!-- Job Progress -->
                         <div class="mb-3">
-                            <label asp-for="JobProgressId" class="form-label"></label>
-                            <select asp-for="JobProgressId"
-                                    class="form-select"
-                                    asp-items="ViewBag.JobProgressId">
+                            <label class="form-label">Job Progress</label>
+                            <select name="JobProgressId" class="form-select">
+                                <option value="">-- Select Job --</option>
+                                @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.JobProgressId)
+                                {
+                                    <option value="@item.Value" selected="@(selJob?.ToString() == item.Value)">
+                                        @item.Text
+                                    </option>
+                                }
                             </select>
-                            <span asp-validation-for="JobProgressId" class="text-danger"></span>
                         </div>
 
                         <!-- Rater -->
                         <div class="mb-3">
-                            <label asp-for="RaterUserId" class="form-label"></label>
-                            <select asp-for="RaterUserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RaterUserId">
+                            <label class="form-label">Rater</label>
+                            <select name="RaterUserId" class="form-select">
+                                <option value="">-- Select Rater --</option>
+                                @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RaterUserId)
+                                {
+                                    <option value="@item.Value" selected="@(selRater?.ToString() == item.Value)">
+                                        @item.Text
+                                    </option>
+                                }
                             </select>
-                            <span asp-validation-for="RaterUserId" class="text-danger"></span>
                         </div>
 
                         <!-- Rated User -->
                         <div class="mb-3">
-                            <label asp-for="RatedUserId" class="form-label"></label>
-                            <select asp-for="RatedUserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RatedUserId">
+                            <label class="form-label">Rated User</label>
+                            <select name="RatedUserId" class="form-select">
+                                <option value="">-- Select Rated User --</option>
+                                @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RatedUserId)
+                                {
+                                    <option value="@item.Value" selected="@(selRated?.ToString() == item.Value)">
+                                        @item.Text
+                                    </option>
+                                }
                             </select>
-                            <span asp-validation-for="RatedUserId" class="text-danger"></span>
                         </div>
 
                         <!-- Rating Value -->
@@ -70,15 +88,6 @@
                                       class="form-control"
                                       rows="3"></textarea>
                             <span asp-validation-for="Review" class="text-danger"></span>
-                        </div>
-
-                        <!-- Created At -->
-                        <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label"></label>
-                            <input asp-for="CreatedAt"
-                                   type="datetime-local"
-                                   class="form-control" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
                         </div>
 
                         <!-- Buttons -->

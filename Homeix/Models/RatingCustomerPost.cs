@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -16,19 +17,16 @@ namespace Homeix.Models
         // Foreign Keys
         // =========================
         [Required]
-        [Column("JobProgressID")]
         public int JobProgressId { get; set; }
 
         [Required]
-        [Column("RaterUserID")]
         public int RaterUserId { get; set; }
 
         [Required]
-        [Column("RatedUserID")]
         public int RatedUserId { get; set; }
 
         // =========================
-        // User-input fields
+        // User-input
         // =========================
         [Range(1, 5)]
         public int RatingValue { get; set; }
@@ -36,22 +34,20 @@ namespace Homeix.Models
         public string? Review { get; set; }
 
         // =========================
-        // System-managed field
+        // System field
         // =========================
-        [Column(TypeName = "datetime")]
-        [BindNever] // ✅ PROTECT
         public DateTime CreatedAt { get; set; }
 
         // =========================
-        // Navigation
+        // Navigation (❌ NEVER VALIDATE)
         // =========================
-        [ForeignKey(nameof(JobProgressId))]
+        [ValidateNever]
         public virtual JobProgress JobProgress { get; set; } = null!;
 
-        [ForeignKey(nameof(RatedUserId))]
-        public virtual User RatedUser { get; set; } = null!;
-
-        [ForeignKey(nameof(RaterUserId))]
+        [ValidateNever]
         public virtual User RaterUser { get; set; } = null!;
+
+        [ValidateNever]
+        public virtual User RatedUser { get; set; } = null!;
     }
 }

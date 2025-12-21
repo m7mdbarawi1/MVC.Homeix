@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -39,19 +40,19 @@ namespace Homeix.Models
         // System-managed field
         // =========================
         [Column(TypeName = "datetime")]
-        [BindNever] // ✅ PROTECT FROM POST
+        [BindNever]
         public DateTime CreatedAt { get; set; }
 
         // =========================
-        // Navigation
+        // Navigation (❌ DO NOT VALIDATE)
         // =========================
-        [ForeignKey(nameof(JobProgressId))]
+        [ValidateNever]
         public virtual JobProgress JobProgress { get; set; } = null!;
 
-        [ForeignKey(nameof(RatedUserId))]
+        [ValidateNever]
         public virtual User RatedUser { get; set; } = null!;
 
-        [ForeignKey(nameof(RaterUserId))]
+        [ValidateNever]
         public virtual User RaterUser { get; set; } = null!;
     }
 }

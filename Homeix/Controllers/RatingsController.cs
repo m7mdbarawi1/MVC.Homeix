@@ -27,6 +27,7 @@ namespace Homeix.Controllers
                 .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
+                .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
 
             return View(ratings);
@@ -44,7 +45,7 @@ namespace Homeix.Controllers
                 .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
-                .FirstOrDefaultAsync(m => m.RatingId == id);
+                .FirstOrDefaultAsync(r => r.RatingId == id);
 
             if (rating == null)
                 return NotFound();
@@ -81,10 +82,7 @@ namespace Homeix.Controllers
                 return View(rating);
             }
 
-            // =========================
-            // SYSTEM FIELD
-            // =========================
-            rating.CreatedAt = DateTime.UtcNow;
+            rating.CreatedAt = DateTime.Now;
 
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
@@ -139,7 +137,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // Preserve system field
             rating.CreatedAt = existing.CreatedAt;
 
             _context.Update(rating);
@@ -160,7 +157,7 @@ namespace Homeix.Controllers
                 .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
-                .FirstOrDefaultAsync(m => m.RatingId == id);
+                .FirstOrDefaultAsync(r => r.RatingId == id);
 
             if (rating == null)
                 return NotFound();
@@ -190,26 +187,23 @@ namespace Homeix.Controllers
         // ========================
         private void LoadDropdowns(Rating? rating = null)
         {
-            ViewData["JobProgressId"] =
-                new SelectList(
-                    _context.JobProgresses,
-                    "JobProgressId",
-                    "JobProgressId",
-                    rating?.JobProgressId);
+            ViewData["JobProgressId"] = new SelectList(
+                _context.JobProgresses,
+                "JobProgressId",
+                "JobProgressId",
+                rating?.JobProgressId);
 
-            ViewData["RatedUserId"] =
-                new SelectList(
-                    _context.Users,
-                    "UserId",
-                    "FullName",   // ✅ UX FIX
-                    rating?.RatedUserId);
+            ViewData["RatedUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "FullName",
+                rating?.RatedUserId);
 
-            ViewData["RaterUserId"] =
-                new SelectList(
-                    _context.Users,
-                    "UserId",
-                    "FullName",   // ✅ UX FIX
-                    rating?.RaterUserId);
+            ViewData["RaterUserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "FullName",
+                rating?.RaterUserId);
         }
     }
 }

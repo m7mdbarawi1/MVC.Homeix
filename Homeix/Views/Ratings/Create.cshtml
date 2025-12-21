@@ -19,8 +19,11 @@
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Show all validation errors -->
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                         <!-- Job Progress -->
                         <div class="mb-3">
@@ -28,6 +31,7 @@
                             <select asp-for="JobProgressId"
                                     class="form-select"
                                     asp-items="ViewBag.JobProgressId">
+                                <option value="">-- Select Job --</option>
                             </select>
                             <span asp-validation-for="JobProgressId" class="text-danger"></span>
                         </div>
@@ -38,6 +42,7 @@
                             <select asp-for="RaterUserId"
                                     class="form-select"
                                     asp-items="ViewBag.RaterUserId">
+                                <option value="">-- Select Rater --</option>
                             </select>
                             <span asp-validation-for="RaterUserId" class="text-danger"></span>
                         </div>
@@ -48,6 +53,7 @@
                             <select asp-for="RatedUserId"
                                     class="form-select"
                                     asp-items="ViewBag.RatedUserId">
+                                <option value="">-- Select Rated User --</option>
                             </select>
                             <span asp-validation-for="RatedUserId" class="text-danger"></span>
                         </div>
@@ -70,15 +76,6 @@
                                       class="form-control"
                                       rows="3"></textarea>
                             <span asp-validation-for="Review" class="text-danger"></span>
-                        </div>
-
-                        <!-- Created At -->
-                        <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label"></label>
-                            <input asp-for="CreatedAt"
-                                   type="datetime-local"
-                                   class="form-control" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
                         </div>
 
                         <!-- Buttons -->
