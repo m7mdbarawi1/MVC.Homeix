@@ -4,17 +4,14 @@ using Homeix.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-         ?? throw new InvalidOperationException("Connection string not found.");
+var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found.");
 
-builder.Services.AddDbContext<HOMEIXDbContext>(opt =>
-    opt.UseSqlServer(cs));
+builder.Services.AddDbContext<HOMEIXDbContext>(opt => opt.UseSqlServer(cs));
 
 // ======================
 // AUTHENTICATION CONFIG
 // ======================
-builder.Services.AddAuthentication("HomeixAuth")
-    .AddCookie("HomeixAuth", options =>
+builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options =>
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
@@ -42,9 +39,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ROUTING
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
