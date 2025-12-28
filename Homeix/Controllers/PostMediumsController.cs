@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +27,7 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // GET: PostMediums/Details
+        // GET: PostMediums/Details/5
         // ========================
         public async Task<IActionResult> Details(int? id)
         {
@@ -54,14 +56,45 @@ namespace Homeix.Controllers
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("PostType,PostId,MediaPath")]
-            PostMedium postMedium)
+        public async Task<IActionResult> Create(PostMedium postMedium)
         {
+            ModelState.Remove(nameof(PostMedium.MediaPath));
+            ModelState.Remove(nameof(PostMedium.UploadedAt));
+
+            if (postMedium.MediaFile == null || postMedium.MediaFile.Length == 0)
+                ModelState.AddModelError(nameof(PostMedium.MediaFile), "Please upload an image or video.");
+
             if (!ModelState.IsValid)
                 return View(postMedium);
 
-            // ✅ system-managed
+            var allowedExtensions = new[]
+            {
+                ".jpg", ".jpeg", ".png", ".gif",
+                ".mp4", ".mov", ".webm"
+            };
+
+            var extension = Path.GetExtension(postMedium.MediaFile!.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError(nameof(PostMedium.MediaFile), "Only images or videos are allowed.");
+                return View(postMedium);
+            }
+
+            var uploadPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "uploads", "post-media"
+            );
+            Directory.CreateDirectory(uploadPath);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var fullPath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await postMedium.MediaFile.CopyToAsync(stream);
+            }
+
+            postMedium.MediaPath = "/uploads/post-media/" + fileName;
             postMedium.UploadedAt = DateTime.Now;
 
             _context.PostMedia.Add(postMedium);
@@ -71,7 +104,7 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // GET: PostMediums/Edit
+        // GET: PostMediums/Edit/5
         // ========================
         public async Task<IActionResult> Edit(int? id)
         {
@@ -86,39 +119,69 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // POST: PostMediums/Edit
+        // POST: PostMediums/Edit/5
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("MediaId,PostType,PostId,MediaPath")]
-            PostMedium postMedium)
+        public async Task<IActionResult> Edit(int id, PostMedium postMedium)
         {
             if (id != postMedium.MediaId)
                 return NotFound();
 
+            ModelState.Remove(nameof(PostMedium.MediaPath));
+            ModelState.Remove(nameof(PostMedium.UploadedAt));
+
             if (!ModelState.IsValid)
                 return View(postMedium);
 
-            var existing = await _context.PostMedia
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.MediaId == id);
-
+            var existing = await _context.PostMedia.FindAsync(id);
             if (existing == null)
                 return NotFound();
 
-            // ✅ preserve system field
-            postMedium.UploadedAt = existing.UploadedAt;
+            // Update editable fields
+            existing.PostType = postMedium.PostType;
+            existing.PostId = postMedium.PostId;
 
-            _context.Update(postMedium);
+            // Replace media ONLY if new file uploaded
+            if (postMedium.MediaFile != null && postMedium.MediaFile.Length > 0)
+            {
+                var extension = Path.GetExtension(postMedium.MediaFile.FileName).ToLowerInvariant();
+
+                var uploadPath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot", "uploads", "post-media"
+                );
+
+                var fileName = $"{Guid.NewGuid()}{extension}";
+                var fullPath = Path.Combine(uploadPath, fileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await postMedium.MediaFile.CopyToAsync(stream);
+                }
+
+                // delete old file
+                if (!string.IsNullOrEmpty(existing.MediaPath))
+                {
+                    var oldPath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        existing.MediaPath.TrimStart('/')
+                    );
+
+                    if (System.IO.File.Exists(oldPath))
+                        System.IO.File.Delete(oldPath);
+                }
+
+                existing.MediaPath = "/uploads/post-media/" + fileName;
+            }
+
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
         // ========================
-        // GET: PostMediums/Delete
+        // GET: PostMediums/Delete/5
         // ========================
         public async Task<IActionResult> Delete(int? id)
         {
@@ -144,6 +207,18 @@ namespace Homeix.Controllers
             var postMedium = await _context.PostMedia.FindAsync(id);
             if (postMedium != null)
             {
+                if (!string.IsNullOrEmpty(postMedium.MediaPath))
+                {
+                    var physicalPath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        postMedium.MediaPath.TrimStart('/')
+                    );
+
+                    if (System.IO.File.Exists(physicalPath))
+                        System.IO.File.Delete(physicalPath);
+                }
+
                 _context.PostMedia.Remove(postMedium);
                 await _context.SaveChangesAsync();
             }

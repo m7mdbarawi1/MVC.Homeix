@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Homeix.Models
 {
-    [Table("PostMedia")] // ✅ EXACT DB TABLE NAME
+    [Table("PostMedia")]
     public class PostMedium
     {
         [Key]
@@ -20,12 +21,16 @@ namespace Homeix.Models
         [Column("PostID")]
         public int PostId { get; set; }
 
-        [Required]
+       
         [StringLength(255)]
         public string MediaPath { get; set; } = string.Empty;
 
         [Column(TypeName = "datetime")]
-        [BindNever] // system-managed
+        [BindNever]
         public DateTime UploadedAt { get; set; }
+
+        // ⬇️ NOT saved in DB
+        [NotMapped]
+        public IFormFile? MediaFile { get; set; }
     }
 }

@@ -13,9 +13,9 @@
         </div>
     </div>
 
-    <!-- Centered Card -->
+    <!-- Centered Card (MATCHES PostCategory layout) -->
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
+        <div class="col-md-6 col-lg-5">
 
             <div class="card shadow-sm">
 
@@ -26,8 +26,9 @@
 
                 <!-- Card Body -->
                 <div class="card-body">
-                    <dl class="row mb-0">
+                    <dl class="row mb-3">
 
+                        <!-- Post Type -->
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.PostType)
                         </dt>
@@ -35,6 +36,7 @@
                             @Html.DisplayFor(model => model.PostType)
                         </dd>
 
+                        <!-- Post ID -->
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.PostId)
                         </dt>
@@ -42,13 +44,7 @@
                             @Html.DisplayFor(model => model.PostId)
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.MediaPath)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.MediaPath)
-                        </dd>
-
+                        <!-- Uploaded At -->
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.UploadedAt)
                         </dt>
@@ -57,6 +53,29 @@
                         </dd>
 
                     </dl>
+
+                    <!-- Media Preview -->
+                    <div class="text-center">
+                        @if (!string.IsNullOrEmpty(Model.MediaPath))
+                        {
+                            if (Model.PostType == "Image")
+                            {
+                                <img src="@Model.MediaPath"
+                                     class="img-fluid rounded shadow-sm"
+                                     style="max-height:300px;"
+                                     alt="Post Media Image" />
+                            }
+                            else if (Model.PostType == "Video")
+                            {
+                                <video src="@Model.MediaPath"
+                                       class="img-fluid rounded shadow-sm"
+                                       style="max-height:300px;"
+                                       controls>
+                                </video>
+                            }
+                        }
+                    </div>
+
                 </div>
 
                 <!-- Card Footer -->
