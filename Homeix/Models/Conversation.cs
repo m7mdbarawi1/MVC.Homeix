@@ -21,7 +21,7 @@ namespace Homeix.Models
         public int User2Id { get; set; }
 
         [Column(TypeName = "datetime")]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Navigation
         [ForeignKey(nameof(User1Id))]

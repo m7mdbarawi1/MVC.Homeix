@@ -34,7 +34,7 @@ namespace Homeix.Models
         // =========================
         [Column(TypeName = "datetime")]
         [BindNever]
-        public DateTime SentAt { get; set; }
+        public DateTime SentAt { get; set; } = DateTime.Now;
 
         // =========================
         // Navigation

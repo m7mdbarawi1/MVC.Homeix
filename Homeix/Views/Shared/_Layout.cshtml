@@ -52,16 +52,9 @@
 
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Chat" asp-action="Index"> Messages</a></li>
                             if (roleName == "admin")
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Messages</a>
-                                    <ul class="dropdown-menu dropdown-menu-dark">
-                                        <li><a class="dropdown-item" asp-controller="Messages" asp-action="Index">Messages</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
-                                    </ul>
-                                </li>
-
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Posts</a>
                                     <ul class="dropdown-menu dropdown-menu-dark">
@@ -112,28 +105,12 @@
                             }
                             else if (roleName == "customer")
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Messages</a>
-                                    <ul class="dropdown-menu dropdown-menu-dark">
-                                        <li><a class="dropdown-item" asp-controller="Messages" asp-action="Index">Messages</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
-                                    </ul>
-                                </li>
-
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">Favorites</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a></li>
                             }
                             else if (roleName == "worker")
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Messages</a>
-                                    <ul class="dropdown-menu dropdown-menu-dark">
-                                        <li><a class="dropdown-item" asp-controller="Messages" asp-action="Index">Messages</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Conversations" asp-action="Index">Conversations</a></li>
-                                    </ul>
-                                </li>
-
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="Advertisements" asp-action="MyAds">My Ads</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="Index">Job Progress</a></li>

@@ -1,0 +1,158 @@
+﻿@using Homeix.Models
+@{
+    ViewData["Title"] = "Chat";
+
+    var users = ViewBag.Users as List<User>;
+    var messages = ViewBag.Messages as List<Message>;
+    var selectedUser = ViewBag.SelectedUser as User;
+
+    int currentUserId = ViewBag.CurrentUserId;
+    int? conversationId = ViewBag.ConversationId;
+}
+
+<div class="container-fluid vh-100 p-0">
+    <div class="row g-0 h-100">
+
+        <!-- ================= USERS LIST ================= -->
+        <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column" style="height: 100vh;">
+            <!-- List Header -->
+            <div class="p-3 fw-bold border-bottom bg-white" style="flex-shrink: 0;">
+                Chats
+            </div>
+
+            <!-- User List with independent scrollbar -->
+            <div class="flex-grow-1 overflow-auto" style="min-height: 0;">
+                <div class="list-group list-group-flush">
+                    @if (users != null)
+                    {
+                        foreach (var user in users)
+                        {
+                            bool isActive = selectedUser?.UserId == user.UserId;
+
+                            <a asp-controller="Chat"
+                               asp-action="Index"
+                               asp-route-userId="@user.UserId"
+                               class="list-group-item list-group-item-action @(isActive ? "active" : "") border-0 rounded-0">
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@(string.IsNullOrEmpty(user.ProfilePicture)
+                                        ? Url.Content("~/images/default-user.png")
+                                        : user.ProfilePicture)"
+                                         class="rounded-circle object-fit-cover"
+                                         width="40" height="40"
+                                         style="aspect-ratio: 1/1;" />
+
+                                    <div class="text-truncate">
+                                        <div class="fw-semibold text-truncate">@user.FullName</div>
+                                        <small class="@(isActive ? "text-white-50" : "text-muted") text-truncate d-block">@user.Email</small>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CHAT AREA ================= -->
+        <div class="col-12 col-md-8 col-lg-9 d-flex flex-column" style="height: 100vh;">
+            @if (selectedUser == null)
+            {
+                <!-- Empty state -->
+                <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
+                    <div class="text-center">
+                        <p class="mb-0">Select a chat to start messaging</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- CHAT HEADER (Fixed height) -->
+                <div class="border-bottom p-3 d-flex align-items-center gap-2 bg-white" style="flex-shrink: 0;">
+                    <img src="@(string.IsNullOrEmpty(selectedUser.ProfilePicture)
+                        ? Url.Content("~/images/default-user.png")
+                        : selectedUser.ProfilePicture)"
+                         class="rounded-circle object-fit-cover"
+                         width="40" height="40"
+                         style="aspect-ratio: 1/1;" />
+
+                    <div>
+                        <strong>@selectedUser.FullName</strong>
+                        <div class="text-muted small">Online</div>
+                    </div>
+                </div>
+
+                <!-- MESSAGES AREA (Scrollable) -->
+                <div class="flex-grow-1 overflow-auto bg-light" style="min-height: 0;">
+                    <div class="p-3 d-flex flex-column">
+                        @if (messages != null)
+                        {
+                            foreach (var msg in messages)
+                            {
+                                bool isMe = msg.SenderUserId == currentUserId;
+
+                                <div class="mb-2 @(isMe ? "align-self-end" : "align-self-start")" style="max-width: 75%;">
+                                    <div class="px-3 py-2 rounded @(isMe ? "bg-primary text-white" : "bg-white border")">
+                                        @msg.MessageText
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- INPUT AREA (Fixed height) -->
+                <div class="border-top p-3 bg-white" style="flex-shrink: 0;">
+                    <form asp-action="Send" method="post" class="d-flex gap-2 align-items-end" id="chatForm">
+                        <input type="hidden" name="conversationId" value="@conversationId" />
+
+                        <div class="flex-grow-1">
+                            <textarea id="messageInput"
+                                      name="messageText"
+                                      class="form-control"
+                                      rows="1"
+                                      placeholder="Type a message..."
+                                      style="resize: none; max-height: 120px;"
+                                      oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px';"
+                                      required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary px-4 py-2" style="height: fit-content;">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-scroll messages to bottom
+        const messagesContainer = document.querySelector('.flex-grow-1.overflow-auto');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Enter to send (Shift+Enter = new line)
+        const input = document.getElementById("messageInput");
+        const form = document.getElementById("chatForm");
+
+        if (input && form) {
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (input.value.trim()) {
+                        form.submit();
+                    }
+                }
+            });
+        }
+
+        // Auto-focus on message input
+        if (input) {
+            input.focus();
+        }
+    </script>
+}
