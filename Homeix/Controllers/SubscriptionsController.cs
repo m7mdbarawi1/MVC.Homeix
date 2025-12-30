@@ -18,9 +18,7 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // ========================
         // GET: Subscriptions
-        // ========================
         public async Task<IActionResult> Index()
         {
             var subs = await _context.Subscriptions
@@ -31,128 +29,89 @@ namespace Homeix.Controllers
             return View(subs);
         }
 
-        // ========================
-        // GET: Subscriptions/Details
-        // ========================
+        // GET: Subscriptions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var subscription = await _context.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.User)
-                .FirstOrDefaultAsync(m => m.SubscriptionId == id);
+                .FirstOrDefaultAsync(s => s.SubscriptionId == id);
 
-            if (subscription == null)
-                return NotFound();
+            if (subscription == null) return NotFound();
 
             return View(subscription);
         }
 
-        // ========================
         // GET: Subscriptions/Create
-        // ========================
         public IActionResult Create()
         {
-            LoadDropdowns();
-            return View();
+            ReloadDropdowns();
+            // sensible defaults
+            var model = new Subscription
+            {
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(30),
+                Status = "Active"
+            };
+            return View(model);
         }
 
-        // ========================
         // POST: Subscriptions/Create
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("UserId,PlanId")]
+            [Bind("UserId,PlanId,StartDate,EndDate,Status")]
             Subscription subscription)
         {
             if (!ModelState.IsValid)
             {
-                LoadDropdowns(subscription);
+                ReloadDropdowns(subscription);
                 return View(subscription);
             }
 
-            var plan = await _context.SubscriptionPlans
-                .FirstOrDefaultAsync(p => p.PlanId == subscription.PlanId);
-
-            if (plan == null)
-            {
-                ModelState.AddModelError("", "Invalid subscription plan.");
-                LoadDropdowns(subscription);
-                return View(subscription);
-            }
-
-            // =========================
-            // SYSTEM LOGIC
-            // =========================
-            subscription.StartDate = DateTime.Today;
-            subscription.EndDate = DateTime.Today.AddDays(plan.DurationDays);
-            subscription.Status = "Active";
+            // (Optional) If you want EndDate auto-based on plan when empty/invalid:
+            // var plan = await _context.SubscriptionPlans.FirstOrDefaultAsync(p => p.PlanId == subscription.PlanId);
+            // if (plan != null && subscription.EndDate <= subscription.StartDate)
+            //     subscription.EndDate = subscription.StartDate.AddDays(plan.DurationDays);
 
             _context.Subscriptions.Add(subscription);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
-        // ========================
-        // GET: Subscriptions/Edit
-        // ========================
+        // GET: Subscriptions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var subscription = await _context.Subscriptions.FindAsync(id);
-            if (subscription == null)
-                return NotFound();
+            if (subscription == null) return NotFound();
 
-            LoadDropdowns(subscription);
+            ReloadDropdowns(subscription);
             return View(subscription);
         }
 
-        // ========================
-        // POST: Subscriptions/Edit
-        // ========================
+        // POST: Subscriptions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("SubscriptionId,UserId,PlanId")]
+            [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")]
             Subscription subscription)
         {
-            if (id != subscription.SubscriptionId)
-                return NotFound();
+            if (id != subscription.SubscriptionId) return NotFound();
 
             if (!ModelState.IsValid)
             {
-                LoadDropdowns(subscription);
+                ReloadDropdowns(subscription);
                 return View(subscription);
             }
 
-            var existing = await _context.Subscriptions
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.SubscriptionId == id);
-
-            if (existing == null)
-                return NotFound();
-
-            var plan = await _context.SubscriptionPlans
-                .FirstOrDefaultAsync(p => p.PlanId == subscription.PlanId);
-
-            if (plan == null)
-            {
-                ModelState.AddModelError("", "Invalid subscription plan.");
-                LoadDropdowns(subscription);
-                return View(subscription);
-            }
-
-            // Preserve system fields
-            subscription.StartDate = existing.StartDate;
-            subscription.EndDate = existing.StartDate.AddDays(plan.DurationDays);
-            subscription.Status = existing.Status;
+            // Ensure row exists
+            var exists = await _context.Subscriptions.AnyAsync(s => s.SubscriptionId == id);
+            if (!exists) return NotFound();
 
             _context.Update(subscription);
             await _context.SaveChangesAsync();
@@ -160,28 +119,22 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ========================
-        // GET: Subscriptions/Delete
-        // ========================
+        // GET: Subscriptions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
             var subscription = await _context.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.User)
-                .FirstOrDefaultAsync(m => m.SubscriptionId == id);
+                .FirstOrDefaultAsync(s => s.SubscriptionId == id);
 
-            if (subscription == null)
-                return NotFound();
+            if (subscription == null) return NotFound();
 
             return View(subscription);
         }
 
-        // ========================
-        // POST: Subscriptions/Delete
-        // ========================
+        // POST: Subscriptions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -192,26 +145,24 @@ namespace Homeix.Controllers
                 _context.Subscriptions.Remove(subscription);
                 await _context.SaveChangesAsync();
             }
-
             return RedirectToAction(nameof(Index));
         }
 
-        // ========================
-        // Helpers
-        // ========================
-        private void LoadDropdowns(Subscription? sub = null)
+        private void ReloadDropdowns(Subscription? sub = null)
         {
             ViewData["UserId"] = new SelectList(
                 _context.Users,
                 "UserId",
-                "FullName", // ✅ UX improvement
-                sub?.UserId);
+                "FullName",
+                sub?.UserId
+            );
 
             ViewData["PlanId"] = new SelectList(
                 _context.SubscriptionPlans,
                 "PlanId",
                 "PlanName",
-                sub?.PlanId);
+                sub?.PlanId
+            );
         }
     }
 }
