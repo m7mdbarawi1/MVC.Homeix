@@ -1,154 +1,145 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerPost>
 
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Browse Services";
+    ViewData["Title"] = Localizer["BrowseServices"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="~/css/workerposts/index.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/workerposts/index.css" />
 
 <div class="container page-wrapper mt-4">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="page-title mb-0">Browse Services</h1>
+        <h1 class="page-title">@Localizer["BrowseServices"]</h1>
         <span id="resultCount" class="fw-bold text-secondary"></span>
     </div>
 
-    <!-- Filters -->
+    <!-- FILTERS -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
-                <div class="col-md-4">
-                    <input type="text" id="searchInput" class="form-control"
-                           placeholder="Search by title or description">
+                <div class="col-md-3">
+                    <input id="searchInput" class="form-control"
+                           placeholder="@Localizer["SearchPlaceholder"]" />
                 </div>
 
                 <div class="col-md-3">
                     <select id="categoryFilter" class="form-select">
-                        <option value="">All Categories</option>
-                        @foreach (var cat in Model.Select(p => p.PostCategory?.CategoryName).Distinct())
+                        <option value="">@Localizer["AllCategories"]</option>
+                        @foreach (var cat in Model.Select(p => p.PostCategory?.CategoryName)
+                        .Where(c => !string.IsNullOrWhiteSpace(c)).Distinct())
                         {
-                            if (!string.IsNullOrEmpty(cat))
-                            {
-                                <option value="@cat">@cat</option>
-                            }
+                            <option value="@cat">@cat</option>
                         }
                     </select>
                 </div>
 
                 <div class="col-md-2">
-                    <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+                    <input id="minPrice" type="number"
+                           class="form-control"
+                           placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col-md-2">
-                    <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+                    <input id="maxPrice" type="number"
+                           class="form-control"
+                           placeholder="@Localizer["MaxPrice"]" />
+                </div>
+
+                <div class="col-md-2">
+                    <select id="ratingFilter" class="form-select">
+                        <option value="">@Localizer["AllRatings"]</option>
+                        <option value="1">⭐ 1+</option>
+                        <option value="2">⭐ 2+</option>
+                        <option value="3">⭐ 3+</option>
+                        <option value="4">⭐ 4+</option>
+                        <option value="5">⭐ 5</option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Worker Posts Grid -->
+    <!-- POSTS -->
     <div class="row" id="postsGrid">
         @foreach (var post in Model)
         {
-            <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
-                <a asp-controller="WorkerPosts"
-                   asp-action="Details"
-                   asp-route-id="@post.WorkerPostId"
-                   class="card-link-wrapper">
+            var media = post.PostMedia?
+            .OrderByDescending(m => m.UploadedAt)
+            .FirstOrDefault();
 
-                    <div class="card h-100 shadow-sm post-card"
-                         data-title="@post.Title.ToLower()"
-                         data-description="@post.Description.ToLower()"
-                         data-category="@post.PostCategory?.CategoryName"
-                         data-minprice="@post.PriceRangeMin"
-                         data-maxprice="@post.PriceRangeMax">
+            var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
+            ? media.MediaPath.Replace("\\", "/")
+            : "/images/no-image.png";
 
-                        <div class="card-body d-flex flex-column">
+            var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
+            var avgRating = ratings.Any() ? ratings.Average(r => r.RatingValue) : 0;
 
-                            <h5 class="card-title fw-bold mb-2">
-                                @post.Title
-                            </h5>
+            <div class="col-md-3 mb-4 post-card-wrapper">
+                <div class="card h-100 shadow-sm post-card"
+                     data-title="@post.Title.ToLower()"
+                     data-category="@post.PostCategory?.CategoryName"
+                     data-price="@post.PriceRangeMin"
+                     data-rating="@avgRating">
 
-                            <p class="card-text text-muted small text-truncate">
-                                @post.Description
-                            </p>
+                    <img src="@imageUrl" class="card-img-top" alt="@post.Title" />
 
-                            <p class="mb-1">
-                                <strong>📍 Location:</strong> @post.Location
-                            </p>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="fw-bold">@post.Title</h5>
+                        <p class="text-muted small text-truncate">@post.Description</p>
 
-                            <p class="mb-1">
-                                <strong>📂 Category:</strong> @post.PostCategory?.CategoryName
-                            </p>
+                        <p><strong>@Localizer["Worker"]:</strong> @post.User?.FullName</p>
+                        <p><strong>@Localizer["Category"]:</strong> @post.PostCategory?.CategoryName</p>
 
-                            <p class="fw-bold text-primary mb-2">
-                                💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
-                            </p>
+                        <p class="fw-bold text-primary">
+                            💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
+                        </p>
 
-                            <p class="small text-muted mb-2">
-                                🕒 @post.CreatedAt.ToString("dd MMM yyyy")
-                            </p>
-
-                            <div class="mt-auto">
-                                <span class="badge bg-success">Available</span>
-                            </div>
-
+                        <div class="small text-muted mb-2">
+                            ⭐ @avgRating.ToString("0.0") / 5
                         </div>
+
+                        <span class="badge bg-success mt-auto">@Localizer["Available"]</span>
                     </div>
-                </a>
+                </div>
             </div>
         }
     </div>
-
 </div>
 
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const searchInput = document.getElementById("searchInput");
-            const categoryFilter = document.getElementById("categoryFilter");
-            const minPriceInput = document.getElementById("minPrice");
-            const maxPriceInput = document.getElementById("maxPrice");
+            const search = document.getElementById("searchInput");
+            const category = document.getElementById("categoryFilter");
+            const minPrice = document.getElementById("minPrice");
+            const rating = document.getElementById("ratingFilter");
             const cards = document.querySelectorAll(".post-card");
             const resultCount = document.getElementById("resultCount");
 
-            function filterPosts() {
-                const term = searchInput.value.toLowerCase();
-                const category = categoryFilter.value;
-                const minPrice = parseFloat(minPriceInput.value) || 0;
-                const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
-
+            function filter() {
                 let visible = 0;
+                cards.forEach(c => {
+                    const show =
+                        c.dataset.title.includes(search.value.toLowerCase()) &&
+                        (category.value === "" || c.dataset.category === category.value) &&
+                        ((parseFloat(c.dataset.price) || 0) >= (parseFloat(minPrice.value) || 0)) &&
+                        ((parseFloat(c.dataset.rating) || 0) >= (parseFloat(rating.value) || 0));
 
-                cards.forEach(card => {
-                    const title = card.dataset.title || "";
-                    const desc = card.dataset.description || "";
-                    const cat = card.dataset.category || "";
-                    const min = parseFloat(card.dataset.minprice) || 0;
-                    const max = parseFloat(card.dataset.maxprice) || 0;
-
-                    const matchesSearch = title.includes(term) || desc.includes(term);
-                    const matchesCategory = category === "" || cat === category;
-                    const matchesPrice = min >= minPrice && max <= maxPrice;
-
-                    const show = matchesSearch && matchesCategory && matchesPrice;
-                    card.closest(".post-card-wrapper").style.display = show ? "" : "none";
-
+                    c.parentElement.style.display = show ? "" : "none";
                     if (show) visible++;
                 });
-
                 resultCount.textContent = visible + " services found";
             }
 
-            searchInput.addEventListener("input", filterPosts);
-            categoryFilter.addEventListener("change", filterPosts);
-            minPriceInput.addEventListener("input", filterPosts);
-            maxPriceInput.addEventListener("input", filterPosts);
-
-            filterPosts();
+            search.oninput = category.onchange = minPrice.oninput = rating.onchange = filter;
+            filter();
         });
     </script>
 }

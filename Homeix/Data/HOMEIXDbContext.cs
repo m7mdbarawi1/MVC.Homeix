@@ -137,6 +137,17 @@ namespace Homeix.Data
                 entity.HasOne(e => e.Role).WithMany(r => r.Users).HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
+            modelBuilder.Entity<PostMedium>(entity =>
+            {
+                entity.HasKey(e => e.MediaId);
+
+                entity.HasOne<WorkerPost>()
+                    .WithMany(w => w.PostMedia)
+                    .HasForeignKey(e => e.PostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+
             OnModelCreatingPartial(modelBuilder);
         }
 

@@ -1,62 +1,74 @@
 ﻿@model IEnumerable<Homeix.Models.CustomerPost>
 
+
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Customer Requests";
+    ViewData["Title"] = Localizer["CustomerRequests"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="~/css/customerposts/index.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/customerposts/index.css" />
 
 <div class="container page-wrapper mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="page-title mb-0">Customer Requests</h1>
+        <h1 class="page-title mb-0">@Localizer["CustomerRequests"]</h1>
         <span id="resultCount" class="fw-bold text-secondary"></span>
     </div>
 
-    <!-- Filters -->
+    <!-- ================= FILTERS ================= -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
+
                 <div class="col-md-4">
-                    <input type="text" id="searchInput" class="form-control"
-                           placeholder="Search by title or description">
+                    <input id="searchInput"
+                           class="form-control"
+                           placeholder="@Localizer["SearchPlaceholder"]" />
                 </div>
 
                 <div class="col-md-3">
                     <select id="categoryFilter" class="form-select">
-                        <option value="">All Categories</option>
-                        @foreach (var cat in Model.Select(p => p.PostCategory?.CategoryName).Distinct())
+                        <option value="">@Localizer["AllCategories"]</option>
+                        @foreach (var cat in Model
+                        .Select(p => p.PostCategory?.CategoryName)
+                        .Where(c => !string.IsNullOrWhiteSpace(c))
+                        .Distinct())
                         {
-                            if (!string.IsNullOrEmpty(cat))
-                            {
-                                <option value="@cat">@cat</option>
-                            }
+                            <option value="@cat">@cat</option>
                         }
                     </select>
                 </div>
 
                 <div class="col-md-2">
-                    <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+                    <input id="minPrice" type="number"
+                           class="form-control"
+                           placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col-md-2">
-                    <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+                    <input id="maxPrice" type="number"
+                           class="form-control"
+                           placeholder="@Localizer["MaxPrice"]" />
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Customer Posts Grid -->
+    <!-- ================= POSTS GRID ================= -->
     <div class="row" id="postsGrid">
+
         @foreach (var post in Model)
         {
             <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
                 <a asp-controller="CustomerPosts"
                    asp-action="Details"
                    asp-route-id="@post.CustomerPostId"
-                   class="card-link-wrapper">
+                   class="card-link-wrapper text-decoration-none text-dark">
 
                     <div class="card h-100 shadow-sm post-card"
                          data-title="@post.Title.ToLower()"
@@ -67,20 +79,20 @@
 
                         <div class="card-body d-flex flex-column">
 
-                            <h5 class="card-title fw-bold mb-2">
-                                @post.Title
-                            </h5>
+                            <h5 class="fw-bold mb-2">@post.Title</h5>
 
-                            <p class="card-text text-muted small text-truncate">
+                            <p class="text-muted small text-truncate">
                                 @post.Description
                             </p>
 
                             <p class="mb-1">
-                                <strong>📍 Location:</strong> @post.Location
+                                <strong>@Localizer["Location"]:</strong>
+                                @post.Location
                             </p>
 
                             <p class="mb-1">
-                                <strong>📂 Category:</strong> @post.PostCategory?.CategoryName
+                                <strong>@Localizer["Category"]:</strong>
+                                @post.PostCategory?.CategoryName
                             </p>
 
                             <p class="fw-bold text-primary mb-2">
@@ -103,26 +115,20 @@
             </div>
         }
     </div>
-
 </div>
 
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const searchInput = document.getElementById("searchInput");
-            const categoryFilter = document.getElementById("categoryFilter");
-            const minPriceInput = document.getElementById("minPrice");
-            const maxPriceInput = document.getElementById("maxPrice");
+            const search = document.getElementById("searchInput");
+            const category = document.getElementById("categoryFilter");
+            const minPrice = document.getElementById("minPrice");
+            const maxPrice = document.getElementById("maxPrice");
             const cards = document.querySelectorAll(".post-card");
             const resultCount = document.getElementById("resultCount");
 
-            function filterPosts() {
-                const term = searchInput.value.toLowerCase();
-                const category = categoryFilter.value;
-                const minPrice = parseFloat(minPriceInput.value) || 0;
-                const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
-
+            function filter() {
                 let visible = 0;
 
                 cards.forEach(card => {
@@ -130,27 +136,28 @@
                     const desc = card.dataset.description || "";
                     const cat = card.dataset.category || "";
                     const min = parseFloat(card.dataset.minprice) || 0;
-                    const max = parseFloat(card.dataset.maxprice) || 0;
+                    const max = parseFloat(card.dataset.maxprice) || Infinity;
 
-                    const matchesSearch = title.includes(term) || desc.includes(term);
-                    const matchesCategory = category === "" || cat === category;
-                    const matchesPrice = min >= minPrice && max <= maxPrice;
+                    const show =
+                        (title.includes(search.value.toLowerCase()) ||
+                         desc.includes(search.value.toLowerCase())) &&
+                        (category.value === "" || cat === category.value) &&
+                        min >= (parseFloat(minPrice.value) || 0) &&
+                        max <= (parseFloat(maxPrice.value) || Infinity);
 
-                    const show = matchesSearch && matchesCategory && matchesPrice;
                     card.closest(".post-card-wrapper").style.display = show ? "" : "none";
-
                     if (show) visible++;
                 });
 
-                resultCount.textContent = visible + " requests found";
+                resultCount.textContent = visible + " @Localizer["RequestsFound"]";
             }
 
-            searchInput.addEventListener("input", filterPosts);
-            categoryFilter.addEventListener("change", filterPosts);
-            minPriceInput.addEventListener("input", filterPosts);
-            maxPriceInput.addEventListener("input", filterPosts);
+            search.oninput =
+                category.onchange =
+                minPrice.oninput =
+                maxPrice.oninput = filter;
 
-            filterPosts();
+            filter();
         });
     </script>
 }

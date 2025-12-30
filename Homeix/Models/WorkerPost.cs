@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -36,14 +38,25 @@ namespace Homeix.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal? PriceRangeMax { get; set; }
 
-        // System-managed field
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }
 
         public bool IsActive { get; set; } = true;
 
+        // =========================
         // Navigation
-        public virtual PostCategory? PostCategory { get; set; }
+        // =========================
+        [ValidateNever]
         public virtual User? User { get; set; }
+
+        [ValidateNever]
+        public virtual PostCategory? PostCategory { get; set; }
+
+        // 🖼 MEDIA (THIS FIXES YOUR ERROR)
+        [ValidateNever]
+        public virtual ICollection<PostMedium> PostMedia { get; set; }
+            = new List<PostMedium>();
+
+      
     }
 }
