@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Homeix.Models
 {
@@ -25,31 +24,31 @@ namespace Homeix.Models
         public int PlanId { get; set; }
 
         // =========================
-        // System-managed fields
+        // Editable fields (USER INPUT)
         // =========================
+        [Required]
         [Column(TypeName = "date")]
-        [BindNever] // ✅ FIX
+        [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
+        [Required]
         [Column(TypeName = "date")]
-        [BindNever] // ✅ FIX
+        [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
         [Required]
         [StringLength(50)]
-        [BindNever] // ✅ FIX
         public string Status { get; set; } = "Active";
 
         // =========================
         // Navigation
         // =========================
-        public virtual ICollection<Payment> Payments { get; set; }
-            = new List<Payment>();
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
         [ForeignKey(nameof(PlanId))]
-        public virtual SubscriptionPlan Plan { get; set; } = null!;
+        public virtual SubscriptionPlan? Plan { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; } = null!;
+        public virtual User? User { get; set; }
     }
 }

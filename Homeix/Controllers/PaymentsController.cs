@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +22,32 @@ namespace Homeix.Controllers
         public async Task<IActionResult> Index()
         {
             var payments = await _context.Payments
-                .Include(p => p.PaymentMethod)
-                .Include(p => p.Subscription)
                 .Include(p => p.User)
+                .Include(p => p.Subscription)
+                .Include(p => p.PaymentMethod)
                 .ToListAsync();
 
             return View(payments);
+        }
+
+        // ========================
+        // GET: Payments/Details/5
+        // ========================
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var payment = await _context.Payments
+                .Include(p => p.User)
+                .Include(p => p.Subscription)
+                .Include(p => p.PaymentMethod)
+                .FirstOrDefaultAsync(p => p.PaymentId == id);
+
+            if (payment == null)
+                return NotFound();
+
+            return View(payment);
         }
 
         // ========================
@@ -37,8 +55,12 @@ namespace Homeix.Controllers
         // ========================
         public IActionResult Create()
         {
-            ReloadDropdowns();
-            return View();
+            LoadDropdowns();
+            return View(new Payment
+            {
+                PaymentDate = System.DateTime.Now,
+                Status = "Completed"
+            });
         }
 
         // ========================
@@ -46,30 +68,21 @@ namespace Homeix.Controllers
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("UserId,SubscriptionId,PaymentMethodId,Amount")]
-            Payment payment)
+        public async Task<IActionResult> Create(Payment payment)
         {
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(payment);
+                LoadDropdowns(payment);
                 return View(payment);
             }
 
-            // =========================
-            // SYSTEM FIELDS
-            // =========================
-            payment.PaymentDate = DateTime.Now;
-            payment.Status = "Completed";
-
-            _context.Payments.Add(payment);
+            _context.Add(payment);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
         // ========================
-        // GET: Payments/Edit
+        // GET: Payments/Edit/5
         // ========================
         public async Task<IActionResult> Edit(int? id)
         {
@@ -80,48 +93,33 @@ namespace Homeix.Controllers
             if (payment == null)
                 return NotFound();
 
-            ReloadDropdowns(payment);
+            LoadDropdowns(payment);
             return View(payment);
         }
 
         // ========================
-        // POST: Payments/Edit
+        // POST: Payments/Edit/5
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("PaymentId,UserId,SubscriptionId,PaymentMethodId,Amount")]
-            Payment payment)
+        public async Task<IActionResult> Edit(int id, Payment payment)
         {
             if (id != payment.PaymentId)
                 return NotFound();
 
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(payment);
+                LoadDropdowns(payment);
                 return View(payment);
             }
 
-            var existing = await _context.Payments
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.PaymentId == id);
-
-            if (existing == null)
-                return NotFound();
-
-            // Preserve system fields
-            payment.PaymentDate = existing.PaymentDate;
-            payment.Status = existing.Status;
-
             _context.Update(payment);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
         // ========================
-        // GET: Payments/Delete
+        // GET: Payments/Delete/5
         // ========================
         public async Task<IActionResult> Delete(int? id)
         {
@@ -129,10 +127,9 @@ namespace Homeix.Controllers
                 return NotFound();
 
             var payment = await _context.Payments
-                .Include(p => p.PaymentMethod)
-                .Include(p => p.Subscription)
                 .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.PaymentId == id);
+                .Include(p => p.PaymentMethod)
+                .FirstOrDefaultAsync(p => p.PaymentId == id);
 
             if (payment == null)
                 return NotFound();
@@ -141,7 +138,7 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // POST: Payments/Delete
+        // POST: Payments/Delete/5
         // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -153,32 +150,34 @@ namespace Homeix.Controllers
                 _context.Payments.Remove(payment);
                 await _context.SaveChangesAsync();
             }
-
             return RedirectToAction(nameof(Index));
         }
 
         // ========================
         // Helpers
         // ========================
-        private void ReloadDropdowns(Payment? payment = null)
+        private void LoadDropdowns(Payment? payment = null)
         {
             ViewData["UserId"] = new SelectList(
                 _context.Users,
                 "UserId",
                 "UserId",
-                payment?.UserId);
+                payment?.UserId
+            );
 
             ViewData["SubscriptionId"] = new SelectList(
                 _context.Subscriptions,
                 "SubscriptionId",
                 "SubscriptionId",
-                payment?.SubscriptionId);
+                payment?.SubscriptionId
+            );
 
             ViewData["PaymentMethodId"] = new SelectList(
                 _context.PaymentMethods,
                 "PaymentMethodId",
                 "PaymentMethodId",
-                payment?.PaymentMethodId);
+                payment?.PaymentMethodId
+            );
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Homeix.Models
 {
@@ -12,9 +11,6 @@ namespace Homeix.Models
         [Column("PaymentID")]
         public int PaymentId { get; set; }
 
-        // =========================
-        // Foreign Keys
-        // =========================
         [Required]
         [Column("UserID")]
         public int UserId { get; set; }
@@ -27,29 +23,21 @@ namespace Homeix.Models
         [Column("PaymentMethodID")]
         public int PaymentMethodId { get; set; }
 
-        // =========================
-        // User input
-        // =========================
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal Amount { get; set; }
 
-        // =========================
-        // System-managed
-        // =========================
+        [Required]
         [Column(TypeName = "datetime")]
-        [BindNever]
         public DateTime PaymentDate { get; set; }
 
+        [Required]
         [StringLength(50)]
-        [BindNever]
         public string Status { get; set; } = "Completed";
 
-        // =========================
         // Navigation
-        // =========================
-        public virtual PaymentMethod PaymentMethod { get; set; } = null!;
-        public virtual Subscription Subscription { get; set; } = null!;
-        public virtual User User { get; set; } = null!;
+        public virtual PaymentMethod? PaymentMethod { get; set; }
+        public virtual Subscription? Subscription { get; set; }
+        public virtual User? User { get; set; }
     }
 }
