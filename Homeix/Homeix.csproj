@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Resources\**" />
-    <Content Remove="Resources\**" />
-    <EmbeddedResource Remove="Resources\**" />
-    <None Remove="Resources\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
@@ -22,6 +15,29 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.13" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\Views\Account\" />
+    <Folder Include="Resources\Views\Advertisements\" />
+    <Folder Include="Resources\Views\Conversations\" />
+    <Folder Include="Resources\Views\CustomerPosts\" />
+    <Folder Include="Resources\Views\Dashboard\" />
+    <Folder Include="Resources\Views\FavoritePosts\" />
+    <Folder Include="Resources\Views\Home\" />
+    <Folder Include="Resources\Views\JobProgresses\" />
+    <Folder Include="Resources\Views\Messages\" />
+    <Folder Include="Resources\Views\WorkerPosts\" />
+    <Folder Include="Resources\Views\WorkerApprovals\" />
+    <Folder Include="Resources\Views\Users\" />
+    <Folder Include="Resources\Views\UserRoles\" />
+    <Folder Include="Resources\Views\Subscriptions\" />
+    <Folder Include="Resources\Views\SubscriptionPlans\" />
+    <Folder Include="Resources\Views\Shared\" />
+    <Folder Include="Resources\Views\Ratings\" />
+    <Folder Include="Resources\Views\RatingCustomerPosts\" />
+    <Folder Include="Resources\Views\PaymentMethods\" />
+    <Folder Include="Resources\Views\Offers\" />
   </ItemGroup>
 
 </Project>
