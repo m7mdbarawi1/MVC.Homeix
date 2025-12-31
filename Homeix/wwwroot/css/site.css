@@ -436,6 +436,22 @@ html.dark-theme #chatbot-box {
     background: var(--dark-card);
 }
 
+.post-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+    .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .post-card img {
+        height: 180px;
+        object-fit: cover;
+    }
+
+
 /* =========================
    RESPONSIVE
 ========================= */
