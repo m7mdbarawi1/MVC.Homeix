@@ -108,9 +108,9 @@ namespace Homeix.Controllers
         {
             var workerPosts = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
+                .Include(w => w.PostMedia)
                 .Include(w => w.User)
-                    .ThenInclude(u => u.RatingRatedUsers)   // ⭐ ratings
-                .Include(w => w.PostMedia)                  // 🖼 images (THIS WAS MISSING)
+                    .ThenInclude(u => u.RatingRatedUsers) // ⭐ LOAD RATINGS
                 .Where(w => w.IsActive)
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
@@ -125,7 +125,7 @@ namespace Homeix.Controllers
             var customerPosts = await _context.CustomerPosts
                 .Include(c => c.PostCategory)
                 .Include(c => c.User)
-                 // ⭐ REQUIRED
+                // ⭐ REQUIRED
                 .Where(c => c.IsActive)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();

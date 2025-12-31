@@ -1,12 +1,10 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerPost>
 
-@using System.Security.Claims
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = Localizer["BrowseServices"];
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/workerposts/index.css" />
@@ -23,10 +21,8 @@
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
-
                 <div class="col-md-3">
-                    <input id="searchInput"
-                           class="form-control"
+                    <input id="searchInput" class="form-control"
                            placeholder="@Localizer["SearchPlaceholder"]" />
                 </div>
 
@@ -44,16 +40,12 @@
                 </div>
 
                 <div class="col-md-2">
-                    <input id="minPrice"
-                           type="number"
-                           class="form-control"
+                    <input id="minPrice" type="number" class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col-md-2">
-                    <input id="maxPrice"
-                           type="number"
-                           class="form-control"
+                    <input id="maxPrice" type="number" class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
@@ -67,7 +59,6 @@
                         <option value="5">⭐ 5</option>
                     </select>
                 </div>
-
             </div>
         </div>
     </div>
@@ -81,13 +72,17 @@
             .FirstOrDefault();
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
-            ? Url.Content("~/uploads/" + media.MediaPath.Replace("\\", "/"))
-            : Url.Content("~/images/no-image.png");
+            ? media.MediaPath.Replace("\\", "/")
+            : "/images/no-image.png";
 
-            var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
-            var avgRating = ratings.Any() ? ratings.Average(r => r.RatingValue) : 0;
+            var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Homeix.Models.Rating>();
+            var avgRating = ratings.Any()
+            ? ratings.Average(r => r.RatingValue)
+            : 0;
 
             <div class="col-md-3 mb-4 post-card-wrapper">
+
+                <!-- ✅ CLICKABLE CARD -->
                 <a asp-controller="WorkerPosts"
                    asp-action="Details"
                    asp-route-id="@post.WorkerPostId"
@@ -99,9 +94,7 @@
                          data-price="@post.PriceRangeMin"
                          data-rating="@avgRating">
 
-                        <img src="@imageUrl"
-                             class="card-img-top"
-                             alt="@post.Title" />
+                        <img src="@imageUrl" class="card-img-top" />
 
                         <div class="card-body d-flex flex-column">
                             <h5 class="fw-bold">@post.Title</h5>
@@ -110,22 +103,23 @@
                                 @post.Description
                             </p>
 
-                            <p class="mb-1">
+                            <p>
                                 <strong>@Localizer["Worker"]:</strong>
                                 @post.User?.FullName
                             </p>
 
-                            <p class="mb-1">
+                            <p>
                                 <strong>@Localizer["Category"]:</strong>
                                 @post.PostCategory?.CategoryName
                             </p>
 
-                            <p class="fw-bold text-primary mt-2">
+                            <p class="fw-bold text-primary">
                                 💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
                             </p>
 
                             <div class="small text-muted mb-2">
                                 ⭐ @avgRating.ToString("0.0") / 5
+                                (@ratings.Count())
                             </div>
 
                             <span class="badge bg-success mt-auto">
@@ -154,27 +148,29 @@
             function filter() {
                 let visible = 0;
 
-                cards.forEach(c => {
-                    const price = parseFloat(c.dataset.price) || 0;
-                    const show =
-                        c.dataset.title.includes(search.value.toLowerCase()) &&
-                        (category.value === "" || c.dataset.category === category.value) &&
-                        (price >= (parseFloat(minPrice.value) || 0)) &&
-                        (price <= (parseFloat(maxPrice.value) || Infinity)) &&
-                        ((parseFloat(c.dataset.rating) || 0) >= (parseFloat(rating.value) || 0));
+                cards.forEach(card => {
+                    const title = card.dataset.title || "";
+                    const cat = card.dataset.category || "";
+                    const price = parseFloat(card.dataset.price) || 0;
+                    const rate = parseFloat(card.dataset.rating) || 0;
 
-                    c.closest(".post-card-wrapper").style.display = show ? "" : "none";
+                    const show =
+                        title.includes(search.value.toLowerCase()) &&
+                        (category.value === "" || cat === category.value) &&
+                        price >= (parseFloat(minPrice.value) || 0) &&
+                        price <= (parseFloat(maxPrice.value) || Infinity) &&
+                        rate >= (parseFloat(rating.value) || 0);
+
+                    card.closest(".post-card-wrapper").style.display = show ? "" : "none";
                     if (show) visible++;
                 });
 
-                resultCount.textContent = `${visible} services found`;
+                resultCount.textContent = visible + " services found";
             }
 
-            search.oninput =
-                category.onchange =
-                minPrice.oninput =
-                maxPrice.oninput =
-                rating.onchange = filter;
+            search.oninput = category.onchange =
+            minPrice.oninput = maxPrice.oninput =
+            rating.onchange = filter;
 
             filter();
         });
