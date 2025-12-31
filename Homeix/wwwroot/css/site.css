@@ -1,32 +1,40 @@
-/* ==========================================
-   HOMEIX MASTER THEME — FINAL VERSION
-   Fully Working Light + Dark Mode
-========================================== */
+/* ==========================================================
+   HOMEIX MASTER THEME — COMPREHENSIVE VERSION
+   Light + Dark Mode | Bootstrap 5 Extension
+========================================================== */
 
-/* ---------- COLOR VARIABLES ---------- */
+/* =========================
+   COLOR VARIABLES (UNCHANGED)
+========================= */
 :root {
     --primary: #0a0f2b;
     --primary-light: #131b3f;
     --blue: #1a237e;
     --gold: #ffd700;
     --gold-dark: #e6c300;
-    /* Light mode */
+    /* Light */
     --light-bg: #f5f7fa;
     --light-text: #0a0f2b;
     --light-card: #ffffff;
     --light-border: #d7d7d7;
-    /* Dark mode */
+    /* Dark */
     --dark-bg: #0b0f1e;
     --dark-text: #e6e6e6;
     --dark-card: #1a2035;
     --dark-border: #2d3145;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --transition: 0.3s ease;
 }
 
-/* ---------- ROOT PAGE ---------- */
+/* =========================
+   ROOT & BODY
+========================= */
 html {
     background: var(--light-bg);
     color: var(--light-text);
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background var(--transition), color var(--transition);
 }
 
     html.dark-theme {
@@ -37,13 +45,35 @@ html {
 body {
     background: transparent !important;
     color: inherit !important;
+    padding-top: 70px;
 }
 
+/* RTL SAFE */
+html[dir="rtl"] {
+    direction: rtl;
+}
 
+/* =========================
+   HEADINGS & TITLES
+========================= */
+.page-title,
+h1, h2, h3, h4, h5 {
+    font-weight: 700;
+    color: var(--primary);
+}
 
-/* ==========================================
+html.dark-theme .page-title,
+html.dark-theme h1,
+html.dark-theme h2,
+html.dark-theme h3,
+html.dark-theme h4,
+html.dark-theme h5 {
+    color: var(--gold);
+}
+
+/* =========================
    NAVBAR
-========================================== */
+========================= */
 .bg-main {
     background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
 }
@@ -52,19 +82,220 @@ html.dark-theme .bg-main {
     background: linear-gradient(135deg, #000814, #001233) !important;
 }
 
-.nav-link {
-    color: #ffffff !important;
+.navbar .nav-link {
+    color: #fff !important;
     font-weight: 500;
+    font-size: 0.9rem;
 }
 
-    .nav-link:hover {
+    .navbar .nav-link:hover,
+    .navbar .dropdown-toggle:hover {
         color: var(--gold) !important;
     }
 
+/* =========================
+   DROPDOWNS
+========================= */
+.dropdown-menu {
+    border-radius: var(--radius-sm);
+    border: none;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+.dropdown-item {
+    font-size: 0.9rem;
+}
+
+html.dark-theme .dropdown-menu {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+}
+
+html.dark-theme .dropdown-item {
+    color: var(--dark-text);
+}
+
+    html.dark-theme .dropdown-item:hover {
+        background: var(--blue);
+        color: #fff;
+    }
+
+/* =========================
+   CARDS (ALL PAGES)
+========================= */
+.card {
+    background: var(--light-card);
+    color: var(--light-text);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--light-border);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+html.dark-theme .card {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+}
+
+.card-header {
+    font-weight: 600;
+    background: rgba(0,0,0,0.03);
+}
+
+html.dark-theme .card-header {
+    background: rgba(255,255,255,0.05);
+}
+
+/* =========================
+   FORMS (Create/Edit/Login/Register/Profile)
+========================= */
+.form-label {
+    font-weight: 600;
+}
+
+.form-control,
+.form-select,
+textarea {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--light-border);
+}
+
+html.dark-theme .form-control,
+html.dark-theme .form-select,
+html.dark-theme textarea {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.2rem rgba(255,215,0,0.25);
+}
+
+/* Validation */
+.text-danger {
+    font-size: 0.85rem;
+}
+
+.form-text {
+    font-size: 0.8rem;
+}
+
+/* =========================
+   ALERTS
+========================= */
+.alert {
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+}
+
+html.dark-theme .alert-success {
+    background: #14532d;
+    color: #dcfce7;
+}
+
+html.dark-theme .alert-danger {
+    background: #7f1d1d;
+    color: #fee2e2;
+}
+
+/* =========================
+   TABLES (Index Pages)
+========================= */
+.table {
+    background: var(--light-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+html.dark-theme .table {
+    background: var(--dark-card);
+}
+
+.table th {
+    background: var(--primary-light);
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background: rgba(26,35,126,0.1);
+}
+
+html.dark-theme .table-hover tbody tr:hover {
+    background: rgba(26,35,126,0.25);
+}
+
+html.dark-theme .table th,
+html.dark-theme .table td {
+    color: var(--dark-text);
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+}
+
+    .badge.bg-warning {
+        background: var(--gold) !important;
+        color: #000 !important;
+    }
+
+/* =========================
+   BUTTONS
+========================= */
+.btn {
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: all var(--transition);
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+/* Primary */
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+    .btn-primary:hover {
+        background: var(--primary-light);
+    }
+
+/* Secondary */
+.btn-secondary {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+    .btn-secondary:hover {
+        background: var(--primary-light);
+    }
+
+/* Accent */
 .btn-accent {
     background: var(--gold);
+    border-color: var(--gold);
     color: #000 !important;
-    border: none;
     font-weight: 700;
 }
 
@@ -72,192 +303,108 @@ html.dark-theme .bg-main {
         background: var(--gold-dark);
     }
 
+/* Danger */
+.btn-danger {
+    background: #8b1a2d;
+    border-color: #8b1a2d;
+}
 
+    .btn-danger:hover {
+        background: #6e1423;
+    }
 
-/* ==========================================
-   HERO SECTION
-========================================== */
+/* Outline light */
+.btn-outline-light:hover {
+    color: var(--gold) !important;
+    border-color: var(--gold) !important;
+}
+
+/* =========================
+   DETAILS / DELETE
+========================= */
+dl dt {
+    font-weight: 700;
+}
+
+dl dd {
+    margin-bottom: 0.75rem;
+}
+
+.border-danger {
+    border-width: 2px !important;
+}
+
+/* =========================
+   HERO / FEATURES / CTA
+========================= */
 .hero-section {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     padding: 100px 0;
+    color: #fff;
     text-align: center;
-    color: #ffffff;
 }
 
-.hero-title {
-    color: var(--gold) !important;
-}
-
-html.dark-theme .hero-section {
-    background: linear-gradient(135deg, #000814, #001233) !important;
-}
-
-
-
-/* ==========================================
-   FEATURE CARDS
-========================================== */
-.features-bg {
-    background: var(--light-bg);
-    color: var(--light-text);
-    padding: 60px 0;
-}
-
-html.dark-theme .features-bg {
-    background: var(--dark-bg);
-    color: var(--dark-text);
-}
-
-.feature-card {
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--light-border);
-}
-
-html.dark-theme .feature-card {
-    border-color: var(--dark-border);
-}
-
-/* Gold header — ALWAYS black text */
-.feature-card-header {
-    background: var(--gold) !important;
-    color: #000 !important;
-    font-weight: 700;
-    text-align: center;
-    padding: 12px;
-}
-
-/* Card body */
-.feature-card .card-body {
-    background: var(--light-card);
-    color: var(--light-text);
-}
-
-html.dark-theme .feature-card .card-body {
-    background: var(--dark-card);
-    color: var(--dark-text);
-}
-
-
-
-/* ==========================================
-   WHY CHOOSE HOMEIX
-========================================== */
-.features-section {
-    background: var(--primary-light);
-    color: #ffffff;
-    padding: 70px 0;
-}
-
-html.dark-theme .features-section {
-    background: #111524;
-    color: var(--dark-text);
-}
-
-.features-title {
-    color: var(--gold) !important;
-}
-
-.feature-icon {
-    color: var(--gold);
-    font-size: 2.6rem;
-}
-
-
-
-/* ==========================================
-   CTA SECTION
-========================================== */
-.cta-section {
-    background: var(--primary);
-    color: #ffffff;
-    padding: 70px 0;
-}
-
-html.dark-theme .cta-section {
-    background: var(--primary-light);
-    color: var(--dark-text);
-}
-
+.hero-title,
+.features-title,
 .cta-title {
     color: var(--gold) !important;
 }
 
-
-
-/* ==========================================
-   BUTTONS — GLOBAL FIX
-========================================== */
-.btn-outline-light {
+.features-section {
+    background: var(--primary-light);
     color: #fff;
-    border-color: #fff;
+    padding: 70px 0;
 }
 
-    .btn-outline-light:hover {
-        color: var(--gold) !important;
-        border-color: var(--gold) !important;
-    }
+.cta-section {
+    background: var(--primary);
+    padding: 70px 0;
+    color: #fff;
+}
 
-html.dark-theme .btn-outline-light {
+/* =========================
+   DASHBOARDS (Admin/User)
+========================= */
+.admin-card,
+.dashboard-card {
+    background: var(--light-card);
+    color: var(--light-text);
+    border-radius: var(--radius-lg);
+    padding: 36px 24px;
+    border: 1px solid var(--light-border);
+    transition: all 0.35s ease;
+    text-align: center;
+}
+
+html.dark-theme .admin-card,
+html.dark-theme .dashboard-card {
+    background: var(--dark-card);
     color: var(--dark-text);
-    border-color: var(--dark-text);
+    border-color: var(--dark-border);
 }
 
-    html.dark-theme .btn-outline-light:hover {
-        color: var(--gold) !important;
-        border-color: var(--gold) !important;
-    }
-
-
-
-/* ==========================================
-   UNIVERSAL FIXES
-========================================== */
-/* Base sections inherit theme text */
-.hero-section *,
-.features-bg *,
-.features-section *,
-.cta-section * {
-    color: inherit !important;
+.admin-icon,
+.dashboard-icon {
+    font-size: 3rem;
+    color: var(--gold);
 }
 
-/* Light mode text-white fix */
-html:not(.dark-theme) .text-white {
-    color: var(--light-text) !important;
+.admin-card:hover,
+.dashboard-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--gold);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.25);
 }
 
-/* Dark mode text-white fix */
-html.dark-theme .text-white {
-    color: var(--dark-text) !important;
-}
-
-
-
-/* ==========================================
-   GOLD BACKGROUND FIX — ALWAYS BLACK TEXT
-========================================== */
-.feature-card-header,
-.feature-card-header *,
-.btn-accent,
-.btn-accent *,
-.bg-gold,
-.bg-gold *,
-.btn-warning,
-.btn-warning *,
-.feature-card-header {
-    color: #000 !important;
-}
-
-
-
-/* ==========================================
+/* =========================
    FOOTER
-========================================== */
+========================= */
 .footer {
     background: linear-gradient(135deg, var(--primary-light), var(--blue));
-    color: white;
+    color: #fff;
     padding: 15px;
     border-top: 2px solid var(--gold);
+    text-align: center;
 }
 
 html.dark-theme .footer {
@@ -265,11 +412,9 @@ html.dark-theme .footer {
     color: var(--dark-text);
 }
 
-
-
-/* ==========================================
+/* =========================
    CHATBOT
-========================================== */
+========================= */
 #chatbot-toggle {
     width: 55px;
     height: 55px;
@@ -291,124 +436,22 @@ html.dark-theme #chatbot-box {
     background: var(--dark-card);
 }
 
-/* END OF FILE */
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.4rem;
+        text-align: center;
+    }
 
-/* ==========================================
-   HOMEIX ADMIN DASHBOARD
-========================================== */
-
-.admin-card {
-    background: var(--light-card);
-    color: var(--light-text);
-    border-radius: 16px;
-    padding: 36px 24px;
-    text-align: center;
-    border: 1px solid var(--light-border);
-    transition: all 0.35s ease;
+    .btn {
+        width: 100%;
+    }
 }
 
-html.dark-theme .admin-card {
-    background: var(--dark-card);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
-}
-
-/* Icons */
-.admin-icon {
-    font-size: 3rem;
-    color: var(--gold);
-}
-
-/* Hover Interaction */
-.admin-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--gold);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
-}
-
-/* Button inside */
-.admin-card .btn {
-    margin-top: 15px;
-}
-
-/* Text consistency */
-.admin-card h5,
-.admin-card p {
-    color: inherit;
-}
-
-/* ==========================================
-   HOMEIX CUSTOMER DASHBOARD
-========================================== */
-
-.dashboard-card {
-    background: var(--light-card);
-    color: var(--light-text);
-    border-radius: 16px;
-    padding: 36px 24px;
-    text-align: center;
-    border: 1px solid var(--light-border);
-    transition: all 0.35s ease;
-}
-
-html.dark-theme .dashboard-card {
-    background: var(--dark-card);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
-}
-
-/* Icons */
-.dashboard-icon {
-    font-size: 3rem;
-    color: var(--gold);
-}
-
-/* Hover */
-.dashboard-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--gold);
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.2);
-}
-
-/* Ensure text always visible */
-.dashboard-card h5,
-.dashboard-card p {
-    color: inherit;
-}
-
-
-/* ==========================================
-   HOMEIX DASHBOARD CARDS (SHARED)
-========================================== */
-
-.dashboard-card {
-    background: var(--light-card);
-    color: var(--light-text);
-    border-radius: 16px;
-    padding: 36px 24px;
-    text-align: center;
-    border: 1px solid var(--light-border);
-    transition: all 0.35s ease;
-}
-
-html.dark-theme .dashboard-card {
-    background: var(--dark-card);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
-}
-
-.dashboard-icon {
-    font-size: 3rem;
-    color: var(--gold);
-}
-
-.dashboard-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--gold);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
-}
-
-.dashboard-card h5,
-.dashboard-card p {
-    color: inherit;
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+    }
 }
