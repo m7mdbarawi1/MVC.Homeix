@@ -61,14 +61,8 @@
                                             <td>@item.User?.UserId</td>
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                    <a asp-action="Edit" asp-route-id="@item.SubscriptionId" class="btn btn-secondary btn-sm">
-                                                        <i class="bi bi-pencil-square"></i> Edit
-                                                    </a>
                                                     <a asp-action="Details" asp-route-id="@item.SubscriptionId" class="btn btn-accent btn-sm">
                                                         <i class="bi bi-info-circle"></i> Details
-                                                    </a>
-                                                    <a asp-action="Delete" asp-route-id="@item.SubscriptionId" class="btn btn-danger btn-sm">
-                                                        <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
                                             </td>
