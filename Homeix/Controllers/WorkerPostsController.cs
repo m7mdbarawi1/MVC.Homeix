@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class WorkerPostsController : Controller
     {
         private readonly HOMEIXDbContext _context;
@@ -18,182 +21,220 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // ========================
-        // GET: WorkerPosts
-        // ========================
+        // =====================================================
+        // ADMIN: VIEW ALL WORKER POSTS
+        // =====================================================
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var posts = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
                 .Include(w => w.User)
+                .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
 
             return View(posts);
         }
 
-        // ========================
-        // GET: WorkerPosts/Details/5
-        // ========================
+        // =====================================================
+        // DETAILS (Owner or Admin)
+        // =====================================================
         public async Task<IActionResult> Details(int? id)
         {
-            if (id is null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var workerPost = await _context.WorkerPosts
+            var post = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
                 .Include(w => w.User)
-                .FirstOrDefaultAsync(m => m.WorkerPostId == id);
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
 
-            if (workerPost is null)
-                return NotFound();
+            if (post == null) return NotFound();
 
-            return View(workerPost);
+            if (!IsOwnerOrAdmin(post))
+                return Forbid();
+
+            return View(post);
         }
 
-        // ========================
-        // GET: WorkerPosts/Create
-        // ========================
+        // =====================================================
+        // CREATE (GET)
+        // =====================================================
+        [Authorize(Roles = "worker")]
         public IActionResult Create()
         {
-            ViewData["PostCategoryId"] =
-                new SelectList(_context.PostCategories, "PostCategoryId", "PostCategoryId");
-
-            ViewData["UserId"] =
-                new SelectList(_context.Users, "UserId", "UserId");
-
+            LoadCategories();
             return View();
         }
 
-        // ========================
-        // POST: WorkerPosts/Create
-        // ========================
+        // =====================================================
+        // CREATE (POST)
+        // =====================================================
         [HttpPost]
+        [Authorize(Roles = "worker")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("UserId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")]
-            WorkerPost workerPost)
+        public async Task<IActionResult> Create([Bind(
+            "PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax"
+        )] WorkerPost workerPost)
         {
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(workerPost);
+                LoadCategories(workerPost);
                 return View(workerPost);
             }
 
-            // ✅ System-managed fields
+            workerPost.UserId = GetUserId();
             workerPost.CreatedAt = DateTime.Now;
             workerPost.IsActive = true;
 
             _context.WorkerPosts.Add(workerPost);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyPosts));
         }
 
-        // ========================
-        // GET: WorkerPosts/Edit/5
-        // ========================
+        // =====================================================
+        // EDIT (GET)
+        // =====================================================
+        [Authorize(Roles = "worker")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id is null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var workerPost = await _context.WorkerPosts.FindAsync(id);
+            var post = await _context.WorkerPosts.FindAsync(id);
+            if (post == null) return NotFound();
 
-            if (workerPost is null)
-                return NotFound();
+            if (!IsOwnerOrAdmin(post))
+                return Forbid();
 
-            ReloadDropdowns(workerPost);
-            return View(workerPost);
+            LoadCategories(post);
+            return View(post);
         }
 
-        // ========================
-        // POST: WorkerPosts/Edit/5
-        // ========================
+        // =====================================================
+        // EDIT (POST)
+        // =====================================================
         [HttpPost]
+        [Authorize(Roles = "worker")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("WorkerPostId,UserId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive")]
-            WorkerPost workerPost)
+        public async Task<IActionResult> Edit(int id, [Bind(
+            "WorkerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive"
+        )] WorkerPost workerPost)
         {
             if (id != workerPost.WorkerPostId)
                 return NotFound();
 
+            var existing = await _context.WorkerPosts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            if (!IsOwnerOrAdmin(existing))
+                return Forbid();
+
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(workerPost);
+                LoadCategories(workerPost);
                 return View(workerPost);
             }
 
-            var existing = await _context.WorkerPosts
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.WorkerPostId == id);
-
-            if (existing is null)
-                return NotFound();
-
-            // ✅ Preserve CreatedAt (not editable)
+            workerPost.UserId = existing.UserId;
             workerPost.CreatedAt = existing.CreatedAt;
 
-            _context.Update(workerPost);
+            _context.WorkerPosts.Update(workerPost);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyPosts));
         }
 
-        // ========================
-        // GET: WorkerPosts/Delete/5
-        // ========================
+        // =====================================================
+        // DELETE (GET)
+        // =====================================================
+        [Authorize(Roles = "worker")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id is null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var workerPost = await _context.WorkerPosts
+            var post = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
                 .Include(w => w.User)
-                .FirstOrDefaultAsync(m => m.WorkerPostId == id);
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
 
-            if (workerPost is null)
-                return NotFound();
+            if (post == null) return NotFound();
 
-            return View(workerPost);
+            if (!IsOwnerOrAdmin(post))
+                return Forbid();
+
+            return View(post);
         }
 
-        // ========================
-        // POST: WorkerPosts/Delete/5
-        // ========================
+        // =====================================================
+        // DELETE (POST)
+        // =====================================================
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "worker")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var workerPost = await _context.WorkerPosts.FindAsync(id);
+            var post = await _context.WorkerPosts.FindAsync(id);
+            if (post == null)
+                return NotFound();
 
-            if (workerPost is not null)
-            {
-                _context.WorkerPosts.Remove(workerPost);
-                await _context.SaveChangesAsync();
-            }
+            if (!IsOwnerOrAdmin(post))
+                return Forbid();
 
-            return RedirectToAction(nameof(Index));
+            _context.WorkerPosts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(MyPosts));
         }
 
-        // ========================
-        // Helpers
-        // ========================
-        private void ReloadDropdowns(WorkerPost workerPost)
+        // =====================================================
+        // MY POSTS (WORKER)
+        // =====================================================
+        [Authorize(Roles = "worker")]
+        public async Task<IActionResult> MyPosts()
         {
-            ViewData["PostCategoryId"] =
-                new SelectList(_context.PostCategories,
-                               "PostCategoryId",
-                               "PostCategoryId",
-                               workerPost.PostCategoryId);
+            int userId = GetUserId();
 
-            ViewData["UserId"] =
-                new SelectList(_context.Users,
-                               "UserId",
-                               "UserId",
-                               workerPost.UserId);
+            var posts = await _context.WorkerPosts
+                .Where(w => w.UserId == userId)
+                .Include(w => w.PostCategory)
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+
+            return View(posts);
+        }
+
+        // =====================================================
+        // HELPERS
+        // =====================================================
+        private int GetUserId()
+        {
+            var claim = User.FindFirst("UserId");
+            if (claim == null)
+                throw new UnauthorizedAccessException();
+
+            return int.Parse(claim.Value);
+        }
+
+        private bool IsOwnerOrAdmin(WorkerPost post)
+        {
+            if (User.IsInRole("admin"))
+                return true;
+
+            return post.UserId == GetUserId();
+        }
+
+        private void LoadCategories(WorkerPost? post = null)
+        {
+            ViewData["PostCategoryId"] = new SelectList(
+                _context.PostCategories.AsNoTracking().OrderBy(c => c.CategoryName),
+                "PostCategoryId",
+                "CategoryName",
+                post?.PostCategoryId
+            );
         }
     }
 }
