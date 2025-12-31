@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
@@ -22,9 +21,8 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // ADMIN: VIEW ALL CUSTOMER POSTS
+        // VIEW ALL CUSTOMER POSTS
         // =====================================================
-        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var posts = await _context.CustomerPosts
@@ -37,21 +35,20 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // DETAILS (Owner or Admin)
+        // DETAILS (TEMP: NO ACCESS CHECK)
         // =====================================================
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var post = await _context.CustomerPosts
                 .Include(p => p.PostCategory)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (post == null) return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
+            if (post == null)
+                return NotFound();
 
             return View(post);
         }
@@ -59,7 +56,6 @@ namespace Homeix.Controllers
         // =====================================================
         // CREATE (GET)
         // =====================================================
-        [Authorize(Roles = "customer")]
         public IActionResult Create()
         {
             LoadDropdowns();
@@ -70,7 +66,6 @@ namespace Homeix.Controllers
         // CREATE (POST)
         // =====================================================
         [HttpPost]
-        [Authorize(Roles = "customer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind(
             "PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax"
@@ -96,16 +91,14 @@ namespace Homeix.Controllers
         // =====================================================
         // EDIT (GET)
         // =====================================================
-        [Authorize(Roles = "customer")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var post = await _context.CustomerPosts.FindAsync(id);
-            if (post == null) return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
+            if (post == null)
+                return NotFound();
 
             LoadDropdowns(post);
             return View(post);
@@ -115,7 +108,6 @@ namespace Homeix.Controllers
         // EDIT (POST)
         // =====================================================
         [HttpPost]
-        [Authorize(Roles = "customer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind(
             "CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive"
@@ -130,9 +122,6 @@ namespace Homeix.Controllers
 
             if (existing == null)
                 return NotFound();
-
-            if (!IsOwnerOrAdmin(existing))
-                return Forbid();
 
             if (!ModelState.IsValid)
             {
@@ -153,20 +142,18 @@ namespace Homeix.Controllers
         // =====================================================
         // DELETE (GET)
         // =====================================================
-        [Authorize(Roles = "customer")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var post = await _context.CustomerPosts
                 .Include(p => p.PostCategory)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (post == null) return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
+            if (post == null)
+                return NotFound();
 
             return View(post);
         }
@@ -175,16 +162,12 @@ namespace Homeix.Controllers
         // DELETE (POST)
         // =====================================================
         [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = "customer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var post = await _context.CustomerPosts.FindAsync(id);
             if (post == null)
                 return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
 
             _context.CustomerPosts.Remove(post);
             await _context.SaveChangesAsync();
@@ -195,7 +178,6 @@ namespace Homeix.Controllers
         // =====================================================
         // MY POSTS (CUSTOMER)
         // =====================================================
-        [Authorize(Roles = "customer")]
         public async Task<IActionResult> MyPosts()
         {
             int userId = GetUserId();
@@ -214,25 +196,19 @@ namespace Homeix.Controllers
         // =====================================================
         private int GetUserId()
         {
-            var idClaim = User.FindFirst("UserId");
-            if (idClaim == null)
+            var claim = User.FindFirst("UserId");
+            if (claim == null)
                 throw new UnauthorizedAccessException();
 
-            return int.Parse(idClaim.Value);
-        }
-
-        private bool IsOwnerOrAdmin(CustomerPost post)
-        {
-            if (User.IsInRole("admin"))
-                return true;
-
-            return post.UserId == GetUserId();
+            return int.Parse(claim.Value);
         }
 
         private void LoadDropdowns(CustomerPost? post = null)
         {
             ViewData["PostCategoryId"] = new SelectList(
-                _context.PostCategories.AsNoTracking().OrderBy(c => c.CategoryName),
+                _context.PostCategories
+                    .AsNoTracking()
+                    .OrderBy(c => c.CategoryName),
                 "PostCategoryId",
                 "CategoryName",
                 post?.PostCategoryId
