@@ -2,100 +2,118 @@
 
 @{
     ViewData["Title"] = "Worker Post Details";
+    var images = Model.PostMedia?.ToList() ?? new List<Homeix.Models.PostMedium>();
 }
 
-<div class="container-fluid mt-4">
+<div class="container-fluid page-wrapper mt-4">
 
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="fw-bold">Worker Post Details</h1>
+            <h1 class="page-title">Worker Post Details</h1>
         </div>
     </div>
 
-    <!-- Centered Card -->
+    <!-- Centered Details Card -->
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
+        <div class="col-md-8 col-lg-7">
 
             <div class="card shadow-sm">
+                <div class="card-body text-center">
 
-                <!-- Card Header -->
-                <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
-                </div>
+                    <!-- =========================
+                         POST IMAGE (LIKE BOOK COVER)
+                    ========================= -->
+                    @if (images.Any())
+                    {
+                        <img src="~/uploads/@images.First().MediaPath"
+                             class="img-fluid rounded shadow-sm mb-3 w-100"
+                             style="max-height:400px; object-fit:cover; cursor:pointer"
+                             data-bs-toggle="modal"
+                             data-bs-target="#imageModal" />
+                    }
+                    else
+                    {
+                        <span class="text-muted d-block mb-3">
+                            <i class="bi bi-image"></i> No image uploaded
+                        </span>
+                    }
 
-                <!-- Card Body -->
-                <div class="card-body">
-                    <dl class="row mb-0">
+                    <!-- =========================
+                         TITLE + META + ACTION
+                    ========================= -->
+                    <div class="d-flex flex-column flex-md-row
+                                align-items-md-center
+                                justify-content-between
+                                mb-4 gap-2">
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Title)
-                        </dt>
+                        <div class="text-start">
+                            <h3 class="fw-bold mb-1">@Model.Title</h3>
+                            <p class="mb-0 text-muted">
+                                Category: @Model.PostCategory?.CategoryName
+                            </p>
+                            <p class="mb-0 fw-bold text-success">
+                                @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
+                                    ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax}"
+                                    : "Price not specified")
+                            </p>
+                        </div>
+
+                        <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary") fs-6">
+                            @(Model.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </div>
+
+                    <!-- =========================
+                         DETAILS LIST (LIKE BOOK INFO)
+                    ========================= -->
+                    <dl class="row text-start mb-0">
+
+                        <dt class="col-sm-4 fw-bold">Location</dt>
+                        <dd class="col-sm-8">@Model.Location</dd>
+
+                        <dt class="col-sm-4 fw-bold">Posted By</dt>
+                        <dd class="col-sm-8">@Model.User?.FullName</dd>
+
+                        <dt class="col-sm-4 fw-bold">Posted On</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Title)
+                            @Model.CreatedAt.ToString("yyyy-MM-dd")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Description)
-                        </dt>
+                        <dt class="col-sm-4 fw-bold">Description</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Description)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Location)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Location)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.PriceRangeMin)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PriceRangeMin)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.PriceRangeMax)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PriceRangeMax)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.CreatedAt)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.CreatedAt)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.IsActive)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.IsActive)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.PostCategory)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PostCategory.PostCategoryId)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.User)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.User.UserId)
+                            @Model.Description
                         </dd>
 
                     </dl>
+
                 </div>
 
+                <!-- =========================
+                     FOOTER
+                ========================= -->
+                <div class="card-footer text-end">
+                    <a asp-action="MyPosts" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Back
+                    </a>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
+
+<!-- =========================
+     IMAGE MODAL
+========================= -->
+@if (images.Any())
+{
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+                <img src="~/uploads/@images.First().MediaPath"
+                     class="img-fluid rounded shadow" />
+            </div>
+        </div>
+    </div>
+}

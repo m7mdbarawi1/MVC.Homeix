@@ -46,6 +46,7 @@ namespace Homeix.Controllers
             var post = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
                 .Include(w => w.User)
+                .Include(w => w.PostMedia) // 🔧 REQUIRED FOR IMAGES
                 .FirstOrDefaultAsync(w => w.WorkerPostId == id);
 
             if (post == null) return NotFound();

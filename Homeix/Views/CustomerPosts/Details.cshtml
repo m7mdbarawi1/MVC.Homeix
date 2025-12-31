@@ -4,61 +4,95 @@
     ViewData["Title"] = "Customer Post Details";
 }
 
-<div class="container-fluid mt-4">
+<div class="container-fluid page-wrapper mt-4">
+
+    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1>@ViewData["Title"]</h1>
+            <h1 class="page-title">@ViewData["Title"]</h1>
         </div>
     </div>
 
+    <!-- Centered Details Card -->
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
+        <div class="col-md-8 col-lg-7">
+
             <div class="card shadow-sm">
-                <div class="card-body">
+                <div class="card-body text-center">
 
-                    <dl class="row mb-0">
-                        <dt class="col-sm-4">Customer</dt>
-                        <dd class="col-sm-8">@((Model.User?.FullName) ?? "—")</dd>
+                    <!-- =========================
+                         IMAGE PLACEHOLDER (LIKE BOOK)
+                    ========================= -->
+                    <div class="mb-3">
+                        <span class="text-muted d-block">
+                            <i class="bi bi-image fs-1"></i><br />
+                            No image uploaded
+                        </span>
+                    </div>
 
-                        <dt class="col-sm-4">Category</dt>
-                        <dd class="col-sm-8">@((Model.PostCategory?.CategoryName) ?? "—")</dd>
+                    <!-- =========================
+                         TITLE + META
+                    ========================= -->
+                    <div class="d-flex flex-column flex-md-row
+                                align-items-md-center
+                                justify-content-between
+                                mb-4 gap-2">
 
-                        <dt class="col-sm-4">Title</dt>
-                        <dd class="col-sm-8">@Model.Title</dd>
+                        <div class="text-start">
+                            <h3 class="fw-bold mb-1">@Model.Title</h3>
+                            <p class="mb-0 text-muted">
+                                Category: @Model.PostCategory?.CategoryName
+                            </p>
+                            <p class="mb-0 fw-bold text-success">
+                                @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
+                                    ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax}"
+                                    : "Price not specified")
+                            </p>
+                        </div>
 
-                        <dt class="col-sm-4">Description</dt>
-                        <dd class="col-sm-8">@Model.Description</dd>
+                        <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary") fs-6">
+                            @(Model.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </div>
 
-                        <dt class="col-sm-4">Location</dt>
+                    <!-- =========================
+                         DETAILS LIST (LIKE BOOK INFO)
+                    ========================= -->
+                    <dl class="row text-start mb-0">
+
+                        <dt class="col-sm-4 fw-bold">Customer</dt>
+                        <dd class="col-sm-8">@Model.User?.FullName</dd>
+
+                        <dt class="col-sm-4 fw-bold">Location</dt>
                         <dd class="col-sm-8">@Model.Location</dd>
 
-                        <dt class="col-sm-4">Min Price</dt>
-                        <dd class="col-sm-8">@Model.PriceRangeMin</dd>
-
-                        <dt class="col-sm-4">Max Price</dt>
-                        <dd class="col-sm-8">@Model.PriceRangeMax</dd>
-
-                        <dt class="col-sm-4">Status</dt>
+                        <dt class="col-sm-4 fw-bold">Status</dt>
                         <dd class="col-sm-8">@Model.Status</dd>
 
-                        <dt class="col-sm-4">Created At</dt>
-                        <dd class="col-sm-8">@Model.CreatedAt.ToString("g")</dd>
-
-                        <dt class="col-sm-4">Active</dt>
+                        <dt class="col-sm-4 fw-bold">Created On</dt>
                         <dd class="col-sm-8">
-                            @if (Model.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Inactive</span>
-                            }
+                            @Model.CreatedAt.ToString("yyyy-MM-dd")
                         </dd>
+
+                        <dt class="col-sm-4 fw-bold">Description</dt>
+                        <dd class="col-sm-8">
+                            @Model.Description
+                        </dd>
+
                     </dl>
 
                 </div>
+
+                <!-- =========================
+                     FOOTER
+                ========================= -->
+                <div class="card-footer text-end">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Back
+                    </a>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
