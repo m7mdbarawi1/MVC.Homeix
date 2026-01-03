@@ -106,14 +106,23 @@ namespace Homeix.Controllers
         [Authorize(Roles = "customer")]
         public async Task<IActionResult> CustomerDashboard()
         {
+            int userId = int.Parse(User.FindFirst("UserId")!.Value);
+
             var workerPosts = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
                 .Include(w => w.PostMedia)
                 .Include(w => w.User)
-                    .ThenInclude(u => u.RatingRatedUsers) // ⭐ LOAD RATINGS
+                    .ThenInclude(u => u.RatingRatedUsers)
                 .Where(w => w.IsActive)
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
+
+            var favoriteIds = await _context.FavoritePosts
+                .Where(f => f.UserId == userId && f.PostType == "WorkerPost")
+                .Select(f => f.PostId)
+                .ToListAsync();
+
+            ViewBag.FavoritePostIds = favoriteIds;
 
             return View(workerPosts);
         }

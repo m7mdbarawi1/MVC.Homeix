@@ -1,10 +1,14 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerPost>
 
 @using Microsoft.AspNetCore.Mvc.Localization
+@using System.Security.Claims
 @inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = Localizer["BrowseServices"];
+
+    // Favorites passed from controller
+    var favoriteIds = ViewBag.FavoritePostIds as List<int> ?? new List<int>();
 }
 
 <link rel="stylesheet" href="~/css/workerposts/index.css" />
@@ -22,7 +26,8 @@
         <div class="card-body">
             <div class="row g-2">
                 <div class="col-md-3">
-                    <input id="searchInput" class="form-control"
+                    <input id="searchInput"
+                           class="form-control"
                            placeholder="@Localizer["SearchPlaceholder"]" />
                 </div>
 
@@ -40,12 +45,16 @@
                 </div>
 
                 <div class="col-md-2">
-                    <input id="minPrice" type="number" class="form-control"
+                    <input id="minPrice"
+                           type="number"
+                           class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col-md-2">
-                    <input id="maxPrice" type="number" class="form-control"
+                    <input id="maxPrice"
+                           type="number"
+                           class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
@@ -82,17 +91,47 @@
 
             <div class="col-md-3 mb-4 post-card-wrapper">
 
-                <!-- ✅ CLICKABLE CARD -->
-                <a asp-controller="WorkerPosts"
-                   asp-action="Details"
-                   asp-route-id="@post.WorkerPostId"
-                   class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm post-card"
+                     data-title="@post.Title.ToLower()"
+                     data-category="@post.PostCategory?.CategoryName"
+                     data-price="@post.PriceRangeMin"
+                     data-rating="@avgRating">
 
-                    <div class="card h-100 shadow-sm post-card"
-                         data-title="@post.Title.ToLower()"
-                         data-category="@post.PostCategory?.CategoryName"
-                         data-price="@post.PriceRangeMin"
-                         data-rating="@avgRating">
+                    <!-- ❤️ FAVORITE BUTTON -->
+                    <div class="position-absolute top-0 end-0 p-2">
+                        @if (favoriteIds.Contains(post.WorkerPostId))
+                        {
+                            <form asp-controller="FavoritePosts"
+                                  asp-action="RemoveWorkerPost"
+                                  method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="postId" value="@post.WorkerPostId" />
+                                <button class="btn btn-sm btn-danger rounded-circle"
+                                        title="Remove from favorites">
+                                    ❤️
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="FavoritePosts"
+                                  asp-action="AddWorkerPost"
+                                  method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="postId" value="@post.WorkerPostId" />
+                                <button class="btn btn-sm btn-outline-danger rounded-circle"
+                                        title="Add to favorites">
+                                    🤍
+                                </button>
+                            </form>
+                        }
+                    </div>
+
+                    <!-- CLICKABLE CONTENT -->
+                    <a asp-controller="WorkerPosts"
+                       asp-action="Details"
+                       asp-route-id="@post.WorkerPostId"
+                       class="text-decoration-none text-dark">
 
                         <img src="@imageUrl" class="card-img-top" />
 
@@ -126,8 +165,8 @@
                                 @Localizer["Available"]
                             </span>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
         }
     </div>
@@ -168,8 +207,10 @@
                 resultCount.textContent = visible + " services found";
             }
 
-            search.oninput = category.onchange =
-            minPrice.oninput = maxPrice.oninput =
+            search.oninput =
+            category.onchange =
+            minPrice.oninput =
+            maxPrice.oninput =
             rating.onchange = filter;
 
             filter();
