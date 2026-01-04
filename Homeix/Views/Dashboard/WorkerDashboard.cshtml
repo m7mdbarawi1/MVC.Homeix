@@ -1,25 +1,33 @@
 ﻿@model IEnumerable<Homeix.Models.CustomerPost>
 
-
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Homeix.Models
 @inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = Localizer["CustomerRequests"];
-    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Media + Favorites passed from controller
+    var mediaLookup =
+        ViewBag.PostMedia as Dictionary<int, List<PostMedium>>
+        ?? new Dictionary<int, List<PostMedium>>();
+
+    var favoriteIds =
+        ViewBag.FavoritePostIds as List<int>
+        ?? new List<int>();
 }
 
 <link rel="stylesheet" href="~/css/customerposts/index.css" />
 
 <div class="container page-wrapper mt-4">
 
-    <!-- ================= HEADER ================= -->
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="page-title mb-0">@Localizer["CustomerRequests"]</h1>
+        <h1 class="page-title">@Localizer["CustomerRequests"]</h1>
         <span id="resultCount" class="fw-bold text-secondary"></span>
     </div>
 
-    <!-- ================= FILTERS ================= -->
+    <!-- FILTERS -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
@@ -44,74 +52,139 @@
                 </div>
 
                 <div class="col-md-2">
-                    <input id="minPrice" type="number"
+                    <input id="minPrice"
+                           type="number"
                            class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col-md-2">
-                    <input id="maxPrice" type="number"
+                    <input id="maxPrice"
+                           type="number"
                            class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
+                </div>
+
+                <div class="col-md-1">
+                    <select id="ratingFilter" class="form-select">
+                        <option value="">⭐</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5</option>
+                    </select>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- ================= POSTS GRID ================= -->
+    <!-- POSTS GRID -->
     <div class="row" id="postsGrid">
-
         @foreach (var post in Model)
         {
-            <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
-                <a asp-controller="CustomerPosts"
-                   asp-action="Details"
-                   asp-route-id="@post.CustomerPostId"
-                   class="card-link-wrapper text-decoration-none text-dark">
+            // 🖼 Media
+            var media = mediaLookup.ContainsKey(post.CustomerPostId)
+            ? mediaLookup[post.CustomerPostId]
+            .OrderByDescending(m => m.UploadedAt)
+            .FirstOrDefault()
+            : null;
 
-                    <div class="card h-100 shadow-sm post-card"
-                         data-title="@post.Title.ToLower()"
-                         data-description="@post.Description.ToLower()"
-                         data-category="@post.PostCategory?.CategoryName"
-                         data-minprice="@post.PriceRangeMin"
-                         data-maxprice="@post.PriceRangeMax">
+            var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
+            ? media.MediaPath.Replace("\\", "/")
+            : "/images/no-image.png";
+
+            // ⭐ Rating (customer rated as a user)
+            var ratings = post.User?.RatingRatedUsers
+            ?? Enumerable.Empty<Rating>();
+
+            var avgRating = ratings.Any()
+            ? ratings.Average(r => r.RatingValue)
+            : 0;
+
+            <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
+
+                <div class="card h-100 shadow-sm post-card"
+                     data-title="@post.Title.ToLower()"
+                     data-category="@post.PostCategory?.CategoryName"
+                     data-price="@post.PriceRangeMin"
+                     data-rating="@avgRating">
+
+                    <!-- ❤️ FAVORITE -->
+                    <div class="position-absolute top-0 end-0 p-2">
+                        @if (favoriteIds.Contains(post.CustomerPostId))
+                        {
+                            <form asp-controller="FavoritePosts"
+                                  asp-action="RemoveCustomerPost"
+                                  method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="postId"
+                                       value="@post.CustomerPostId" />
+                                <button class="btn btn-sm btn-danger rounded-circle"
+                                        title="Remove from favorites">
+                                    ❤️
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="FavoritePosts"
+                                  asp-action="AddCustomerPost"
+                                  method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="postId"
+                                       value="@post.CustomerPostId" />
+                                <button class="btn btn-sm btn-outline-danger rounded-circle"
+                                        title="Add to favorites">
+                                    🤍
+                                </button>
+                            </form>
+                        }
+                    </div>
+
+                    <!-- CLICKABLE CONTENT -->
+                    <a asp-controller="CustomerPosts"
+                       asp-action="Details"
+                       asp-route-id="@post.CustomerPostId"
+                       class="text-decoration-none text-dark">
+
+                        <img src="@imageUrl"
+                             class="card-img-top"
+                             style="height:180px; object-fit:cover" />
 
                         <div class="card-body d-flex flex-column">
-
-                            <h5 class="fw-bold mb-2">@post.Title</h5>
+                            <h5 class="fw-bold">@post.Title</h5>
 
                             <p class="text-muted small text-truncate">
                                 @post.Description
                             </p>
 
-                            <p class="mb-1">
-                                <strong>@Localizer["Location"]:</strong>
-                                @post.Location
+                            <p>
+                                <strong>@Localizer["Customer"]:</strong>
+                                @post.User?.FullName
                             </p>
 
-                            <p class="mb-1">
+                            <p>
                                 <strong>@Localizer["Category"]:</strong>
                                 @post.PostCategory?.CategoryName
                             </p>
 
-                            <p class="fw-bold text-primary mb-2">
+                            <p class="fw-bold text-primary">
                                 💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
                             </p>
 
-                            <p class="small text-muted mb-2">
-                                🕒 @post.CreatedAt.ToString("dd MMM yyyy")
-                            </p>
-
-                            <div class="mt-auto">
-                                <span class="badge bg-info">
-                                    @post.Status
-                                </span>
+                            <div class="small text-muted mb-2">
+                                ⭐ @avgRating.ToString("0.0") / 5
+                                (@ratings.Count())
                             </div>
 
+                            <span class="badge bg-info mt-auto">
+                                @post.Status
+                            </span>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
         }
     </div>
@@ -125,6 +198,7 @@
             const category = document.getElementById("categoryFilter");
             const minPrice = document.getElementById("minPrice");
             const maxPrice = document.getElementById("maxPrice");
+            const rating = document.getElementById("ratingFilter");
             const cards = document.querySelectorAll(".post-card");
             const resultCount = document.getElementById("resultCount");
 
@@ -133,29 +207,32 @@
 
                 cards.forEach(card => {
                     const title = card.dataset.title || "";
-                    const desc = card.dataset.description || "";
                     const cat = card.dataset.category || "";
-                    const min = parseFloat(card.dataset.minprice) || 0;
-                    const max = parseFloat(card.dataset.maxprice) || Infinity;
+                    const price = parseFloat(card.dataset.price) || 0;
+                    const rate = parseFloat(card.dataset.rating) || 0;
 
                     const show =
-                        (title.includes(search.value.toLowerCase()) ||
-                         desc.includes(search.value.toLowerCase())) &&
+                        title.includes(search.value.toLowerCase()) &&
                         (category.value === "" || cat === category.value) &&
-                        min >= (parseFloat(minPrice.value) || 0) &&
-                        max <= (parseFloat(maxPrice.value) || Infinity);
+                        price >= (parseFloat(minPrice.value) || 0) &&
+                        price <= (parseFloat(maxPrice.value) || Infinity) &&
+                        rate >= (parseFloat(rating.value) || 0);
 
-                    card.closest(".post-card-wrapper").style.display = show ? "" : "none";
+                    card.closest(".post-card-wrapper").style.display =
+                        show ? "" : "none";
+
                     if (show) visible++;
                 });
 
-                resultCount.textContent = visible + " @Localizer["RequestsFound"]";
+                resultCount.textContent =
+                    visible + " " + "@Localizer["RequestsFound"]";
             }
 
             search.oninput =
-                category.onchange =
-                minPrice.oninput =
-                maxPrice.oninput = filter;
+            category.onchange =
+            minPrice.oninput =
+            maxPrice.oninput =
+            rating.onchange = filter;
 
             filter();
         });

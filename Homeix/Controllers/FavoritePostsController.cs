@@ -36,26 +36,7 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // DETAILS
-        // =====================================================
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var favoritePost = await _context.FavoritePosts
-                .Include(f => f.User)
-                .FirstOrDefaultAsync(f => f.FavoritePostId == id);
-
-            if (favoritePost == null)
-                return NotFound();
-
-            return View(favoritePost);
-        }
-
-        // =====================================================
-        // ⭐ ADD WORKER POST TO FAVORITES (CUSTOMER)
+        // ⭐ CUSTOMER → ADD WORKER POST TO FAVORITES
         // =====================================================
         [HttpPost]
         [Authorize(Roles = "customer")]
@@ -71,15 +52,14 @@ namespace Homeix.Controllers
 
             if (!exists)
             {
-                var favorite = new FavoritePost
+                _context.FavoritePosts.Add(new FavoritePost
                 {
                     UserId = userId,
                     PostType = "WorkerPost",
                     PostId = postId,
                     AddedAt = DateTime.Now
-                };
+                });
 
-                _context.FavoritePosts.Add(favorite);
                 await _context.SaveChangesAsync();
             }
 
@@ -87,7 +67,7 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // ❌ REMOVE WORKER POST FROM FAVORITES (CUSTOMER)
+        // ❌ CUSTOMER → REMOVE WORKER POST FROM FAVORITES
         // =====================================================
         [HttpPost]
         [Authorize(Roles = "customer")]
@@ -111,117 +91,58 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // ADMIN CREATE (KEEP FOR BACKOFFICE)
+        // ⭐ WORKER → ADD CUSTOMER POST TO FAVORITES
         // =====================================================
-        [Authorize(Roles = "admin")]
-        public IActionResult Create()
-        {
-            LoadUsersDropdown();
-            return View();
-        }
-
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "worker")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("UserId,PostType,PostId")]
-            FavoritePost favoritePost)
+        public async Task<IActionResult> AddCustomerPost(int postId)
         {
-            if (!ModelState.IsValid)
+            int userId = GetUserId();
+
+            bool exists = await _context.FavoritePosts.AnyAsync(f =>
+                f.UserId == userId &&
+                f.PostType == "CustomerPost" &&
+                f.PostId == postId);
+
+            if (!exists)
             {
-                LoadUsersDropdown(favoritePost.UserId);
-                return View(favoritePost);
-            }
+                _context.FavoritePosts.Add(new FavoritePost
+                {
+                    UserId = userId,
+                    PostType = "CustomerPost",
+                    PostId = postId,
+                    AddedAt = DateTime.Now
+                });
 
-            favoritePost.AddedAt = DateTime.Now;
-
-            _context.FavoritePosts.Add(favoritePost);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // =====================================================
-        // ADMIN EDIT
-        // =====================================================
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var favoritePost = await _context.FavoritePosts.FindAsync(id);
-            if (favoritePost == null)
-                return NotFound();
-
-            LoadUsersDropdown(favoritePost.UserId);
-            return View(favoritePost);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "admin")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("FavoritePostId,UserId,PostType,PostId")]
-            FavoritePost favoritePost)
-        {
-            if (id != favoritePost.FavoritePostId)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-            {
-                LoadUsersDropdown(favoritePost.UserId);
-                return View(favoritePost);
-            }
-
-            var existing = await _context.FavoritePosts
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.FavoritePostId == id);
-
-            if (existing == null)
-                return NotFound();
-
-            favoritePost.AddedAt = existing.AddedAt;
-
-            _context.Update(favoritePost);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // =====================================================
-        // ADMIN DELETE
-        // =====================================================
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var favoritePost = await _context.FavoritePosts
-                .Include(f => f.User)
-                .FirstOrDefaultAsync(f => f.FavoritePostId == id);
-
-            if (favoritePost == null)
-                return NotFound();
-
-            return View(favoritePost);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = "admin")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var favoritePost = await _context.FavoritePosts.FindAsync(id);
-            if (favoritePost != null)
-            {
-                _context.FavoritePosts.Remove(favoritePost);
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("WorkerDashboard", "Dashboard");
+        }
+
+        // =====================================================
+        // ❌ WORKER → REMOVE CUSTOMER POST FROM FAVORITES
+        // =====================================================
+        [HttpPost]
+        [Authorize(Roles = "worker")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveCustomerPost(int postId)
+        {
+            int userId = GetUserId();
+
+            var favorite = await _context.FavoritePosts.FirstOrDefaultAsync(f =>
+                f.UserId == userId &&
+                f.PostType == "CustomerPost" &&
+                f.PostId == postId);
+
+            if (favorite != null)
+            {
+                _context.FavoritePosts.Remove(favorite);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("WorkerDashboard", "Dashboard");
         }
 
         // =====================================================

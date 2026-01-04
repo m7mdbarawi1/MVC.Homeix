@@ -127,19 +127,42 @@ namespace Homeix.Controllers
             return View(workerPosts);
         }
 
+        
         // ================= WORKER =================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> WorkerDashboard()
         {
+            int userId = int.Parse(User.FindFirst("UserId")!.Value);
+
+            // 1️⃣ Load customer posts (NO PostMedia Include)
             var customerPosts = await _context.CustomerPosts
                 .Include(c => c.PostCategory)
                 .Include(c => c.User)
-                // ⭐ REQUIRED
+                    .ThenInclude(u => u.RatingRatedUsers) // ⭐ rating same as worker posts
                 .Where(c => c.IsActive)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
 
+            // 2️⃣ Load media manually (POLYMORPHIC FIX)
+            var postIds = customerPosts.Select(c => c.CustomerPostId).ToList();
+
+            var mediaLookup = await _context.PostMedia
+                .Where(m => m.PostType == "CustomerPost" && postIds.Contains(m.PostId))
+                .GroupBy(m => m.PostId)
+                .ToDictionaryAsync(g => g.Key, g => g.ToList());
+
+            ViewBag.PostMedia = mediaLookup;
+
+            // 3️⃣ Favorites (optional but matches customer dashboard)
+            var favoriteIds = await _context.FavoritePosts
+                .Where(f => f.UserId == userId && f.PostType == "CustomerPost")
+                .Select(f => f.PostId)
+                .ToListAsync();
+
+            ViewBag.FavoritePostIds = favoriteIds;
+
             return View(customerPosts);
         }
+
     }
 }
