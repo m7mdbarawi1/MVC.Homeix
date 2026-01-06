@@ -35,7 +35,7 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // DETAILS (TEMP: NO ACCESS CHECK)
+        // DETAILS
         // =====================================================
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,8 +50,16 @@ namespace Homeix.Controllers
             if (post == null)
                 return NotFound();
 
+            // ✅ POLYMORPHIC MEDIA (same logic as WorkerDashboard)
+            var mediaList = await _context.PostMedia
+                .Where(m => m.PostType == "CustomerPost" && m.PostId == id)
+                .ToListAsync();
+
+            ViewBag.PostMedia = mediaList;
+
             return View(post);
         }
+
 
         // =====================================================
         // CREATE (GET)

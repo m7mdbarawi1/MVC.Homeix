@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerPost>
 
 @using Microsoft.AspNetCore.Mvc.Localization
-@using System.Security.Claims
 @inject IViewLocalizer Localizer
 
 @{
@@ -15,16 +14,17 @@
 
 <div class="container page-wrapper mt-4">
 
-    <!-- HEADER -->
+    <!-- ================= HEADER ================= -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="page-title">@Localizer["BrowseServices"]</h1>
         <span id="resultCount" class="fw-bold text-secondary"></span>
     </div>
 
-    <!-- FILTERS -->
+    <!-- ================= FILTERS ================= -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
+
                 <div class="col-md-3">
                     <input id="searchInput"
                            class="form-control"
@@ -68,12 +68,22 @@
                         <option value="5">⭐ 5</option>
                     </select>
                 </div>
+
+                <!-- ❤️ FAVORITES TOGGLE -->
+                <div class="col-md-2 d-grid">
+                    <button id="favoriteToggle"
+                            class="btn btn-outline-danger">
+                        ❤️ My Favorites
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- POSTS GRID -->
+    <!-- ================= POSTS GRID ================= -->
     <div class="row" id="postsGrid">
+
         @foreach (var post in Model)
         {
             var media = post.PostMedia?
@@ -84,10 +94,14 @@
             ? media.MediaPath.Replace("\\", "/")
             : "/images/no-image.png";
 
-            var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Homeix.Models.Rating>();
+            var ratings = post.User?.RatingRatedUsers
+            ?? Enumerable.Empty<Homeix.Models.Rating>();
+
             var avgRating = ratings.Any()
             ? ratings.Average(r => r.RatingValue)
             : 0;
+
+            var isFavorite = favoriteIds.Contains(post.WorkerPostId);
 
             <div class="col-md-3 mb-4 post-card-wrapper">
 
@@ -95,11 +109,12 @@
                      data-title="@post.Title.ToLower()"
                      data-category="@post.PostCategory?.CategoryName"
                      data-price="@post.PriceRangeMin"
-                     data-rating="@avgRating">
+                     data-rating="@avgRating"
+                     data-favorite="@isFavorite.ToString().ToLower()">
 
                     <!-- ❤️ FAVORITE BUTTON -->
                     <div class="position-absolute top-0 end-0 p-2">
-                        @if (favoriteIds.Contains(post.WorkerPostId))
+                        @if (isFavorite)
                         {
                             <form asp-controller="FavoritePosts"
                                   asp-action="RemoveWorkerPost"
@@ -136,6 +151,7 @@
                         <img src="@imageUrl" class="card-img-top" />
 
                         <div class="card-body d-flex flex-column">
+
                             <h5 class="fw-bold">@post.Title</h5>
 
                             <p class="text-muted small text-truncate">
@@ -164,6 +180,7 @@
                             <span class="badge bg-success mt-auto">
                                 @Localizer["Available"]
                             </span>
+
                         </div>
                     </a>
                 </div>
@@ -181,8 +198,12 @@
             const minPrice = document.getElementById("minPrice");
             const maxPrice = document.getElementById("maxPrice");
             const rating = document.getElementById("ratingFilter");
+            const favoriteBtn = document.getElementById("favoriteToggle");
+
             const cards = document.querySelectorAll(".post-card");
             const resultCount = document.getElementById("resultCount");
+
+            let showFavoritesOnly = false;
 
             function filter() {
                 let visible = 0;
@@ -192,13 +213,15 @@
                     const cat = card.dataset.category || "";
                     const price = parseFloat(card.dataset.price) || 0;
                     const rate = parseFloat(card.dataset.rating) || 0;
+                    const isFavorite = card.dataset.favorite === "true";
 
                     const show =
                         title.includes(search.value.toLowerCase()) &&
                         (category.value === "" || cat === category.value) &&
                         price >= (parseFloat(minPrice.value) || 0) &&
                         price <= (parseFloat(maxPrice.value) || Infinity) &&
-                        rate >= (parseFloat(rating.value) || 0);
+                        rate >= (parseFloat(rating.value) || 0) &&
+                        (!showFavoritesOnly || isFavorite);
 
                     card.closest(".post-card-wrapper").style.display = show ? "" : "none";
                     if (show) visible++;
@@ -206,6 +229,19 @@
 
                 resultCount.textContent = visible + " services found";
             }
+
+            favoriteBtn.addEventListener("click", function () {
+                showFavoritesOnly = !showFavoritesOnly;
+
+                favoriteBtn.classList.toggle("btn-danger", showFavoritesOnly);
+                favoriteBtn.classList.toggle("btn-outline-danger", !showFavoritesOnly);
+
+                favoriteBtn.textContent = showFavoritesOnly
+                    ? "❤️ Showing Favorites"
+                    : "❤️ My Favorites";
+
+                filter();
+            });
 
             search.oninput =
             category.onchange =

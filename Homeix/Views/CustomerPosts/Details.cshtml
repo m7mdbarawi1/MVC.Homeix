@@ -1,51 +1,58 @@
 ﻿@model Homeix.Models.CustomerPost
+@using Homeix.Models
 
 @{
     ViewData["Title"] = "Customer Post Details";
+
+    var mediaList =
+        ViewBag.PostMedia as List<PostMedium>
+        ?? new List<PostMedium>();
+
+    var media = mediaList
+        .OrderByDescending(m => m.UploadedAt)
+        .FirstOrDefault();
+
+    var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
+        ? media.MediaPath.Replace("\\", "/")
+        : "/images/no-image.png";
 }
 
 <div class="container-fluid page-wrapper mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">@ViewData["Title"]</h1>
         </div>
     </div>
 
-    <!-- Centered Details Card -->
+    <!-- ================= DETAILS CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
 
             <div class="card shadow-sm">
-                <div class="card-body text-center">
 
-                    <!-- =========================
-                         IMAGE PLACEHOLDER (LIKE BOOK)
-                    ========================= -->
-                    <div class="mb-3">
-                        <span class="text-muted d-block">
-                            <i class="bi bi-image fs-1"></i><br />
-                            No image uploaded
-                        </span>
-                    </div>
+                <!-- 🖼 IMAGE (SAME STYLE AS GRID) -->
+                <img src="@imageUrl"
+                     class="card-img-top"
+                     style="height:300px; object-fit:cover" />
 
-                    <!-- =========================
-                         TITLE + META
-                    ========================= -->
+                <div class="card-body">
+
+                    <!-- TITLE + META -->
                     <div class="d-flex flex-column flex-md-row
                                 align-items-md-center
                                 justify-content-between
                                 mb-4 gap-2">
 
-                        <div class="text-start">
+                        <div>
                             <h3 class="fw-bold mb-1">@Model.Title</h3>
                             <p class="mb-0 text-muted">
                                 Category: @Model.PostCategory?.CategoryName
                             </p>
                             <p class="mb-0 fw-bold text-success">
                                 @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
-                                    ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax}"
+                                    ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax} JD"
                                     : "Price not specified")
                             </p>
                         </div>
@@ -55,10 +62,8 @@
                         </span>
                     </div>
 
-                    <!-- =========================
-                         DETAILS LIST (LIKE BOOK INFO)
-                    ========================= -->
-                    <dl class="row text-start mb-0">
+                    <!-- DETAILS -->
+                    <dl class="row mb-0">
 
                         <dt class="col-sm-4 fw-bold">Customer</dt>
                         <dd class="col-sm-8">@Model.User?.FullName</dd>
@@ -80,16 +85,28 @@
                         </dd>
 
                     </dl>
-
                 </div>
 
-                <!-- =========================
-                     FOOTER
-                ========================= -->
-                <div class="card-footer text-end">
-                    <a asp-action="Index" class="btn btn-secondary">
+                <!-- ================= FOOTER ================= -->
+                <div class="card-footer d-flex justify-content-between">
+
+                    <a asp-controller="Dashboard"
+                       asp-action="WorkerDashboard"
+                       class="btn btn-secondary">
                         <i class="bi bi-arrow-left-circle"></i> Back
                     </a>
+
+
+                    <!-- 💬 CHAT BUTTON -->
+                    <a asp-controller="Chat"
+                       asp-action="Index"
+                       asp-route-postType="CustomerPost"
+                       asp-route-postId="@Model.CustomerPostId"
+                       asp-route-userId="@Model.UserId"
+                       class="btn btn-primary">
+                        <i class="bi bi-chat-dots"></i> Chat
+                    </a>
+
                 </div>
             </div>
 
