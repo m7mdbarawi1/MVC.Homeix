@@ -190,14 +190,26 @@ namespace Homeix.Controllers
         {
             int userId = GetUserId();
 
+            // 1️⃣ Load customer posts
             var posts = await _context.CustomerPosts
                 .Where(p => p.UserId == userId)
                 .Include(p => p.PostCategory)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
+            // 2️⃣ Load media manually (POLYMORPHIC FIX)
+            var postIds = posts.Select(p => p.CustomerPostId).ToList();
+
+            var mediaLookup = await _context.PostMedia
+                .Where(m => m.PostType == "CustomerPost" && postIds.Contains(m.PostId))
+                .GroupBy(m => m.PostId)
+                .ToDictionaryAsync(g => g.Key, g => g.ToList());
+
+            ViewBag.PostMedia = mediaLookup;
+
             return View(posts);
         }
+
 
         // =====================================================
         // HELPERS

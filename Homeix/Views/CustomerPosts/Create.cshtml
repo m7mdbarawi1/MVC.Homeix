@@ -24,14 +24,12 @@
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- User -->
                         <div class="mb-3">
                             <label asp-for="UserId" class="form-label"></label>
-                            <select asp-for="UserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.UserId">
-                                <option value="">-- Select User --</option>
-                            </select>
+                            <input asp-for="UserId"
+                                   type="number"
+                                   class="form-control"
+                                   placeholder="Enter User ID" />
                             <span asp-validation-for="UserId" class="text-danger"></span>
                         </div>
 
