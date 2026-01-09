@@ -35,6 +35,10 @@ namespace Homeix.Models
         [StringLength(50)]
         public string Status { get; set; } = "Completed";
 
+        // ⭐ NEW: Human-readable payment description
+        [StringLength(255)]
+        public string? Quote { get; set; }
+
         // Navigation
         public virtual PaymentMethod? PaymentMethod { get; set; }
         public virtual Subscription? Subscription { get; set; }

@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class SubscriptionsController : Controller
     {
         private readonly HOMEIXDbContext _context;
@@ -18,7 +21,9 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================
         // GET: Subscriptions
+        // ========================
         public async Task<IActionResult> Index()
         {
             var subs = await _context.Subscriptions
@@ -29,7 +34,9 @@ namespace Homeix.Controllers
             return View(subs);
         }
 
+        // ========================
         // GET: Subscriptions/Details/5
+        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -44,44 +51,95 @@ namespace Homeix.Controllers
             return View(subscription);
         }
 
+        // ========================
         // GET: Subscriptions/Create
+        // ========================
         public IActionResult Create()
         {
-            ReloadDropdowns();
-            // sensible defaults
+            ViewData["PlanId"] = new SelectList(
+                _context.SubscriptionPlans.Where(p => p.IsActive),
+                "PlanId",
+                "PlanName"
+            );
+
             var model = new Subscription
             {
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today.AddDays(30),
                 Status = "Active"
             };
+
             return View(model);
         }
 
-        // POST: Subscriptions/Create
+        // ========================
+        // POST: Subscriptions/Create  ✅ FIXED
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("UserId,PlanId,StartDate,EndDate,Status")]
-            Subscription subscription)
+    [Bind("PlanId,StartDate,EndDate")]
+    Subscription subscription)
         {
             if (!ModelState.IsValid)
             {
-                ReloadDropdowns(subscription);
+                ViewData["PlanId"] = new SelectList(
+                    _context.SubscriptionPlans.Where(p => p.IsActive),
+                    "PlanId",
+                    "PlanName",
+                    subscription.PlanId
+                );
                 return View(subscription);
             }
 
-            // (Optional) If you want EndDate auto-based on plan when empty/invalid:
-            // var plan = await _context.SubscriptionPlans.FirstOrDefaultAsync(p => p.PlanId == subscription.PlanId);
-            // if (plan != null && subscription.EndDate <= subscription.StartDate)
-            //     subscription.EndDate = subscription.StartDate.AddDays(plan.DurationDays);
+            // ✅ AUTO ASSIGN USER
+            int userId = int.Parse(User.FindFirst("UserId")!.Value);
+            subscription.UserId = userId;
+
+            // 🔴 EXPIRE ALL ACTIVE SUBSCRIPTIONS
+            var activeSubs = await _context.Subscriptions
+                .Where(s => s.UserId == userId && s.Status == "Active")
+                .ToListAsync();
+
+            foreach (var sub in activeSubs)
+            {
+                sub.Status = "Expired";
+                sub.EndDate = DateTime.Today;
+            }
+
+            // 🟢 CREATE NEW ACTIVE SUBSCRIPTION
+            subscription.Status = "Active";
 
             _context.Subscriptions.Add(subscription);
+            await _context.SaveChangesAsync(); // ✅ SubscriptionId is now available
+
+            // ===============================
+            // 💳 CREATE PAYMENT (ADD HERE)
+            // ===============================
+            var plan = await _context.SubscriptionPlans
+                .FirstAsync(p => p.PlanId == subscription.PlanId);
+
+            var payment = new Payment
+            {
+                UserId = userId,
+                SubscriptionId = subscription.SubscriptionId,
+                PaymentMethodId = 1, // temporary / test method
+                Amount = plan.Price,
+                PaymentDate = DateTime.Now,
+                Status = "Completed",
+                Quote = $"Subscription purchase: {plan.PlanName} plan"
+            };
+
+            _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
+
+        // ========================
         // GET: Subscriptions/Edit/5
+        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -93,7 +151,9 @@ namespace Homeix.Controllers
             return View(subscription);
         }
 
+        // ========================
         // POST: Subscriptions/Edit/5
+        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -109,17 +169,15 @@ namespace Homeix.Controllers
                 return View(subscription);
             }
 
-            // Ensure row exists
-            var exists = await _context.Subscriptions.AnyAsync(s => s.SubscriptionId == id);
-            if (!exists) return NotFound();
-
             _context.Update(subscription);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
+        // ========================
         // GET: Subscriptions/Delete/5
+        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -134,7 +192,9 @@ namespace Homeix.Controllers
             return View(subscription);
         }
 
+        // ========================
         // POST: Subscriptions/Delete/5
+        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -148,6 +208,9 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ========================
+        // HELPERS
+        // ========================
         private void ReloadDropdowns(Subscription? sub = null)
         {
             ViewData["UserId"] = new SelectList(

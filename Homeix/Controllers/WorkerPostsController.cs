@@ -8,6 +8,7 @@ using Homeix.Data;
 using Homeix.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Homeix.Controllers
 {
@@ -15,10 +16,14 @@ namespace Homeix.Controllers
     public class WorkerPostsController : Controller
     {
         private readonly HOMEIXDbContext _context;
+        private readonly ILogger<WorkerPostsController> _logger;
 
-        public WorkerPostsController(HOMEIXDbContext context)
+        public WorkerPostsController(
+            HOMEIXDbContext context,
+            ILogger<WorkerPostsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // =====================================================
@@ -30,7 +35,7 @@ namespace Homeix.Controllers
             var posts = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
                 .Include(w => w.User)
-                    .ThenInclude(u => u.RatingRatedUsers) // ⭐ LOAD RATINGS
+                    .ThenInclude(u => u.RatingRatedUsers)
                 .Where(w => w.IsActive)
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
@@ -38,9 +43,8 @@ namespace Homeix.Controllers
             return View(posts);
         }
 
-
         // =====================================================
-        // DETAILS (Owner or Admin)
+        // DETAILS
         // =====================================================
         public async Task<IActionResult> Details(int id)
         {
@@ -57,13 +61,29 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-
         // =====================================================
         // CREATE (GET)
         // =====================================================
         [Authorize(Roles = "worker, admin")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            int userId = GetUserId();
+
+            _logger.LogInformation("Create(GET) | UserId={UserId}", userId);
+            _logger.LogInformation("IsInRole(worker) = {IsWorker}", User.IsInRole("worker"));
+
+            if (User.IsInRole("worker"))
+            {
+                var subscription = await GetCurrentSubscriptionAsync(userId);
+
+                if (subscription == null)
+                {
+                    _logger.LogWarning("No active subscription found");
+                    TempData["Error"] = "You must have an active subscription to create posts.";
+                    return RedirectToAction("Index", "SubscriptionPlans");
+                }
+            }
+
             LoadCategories();
             return View();
         }
@@ -74,17 +94,62 @@ namespace Homeix.Controllers
         [HttpPost]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind(
-            "PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax"
-        )] WorkerPost workerPost)
+        public async Task<IActionResult> Create(WorkerPost workerPost)
         {
+            int userId = GetUserId();
+
+            await DebugSubscriptions(userId);
+
+            if (User.IsInRole("worker"))
+            {
+                var subscription = await GetCurrentSubscriptionAsync(userId);
+
+                if (subscription == null)
+                {
+                    ModelState.AddModelError("", "You must have an active subscription to create posts.");
+                    LoadCategories(workerPost);
+                    return View(workerPost);
+                }
+
+                if (subscription.StartDate > DateTime.Today || subscription.EndDate < DateTime.Today)
+                {
+                    ModelState.AddModelError("", "Your subscription is not currently valid.");
+                    LoadCategories(workerPost);
+                    return View(workerPost);
+                }
+
+                // 🔴 FIX: rolling 30-day window (ONLY CHANGE)
+                var windowStart = DateTime.Now.AddDays(-30);
+
+                int postsThisMonth = await _context.WorkerPosts.CountAsync(w =>
+                    w.UserId == userId &&
+                    w.CreatedAt >= windowStart);
+
+                _logger.LogInformation(
+                    "LIMIT CHECK → User={UserId}, PostsLast30Days={Count}, MaxAllowed={Max}",
+                    userId,
+                    postsThisMonth,
+                    subscription.Plan?.MaxPostsPerMonth
+                );
+
+                if (subscription.Plan?.MaxPostsPerMonth.HasValue == true &&
+                    postsThisMonth >= subscription.Plan.MaxPostsPerMonth.Value)
+                {
+                    TempData["Error"] =
+     $"You have reached your limit of {subscription.Plan.MaxPostsPerMonth} posts. Upgrade your plan to create more.";
+
+                    return RedirectToAction("Index", "SubscriptionPlans");
+
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 LoadCategories(workerPost);
                 return View(workerPost);
             }
 
-            workerPost.UserId = GetUserId();
+            workerPost.UserId = userId;
             workerPost.CreatedAt = DateTime.Now;
             workerPost.IsActive = true;
 
@@ -95,105 +160,7 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // EDIT (GET)
-        // =====================================================
-        [Authorize(Roles = "worker")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var post = await _context.WorkerPosts.FindAsync(id);
-            if (post == null) return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
-
-            LoadCategories(post);
-            return View(post);
-        }
-
-        // =====================================================
-        // EDIT (POST)
-        // =====================================================
-        [HttpPost]
-        [Authorize(Roles = "worker")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind(
-            "WorkerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive"
-        )] WorkerPost workerPost)
-        {
-            if (id != workerPost.WorkerPostId)
-                return NotFound();
-
-            var existing = await _context.WorkerPosts
-                .AsNoTracking()
-                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
-
-            if (existing == null)
-                return NotFound();
-
-            if (!IsOwnerOrAdmin(existing))
-                return Forbid();
-
-            if (!ModelState.IsValid)
-            {
-                LoadCategories(workerPost);
-                return View(workerPost);
-            }
-
-            workerPost.UserId = existing.UserId;
-            workerPost.CreatedAt = existing.CreatedAt;
-
-            _context.WorkerPosts.Update(workerPost);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(MyPosts));
-        }
-
-        // =====================================================
-        // DELETE (GET)
-        // =====================================================
-        [Authorize(Roles = "worker")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var post = await _context.WorkerPosts
-                .Include(w => w.PostCategory)
-                .Include(w => w.User)
-                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
-
-            if (post == null) return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
-
-            return View(post);
-        }
-
-        // =====================================================
-        // DELETE (POST)
-        // =====================================================
-        [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = "worker")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var post = await _context.WorkerPosts.FindAsync(id);
-            if (post == null)
-                return NotFound();
-
-            if (!IsOwnerOrAdmin(post))
-                return Forbid();
-
-            _context.WorkerPosts.Remove(post);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(MyPosts));
-        }
-
-        // =====================================================
-        // MY POSTS (WORKER)
+        // MY POSTS
         // =====================================================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> MyPosts()
@@ -210,6 +177,56 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
+        // SUBSCRIPTION LOGIC
+        // =====================================================
+        private async Task<Subscription?> GetCurrentSubscriptionAsync(int userId)
+        {
+            return await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Where(s =>
+                    s.UserId == userId &&
+                    s.Status.Trim().ToLower() == "active")
+                .OrderByDescending(s => s.EndDate)
+                .FirstOrDefaultAsync();
+        }
+
+        [Authorize(Roles = "worker, admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var post = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
+            if (post == null) return NotFound();
+
+            // owner check
+            if (post.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
+            return View(post);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "worker, admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var post = await _context.WorkerPosts.FindAsync(id);
+            if (post == null) return NotFound();
+
+            if (post.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
+            _context.WorkerPosts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(MyPosts));
+        }
+
+
+        // =====================================================
         // HELPERS
         // =====================================================
         private int GetUserId()
@@ -221,14 +238,6 @@ namespace Homeix.Controllers
             return int.Parse(claim.Value);
         }
 
-        private bool IsOwnerOrAdmin(WorkerPost post)
-        {
-            if (User.IsInRole("admin"))
-                return true;
-
-            return post.UserId == GetUserId();
-        }
-
         private void LoadCategories(WorkerPost? post = null)
         {
             ViewData["PostCategoryId"] = new SelectList(
@@ -237,6 +246,31 @@ namespace Homeix.Controllers
                 "CategoryName",
                 post?.PostCategoryId
             );
+        }
+
+        private async Task DebugSubscriptions(int userId)
+        {
+            var subs = await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.EndDate)
+                .ToListAsync();
+
+            _logger.LogInformation("==== SUBSCRIPTIONS DEBUG ====");
+
+            foreach (var s in subs)
+            {
+                _logger.LogInformation(
+                    "ID={Id} | Status={Status} | Start={Start:d} | End={End:d} | Plan={Plan}",
+                    s.SubscriptionId,
+                    s.Status,
+                    s.StartDate,
+                    s.EndDate,
+                    s.Plan?.PlanName
+                );
+            }
+
+            _logger.LogInformation("================================");
         }
     }
 }

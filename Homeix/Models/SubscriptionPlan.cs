@@ -22,6 +22,11 @@ namespace Homeix.Models
         [Range(1, 3650)]
         public int DurationDays { get; set; }
 
+        // ⭐ NEW: Post limit per month
+        // NULL = Unlimited posts
+        [Range(1, 1000)]
+        public int? MaxPostsPerMonth { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         // Navigation
