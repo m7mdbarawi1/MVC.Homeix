@@ -62,6 +62,18 @@ namespace Homeix.Controllers
                 "PlanName"
             );
 
+            // ✅ Used by payment confirmation modal
+            ViewBag.PlanData = _context.SubscriptionPlans
+                .Where(p => p.IsActive)
+                .Select(p => new
+                {
+                    planId = p.PlanId,
+                    planName = p.PlanName,
+                    price = p.Price,
+                    durationDays = p.DurationDays
+                })
+                .ToList();
+
             var model = new Subscription
             {
                 StartDate = DateTime.Today,
@@ -73,13 +85,13 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // POST: Subscriptions/Create  ✅ FIXED
+        // POST: Subscriptions/Create
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-    [Bind("PlanId,StartDate,EndDate")]
-    Subscription subscription)
+            [Bind("PlanId,StartDate,EndDate")]
+            Subscription subscription)
         {
             if (!ModelState.IsValid)
             {
@@ -92,11 +104,11 @@ namespace Homeix.Controllers
                 return View(subscription);
             }
 
-            // ✅ AUTO ASSIGN USER
+            // ✅ AUTO ASSIGN LOGGED-IN USER
             int userId = int.Parse(User.FindFirst("UserId")!.Value);
             subscription.UserId = userId;
 
-            // 🔴 EXPIRE ALL ACTIVE SUBSCRIPTIONS
+            // 🔴 EXPIRE ALL CURRENT ACTIVE SUBSCRIPTIONS
             var activeSubs = await _context.Subscriptions
                 .Where(s => s.UserId == userId && s.Status == "Active")
                 .ToListAsync();
@@ -111,10 +123,10 @@ namespace Homeix.Controllers
             subscription.Status = "Active";
 
             _context.Subscriptions.Add(subscription);
-            await _context.SaveChangesAsync(); // ✅ SubscriptionId is now available
+            await _context.SaveChangesAsync(); // SubscriptionId generated
 
             // ===============================
-            // 💳 CREATE PAYMENT (ADD HERE)
+            // 💳 CREATE PAYMENT RECORD
             // ===============================
             var plan = await _context.SubscriptionPlans
                 .FirstAsync(p => p.PlanId == subscription.PlanId);
@@ -123,7 +135,7 @@ namespace Homeix.Controllers
             {
                 UserId = userId,
                 SubscriptionId = subscription.SubscriptionId,
-                PaymentMethodId = 1, // temporary / test method
+                PaymentMethodId = 1, // TEMP / TEST METHOD
                 Amount = plan.Price,
                 PaymentDate = DateTime.Now,
                 Status = "Completed",
@@ -135,7 +147,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
 
         // ========================
         // GET: Subscriptions/Edit/5
