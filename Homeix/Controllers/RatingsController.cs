@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
@@ -24,7 +24,6 @@ namespace Homeix.Controllers
         public async Task<IActionResult> Index()
         {
             var ratings = await _context.Ratings
-                .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
                 .OrderByDescending(r => r.CreatedAt)
@@ -42,7 +41,6 @@ namespace Homeix.Controllers
                 return NotFound();
 
             var rating = await _context.Ratings
-                .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
                 .FirstOrDefaultAsync(r => r.RatingId == id);
@@ -58,7 +56,6 @@ namespace Homeix.Controllers
         // ========================
         public IActionResult Create()
         {
-            LoadDropdowns();
             return View();
         }
 
@@ -68,20 +65,38 @@ namespace Homeix.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("JobProgressId,RaterUserId,RatedUserId,RatingValue,Review")]
+            [Bind("RatedUserId,RatingValue,Review")]
             Rating rating)
         {
-            if (rating.RaterUserId == rating.RatedUserId)
+            // ✅ Logged-in user becomes the rater
+            var userIdClaim = User.FindFirstValue("UserId");
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized();
+
+            int loggedUserId = int.Parse(userIdClaim);
+
+            // ❌ Cannot rate yourself
+            if (rating.RatedUserId == loggedUserId)
             {
                 ModelState.AddModelError("", "You cannot rate yourself.");
             }
 
-            if (!ModelState.IsValid)
+            // ❌ Ensure target user selected
+            if (rating.RatedUserId <= 0)
             {
-                LoadDropdowns(rating);
-                return View(rating);
+                ModelState.AddModelError(nameof(Rating.RatedUserId), "Please select a user to rate.");
             }
 
+            // ❌ Ensure rating selected
+            if (rating.RatingValue < 1 || rating.RatingValue > 5)
+            {
+                ModelState.AddModelError(nameof(Rating.RatingValue), "Please select a rating.");
+            }
+
+            if (!ModelState.IsValid)
+                return View(rating);
+
+            rating.RaterUserId = loggedUserId;
             rating.CreatedAt = DateTime.Now;
 
             _context.Ratings.Add(rating);
@@ -102,7 +117,6 @@ namespace Homeix.Controllers
             if (rating == null)
                 return NotFound();
 
-            LoadDropdowns(rating);
             return View(rating);
         }
 
@@ -113,22 +127,11 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("RatingId,JobProgressId,RaterUserId,RatedUserId,RatingValue,Review")]
+            [Bind("RatingId,RatedUserId,RatingValue,Review")]
             Rating rating)
         {
             if (id != rating.RatingId)
                 return NotFound();
-
-            if (rating.RaterUserId == rating.RatedUserId)
-            {
-                ModelState.AddModelError("", "You cannot rate yourself.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                LoadDropdowns(rating);
-                return View(rating);
-            }
 
             var existing = await _context.Ratings
                 .AsNoTracking()
@@ -137,6 +140,17 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
+            // ❌ Cannot rate yourself
+            if (rating.RatedUserId == existing.RaterUserId)
+            {
+                ModelState.AddModelError("", "You cannot rate yourself.");
+            }
+
+            if (!ModelState.IsValid)
+                return View(rating);
+
+            // Preserve system fields
+            rating.RaterUserId = existing.RaterUserId;
             rating.CreatedAt = existing.CreatedAt;
 
             _context.Update(rating);
@@ -154,7 +168,6 @@ namespace Homeix.Controllers
                 return NotFound();
 
             var rating = await _context.Ratings
-                .Include(r => r.JobProgress)
                 .Include(r => r.RatedUser)
                 .Include(r => r.RaterUser)
                 .FirstOrDefaultAsync(r => r.RatingId == id);
@@ -183,27 +196,25 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // Helpers
+        // AJAX: Search Users
         // ========================
-        private void LoadDropdowns(Rating? rating = null)
+        [HttpGet]
+        public async Task<IActionResult> SearchUsers(string term)
         {
-            ViewData["JobProgressId"] = new SelectList(
-                _context.JobProgresses,
-                "JobProgressId",
-                "JobProgressId",
-                rating?.JobProgressId);
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(Array.Empty<object>());
 
-            ViewData["RatedUserId"] = new SelectList(
-                _context.Users,
-                "UserId",
-                "FullName",
-                rating?.RatedUserId);
+            var users = await _context.Users
+                .Where(u => u.FullName.Contains(term))
+                .Select(u => new
+                {
+                    userId = u.UserId,
+                    fullName = u.FullName
+                })
+                .Take(10)
+                .ToListAsync();
 
-            ViewData["RaterUserId"] = new SelectList(
-                _context.Users,
-                "UserId",
-                "FullName",
-                rating?.RaterUserId);
+            return Json(users);
         }
     }
 }

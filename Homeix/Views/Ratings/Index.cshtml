@@ -39,7 +39,7 @@
                                     <th>@Html.DisplayNameFor(model => model.RatingValue)</th>
                                     <th>@Html.DisplayNameFor(model => model.Review)</th>
                                     <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
-                                    <th>@Html.DisplayNameFor(model => model.JobProgress)</th>
+
                                     <th>@Html.DisplayNameFor(model => model.RatedUser)</th>
                                     <th>@Html.DisplayNameFor(model => model.RaterUser)</th>
                                     <th class="text-center">Actions</th>
@@ -60,7 +60,7 @@
                                                 @item.Review
                                             </td>
                                             <td>@item.CreatedAt</td>
-                                            <td>@item.JobProgress?.JobProgressId</td>
+
                                             <td>@item.RatedUser?.UserId</td>
                                             <td>@item.RaterUser?.UserId</td>
                                             <td class="text-center">

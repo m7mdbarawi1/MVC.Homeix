@@ -5,90 +5,58 @@
 }
 
 <div class="container-fluid mt-4">
-
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="page-title">Create Rating</h1>
-        </div>
-    </div>
-
-    <!-- Centered Form -->
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body">
 
+                    <h4 class="text-center mb-4">Rate a User</h4>
+
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
 
-                        <!-- Show all validation errors -->
                         <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-                        <!-- Job Progress -->
+                        <!-- 🔍 Search User -->
                         <div class="mb-3">
-                            <label asp-for="JobProgressId" class="form-label"></label>
-                            <select asp-for="JobProgressId"
-                                    class="form-select"
-                                    asp-items="ViewBag.JobProgressId">
-                                <option value="">-- Select Job --</option>
-                            </select>
-                            <span asp-validation-for="JobProgressId" class="text-danger"></span>
+                            <label class="form-label">User to Rate</label>
+                            <input type="text"
+                                   id="userSearch"
+                                   class="form-control"
+                                   placeholder="Search user by name..." />
+
+                            <input type="hidden" asp-for="RatedUserId" />
+                            <div id="searchResults" class="list-group mt-1"></div>
                         </div>
 
-                        <!-- Rater -->
+                        <!-- ⭐ Star Rating -->
                         <div class="mb-3">
-                            <label asp-for="RaterUserId" class="form-label"></label>
-                            <select asp-for="RaterUserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RaterUserId">
-                                <option value="">-- Select Rater --</option>
-                            </select>
-                            <span asp-validation-for="RaterUserId" class="text-danger"></span>
-                        </div>
+                            <label class="form-label">Rating</label>
+                            <div id="starRating" class="fs-3 text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi bi-star star"
+                                       data-value="@i"
+                                       style="cursor:pointer;"></i>
+                                }
+                            </div>
 
-                        <!-- Rated User -->
-                        <div class="mb-3">
-                            <label asp-for="RatedUserId" class="form-label"></label>
-                            <select asp-for="RatedUserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RatedUserId">
-                                <option value="">-- Select Rated User --</option>
-                            </select>
-                            <span asp-validation-for="RatedUserId" class="text-danger"></span>
-                        </div>
-
-                        <!-- Rating Value -->
-                        <div class="mb-3">
-                            <label asp-for="RatingValue" class="form-label"></label>
-                            <input asp-for="RatingValue"
-                                   type="number"
-                                   min="1"
-                                   max="5"
-                                   class="form-control" />
+                            <input type="hidden" asp-for="RatingValue" />
                             <span asp-validation-for="RatingValue" class="text-danger"></span>
                         </div>
 
-                        <!-- Review -->
+                        <!-- ✍ Optional Review -->
                         <div class="mb-3">
                             <label asp-for="Review" class="form-label"></label>
                             <textarea asp-for="Review"
                                       class="form-control"
-                                      rows="3"></textarea>
-                            <span asp-validation-for="Review" class="text-danger"></span>
+                                      rows="3"
+                                      placeholder="Optional review..."></textarea>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-end gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Create
-                            </button>
-
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Back
-                            </a>
-                        </div>
-
+                        <button type="submit" class="btn btn-primary w-100">
+                            Submit Rating
+                        </button>
                     </form>
 
                 </div>
@@ -98,7 +66,49 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // ⭐ STAR RATING
+        document.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", () => {
+                const value = star.dataset.value;
+                document.querySelector("input[name='RatingValue']").value = value;
+
+                document.querySelectorAll(".star").forEach(s => {
+                    s.classList.toggle("bi-star-fill", s.dataset.value <= value);
+                    s.classList.toggle("bi-star", s.dataset.value > value);
+                });
+            });
+        });
+
+        // 🔍 USER SEARCH
+        const searchInput = document.getElementById("userSearch");
+        const results = document.getElementById("searchResults");
+        const hiddenUserId = document.querySelector("input[name='RatedUserId']");
+
+        searchInput.addEventListener("input", async () => {
+            const term = searchInput.value.trim();
+            results.innerHTML = "";
+            if (term.length < 2) return;
+
+            const res = await fetch(`/Ratings/SearchUsers?term=${term}`);
+            const users = await res.json();
+
+            users.forEach(u => {
+                const item = document.createElement("button");
+                item.type = "button";
+                item.className = "list-group-item list-group-item-action";
+                item.textContent = u.fullName;
+
+                item.onclick = () => {
+                    searchInput.value = u.fullName;
+                    hiddenUserId.value = u.userId;
+                    results.innerHTML = "";
+                };
+
+                results.appendChild(item);
+            });
+        });
+    </script>
 }

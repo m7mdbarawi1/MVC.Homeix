@@ -97,7 +97,7 @@ namespace Homeix.Data
             modelBuilder.Entity<Rating>(entity =>
             {
                 entity.HasKey(e => e.RatingId);
-                entity.HasOne(e => e.JobProgress).WithMany(j => j.Ratings).HasForeignKey(e => e.JobProgressId).OnDelete(DeleteBehavior.ClientSetNull);
+               
                 entity.HasOne(e => e.RatedUser).WithMany(u => u.RatingRatedUsers).HasForeignKey(e => e.RatedUserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(e => e.RaterUser).WithMany(u => u.RatingRaterUsers).HasForeignKey(e => e.RaterUserId).OnDelete(DeleteBehavior.ClientSetNull);
             });

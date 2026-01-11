@@ -17,10 +17,6 @@ namespace Homeix.Models
         // Foreign Keys
         // =========================
         [Required]
-        [Column("JobProgressID")]
-        public int JobProgressId { get; set; }
-
-        [Required]
         [Column("RaterUserID")]
         public int RaterUserId { get; set; }
 
@@ -34,7 +30,7 @@ namespace Homeix.Models
         [Range(1, 5)]
         public int RatingValue { get; set; }
 
-        public string? Review { get; set; }
+        public string? Review { get; set; } // ✅ OPTIONAL
 
         // =========================
         // System-managed field
@@ -44,11 +40,8 @@ namespace Homeix.Models
         public DateTime CreatedAt { get; set; }
 
         // =========================
-        // Navigation (❌ DO NOT VALIDATE)
+        // Navigation
         // =========================
-        [ValidateNever]
-        public virtual JobProgress JobProgress { get; set; } = null!;
-
         [ValidateNever]
         public virtual User RatedUser { get; set; } = null!;
 
