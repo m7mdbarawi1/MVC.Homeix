@@ -1,0 +1,67 @@
+﻿@model List<Homeix.Models.Advertisement>
+
+@if (Model.Any())
+{
+    var ad = Model.First();
+
+    <div class="modal fade show"
+         id="adModal"
+         style="display:block; background: rgba(0,0,0,0.75);"
+         tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+
+                <!-- HEADER -->
+                <div class="modal-header border-0 justify-content-between">
+                    <span class="badge bg-warning text-dark px-3 py-2">
+                        Advertisement
+                    </span>
+
+                    <button type="button"
+                            class="btn-close"
+                            aria-label="Close"
+                            onclick="closeAd()">
+                    </button>
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body text-center px-4 pb-4">
+
+                    <img src="@ad.ImagePath"
+                         class="img-fluid rounded-3 mb-4"
+                         style="max-height: 420px; object-fit: contain;" />
+
+                    <div class="d-inline-block px-4 py-2 rounded-pill bg-light text-dark fw-semibold">
+                        Closing in <span id="adCountdown">5</span> seconds
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let seconds = 5;
+        const counter = document.getElementById("adCountdown");
+
+        const timer = setInterval(() => {
+            seconds--;
+            counter.innerText = seconds;
+
+            if (seconds <= 0) {
+                closeAd();
+            }
+        }, 1000);
+
+        function closeAd() {
+            clearInterval(timer);
+
+            const modal = document.getElementById("adModal");
+            if (modal) modal.remove();
+
+            document.body.classList.remove("modal-open");
+            document.querySelector(".modal-backdrop")?.remove();
+        }
+    </script>
+}

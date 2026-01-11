@@ -222,5 +222,30 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 
+    @inject Homeix.Data.HOMEIXDbContext _context
+
+    @{
+        var rand = new Random();
+        bool showAd = rand.Next(0, 100) < 20; // ✅ 20% chance
+
+        List<Homeix.Models.Advertisement> ads = new();
+
+        if (showAd)
+        {
+            ads = _context.Advertisements
+            .Where(a =>
+            a.IsActive &&
+            a.StartDate <= DateTime.Today &&
+            a.EndDate >= DateTime.Today)
+            .OrderBy(a => Guid.NewGuid())
+            .Take(1) // ✅ ONLY ONE AD
+            .ToList();
+        }
+    }
+
+
+    <partial name="_AdvertisementRotator" model="ads" />
+
+
 </body>
 </html>

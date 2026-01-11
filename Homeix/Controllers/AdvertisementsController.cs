@@ -1,14 +1,17 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class AdvertisementsController : Controller
     {
         private readonly HOMEIXDbContext _context;
@@ -31,29 +34,10 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // GET: Advertisements/Details/5
-        // ========================
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var advertisement = await _context.Advertisements
-                .Include(a => a.CreatedByUser)
-                .FirstOrDefaultAsync(a => a.AdId == id);
-
-            if (advertisement == null)
-                return NotFound();
-
-            return View(advertisement);
-        }
-
-        // ========================
         // GET: Advertisements/Create
         // ========================
         public IActionResult Create()
         {
-            LoadUsersDropdown();
             return View();
         }
 
@@ -62,58 +46,49 @@ namespace Homeix.Controllers
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("CreatedByUserId,Title,ImagePath,StartDate,EndDate,IsActive")]
-            Advertisement advertisement)
+        public async Task<IActionResult> Create(Advertisement advertisement)
         {
+            ModelState.Remove(nameof(Advertisement.ImagePath));
+            ModelState.Remove(nameof(Advertisement.CreatedByUserId));
+
+            if (advertisement.ImageFile == null || advertisement.ImageFile.Length == 0)
+                ModelState.AddModelError(nameof(advertisement.ImageFile), "Please upload an image.");
+
             if (!ModelState.IsValid)
+                return View(advertisement);
+
+            // ✅ Auto assign logged-in user
+            advertisement.CreatedByUserId =
+                int.Parse(User.FindFirstValue("UserId")!);
+
+            // ✅ Validate extension
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(advertisement.ImageFile!.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
             {
-                LoadUsersDropdown(advertisement.CreatedByUserId);
+                ModelState.AddModelError(nameof(advertisement.ImageFile), "Only image files are allowed.");
                 return View(advertisement);
             }
+
+            // ✅ Save file
+            var uploadPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "uploads", "advertisements"
+            );
+            Directory.CreateDirectory(uploadPath);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var fullPath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await advertisement.ImageFile.CopyToAsync(stream);
+            }
+
+            advertisement.ImagePath = "/uploads/advertisements/" + fileName;
 
             _context.Advertisements.Add(advertisement);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // ========================
-        // GET: Advertisements/Edit/5
-        // ========================
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var advertisement = await _context.Advertisements.FindAsync(id);
-            if (advertisement == null)
-                return NotFound();
-
-            LoadUsersDropdown(advertisement.CreatedByUserId);
-            return View(advertisement);
-        }
-
-        // ========================
-        // POST: Advertisements/Edit/5
-        // ========================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("AdId,CreatedByUserId,Title,ImagePath,StartDate,EndDate,IsActive")]
-            Advertisement advertisement)
-        {
-            if (id != advertisement.AdId)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-            {
-                LoadUsersDropdown(advertisement.CreatedByUserId);
-                return View(advertisement);
-            }
-
-            _context.Update(advertisement);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -138,7 +113,7 @@ namespace Homeix.Controllers
         }
 
         // ========================
-        // POST: Advertisements/Delete/5
+        // POST: Advertisements/Delete
         // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -148,23 +123,24 @@ namespace Homeix.Controllers
 
             if (advertisement != null)
             {
+                // delete image file
+                if (!string.IsNullOrEmpty(advertisement.ImagePath))
+                {
+                    var physicalPath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        advertisement.ImagePath.TrimStart('/')
+                    );
+
+                    if (System.IO.File.Exists(physicalPath))
+                        System.IO.File.Delete(physicalPath);
+                }
+
                 _context.Advertisements.Remove(advertisement);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        // ========================
-        // Helpers
-        // ========================
-        private void LoadUsersDropdown(int? selectedUserId = null)
-        {
-            ViewData["CreatedByUserId"] =
-                new SelectList(_context.Users,
-                               "UserId",
-                               "UserId",
-                               selectedUserId);
         }
     }
 }

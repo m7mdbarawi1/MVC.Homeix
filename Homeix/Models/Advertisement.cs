@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Homeix.Models
 {
@@ -19,9 +21,12 @@ namespace Homeix.Models
         [StringLength(200)]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
         [StringLength(255)]
         public string ImagePath { get; set; } = string.Empty;
+
+        // ⬇️ NOT stored in DB
+        [NotMapped]
+        public IFormFile? ImageFile { get; set; }
 
         [Required]
         [Column(TypeName = "date")]
