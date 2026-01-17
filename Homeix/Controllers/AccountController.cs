@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Linq;
 
-
 namespace Homeix.Controllers
 {
     public class AccountController : Controller
@@ -53,7 +52,6 @@ namespace Homeix.Controllers
                 return View();
             }
 
-            // BCrypt verify only
             if (!VerifyPassword(password, user.PasswordHash))
             {
                 ViewBag.Error = "Invalid email or password.";
@@ -74,11 +72,9 @@ namespace Homeix.Controllers
                 new AuthenticationProperties { IsPersistent = true }
             );
 
-            // Respect returnUrl FIRST
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            // Role-based dashboard redirect
             return user.Role.RoleName switch
             {
                 "admin" => RedirectToAction("AdminDashboard", "Dashboard"),
@@ -104,7 +100,6 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string fullName, string email, string phone, string password, int roleId)
         {
-
             if (!IsStrongPassword(password, out var passError))
             {
                 ViewBag.Error = passError;
@@ -142,7 +137,7 @@ namespace Homeix.Controllers
                 Email = email,
                 PhoneNumber = phone ?? "",
                 RoleId = roleId,
-                PasswordHash = HashPassword(password), // BCrypt
+                PasswordHash = HashPassword(password),
                 ProfilePicture = null
             };
 
@@ -192,15 +187,15 @@ namespace Homeix.Controllers
             dbUser.PhoneNumber = model.PhoneNumber;
 
             if (!string.IsNullOrWhiteSpace(NewPassword))
-                dbUser.PasswordHash = HashPassword(NewPassword); // BCrypt
+                dbUser.PasswordHash = HashPassword(NewPassword);
 
-            if (ProfileImage != null)
+            // 🔧 ONLY SAFE PROFILE-RELATED FIX
+            if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 string folder = Path.Combine(_env.WebRootPath, "uploads/profile");
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
 
-             
                 var ext = Path.GetExtension(ProfileImage.FileName);
                 string fileName = $"{Guid.NewGuid()}{ext}";
                 string path = Path.Combine(folder, fileName);
@@ -213,7 +208,6 @@ namespace Homeix.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Refresh auth
             await HttpContext.SignOutAsync("HomeixAuth");
 
             var role = await _context.UserRoles.FindAsync(dbUser.RoleId);
@@ -287,10 +281,8 @@ namespace Homeix.Controllers
             {
                 if (User.IsInRole("admin"))
                     return RedirectToAction("AdminDashboard", "Dashboard");
-
                 if (User.IsInRole("customer"))
                     return RedirectToAction("CustomerDashboard", "Dashboard");
-
                 if (User.IsInRole("worker"))
                     return RedirectToAction("WorkerDashboard", "Dashboard");
             }
@@ -311,12 +303,12 @@ namespace Homeix.Controllers
             if (string.IsNullOrWhiteSpace(storedHash))
                 return false;
 
-            // BCrypt hashes start with $2a$ / $2b$ / $2y$
             if (!(storedHash.StartsWith("$2a$") || storedHash.StartsWith("$2b$") || storedHash.StartsWith("$2y$")))
                 return false;
 
             return BCrypt.Net.BCrypt.Verify(password, storedHash);
         }
+
         private bool IsStrongPassword(string password, out string error)
         {
             error = "";
@@ -345,6 +337,5 @@ namespace Homeix.Controllers
 
             return true;
         }
-
     }
 }
