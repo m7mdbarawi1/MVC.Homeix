@@ -471,3 +471,32 @@ html.dark-theme #chatbot-box {
         margin-bottom: 1rem;
     }
 }
+
+
+/* ==========================================================
+   ? LANGUAGE DROPDOWN — MOBILE RESPONSIVE FIX (ADDED ONLY)
+   (Use with: <div class="dropdown lang-dropdown"> ... and
+    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive">)
+========================================================== */
+@media (max-width: 576px) {
+
+    .lang-dropdown {
+        width: 100%;
+    }
+
+        .lang-dropdown .dropdown-toggle {
+            width: 100%;
+            text-align: center;
+        }
+
+    .dropdown-menu-responsive {
+        width: 100% !important;
+        max-width: 100%;
+        text-align: center;
+    }
+
+        .dropdown-menu-responsive .dropdown-item {
+            text-align: center;
+            padding: 0.6rem 1rem;
+        }
+}

@@ -52,7 +52,10 @@
 
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <li class="nav-item"><a class="nav-link" asp-controller="Chat" asp-action="Index"> Messages</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Chat" asp-action="Index">Messages</a>
+                            </li>
+
                             if (roleName == "admin")
                             {
                                 <li class="nav-item dropdown">
@@ -87,7 +90,7 @@
                             }
                             else if (roleName == "customer")
                             {
-                                <li class="nav-item"><a class="nav-link" asp-controller="CustomerPosts" asp-action="MyPosts">My Posts</a> </li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="CustomerPosts" asp-action="MyPosts">My Posts</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">My Favorites</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="Index">History</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerApprovals" asp-action="Index">Become a Professional</a></li>
@@ -103,20 +106,22 @@
                     </ul>
 
                     <!-- RIGHT SIDE BUTTONS -->
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
 
-                        <!-- ✅ LANGUAGE DROPDOWN (ADDED ONLY) -->
-                        <div class="dropdown">
-                            <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                🌐
+                        <!-- ✅ RESPONSIVE LANGUAGE DROPDOWN -->
+                        <div class="dropdown lang-dropdown">
+                            <button class="btn btn-outline-light btn-sm dropdown-toggle w-100 w-lg-auto"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                🌐 <span class="d-none d-md-inline">Language</span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive">
                                 <li><button class="dropdown-item lang-btn" data-lang="en">English</button></li>
                                 <li><button class="dropdown-item lang-btn" data-lang="ar">العربية</button></li>
                             </ul>
                         </div>
 
-                        <!-- THEME TOGGLE (UNCHANGED) -->
+                        <!-- THEME TOGGLE -->
                         <button id="themeToggle" class="btn btn-outline-light btn-sm">
                             <span id="themeIcon">🌙</span>
                         </button>
@@ -174,7 +179,7 @@
         });
     </script>
 
-    <!-- ✅ LANGUAGE SCRIPT (ADDED ONLY) -->
+    <!-- ✅ LANGUAGE SCRIPT -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
@@ -187,6 +192,10 @@
                     const selected = btn.dataset.lang;
                     localStorage.setItem("lang", selected);
                     applyLang(selected);
+
+                    // close dropdown on mobile
+                    btn.closest(".dropdown-menu")
+                       ?.previousElementSibling?.click();
                 });
             });
 
@@ -197,7 +206,7 @@
         });
     </script>
 
-    <!-- THEME TOGGLE SCRIPT (UNTOUCHED) -->
+    <!-- THEME TOGGLE SCRIPT -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
@@ -226,7 +235,7 @@
 
     @{
         var rand = new Random();
-        bool showAd = rand.Next(0, 100) < 20; // ✅ 20% chance
+        bool showAd = rand.Next(0, 100) < 20;
 
         List<Homeix.Models.Advertisement> ads = new();
 
@@ -238,14 +247,12 @@
             a.StartDate <= DateTime.Today &&
             a.EndDate >= DateTime.Today)
             .OrderBy(a => Guid.NewGuid())
-            .Take(1) // ✅ ONLY ONE AD
+            .Take(1)
             .ToList();
         }
     }
 
-
     <partial name="_AdvertisementRotator" model="ads" />
-
 
 </body>
 </html>
