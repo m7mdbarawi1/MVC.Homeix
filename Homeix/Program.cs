@@ -5,20 +5,33 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
+using Homeix.Hubs; // ✅ SignalR Hub
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ======================
+// LOGGING
+// ======================
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found.");
-builder.Services.AddDbContext<HOMEIXDbContext>(opt => opt.UseSqlServer(cs));
+// ======================
+// DATABASE
+// ======================
+var cs = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string not found.");
+
+builder.Services.AddDbContext<HOMEIXDbContext>(opt =>
+    opt.UseSqlServer(cs)
+);
 
 // ======================
-// AUTHENTICATION CONFIG
+// AUTHENTICATION (COOKIE)
 // ======================
-builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options =>
+builder.Services
+    .AddAuthentication("HomeixAuth")
+    .AddCookie("HomeixAuth", options =>
     {
         options.Cookie.Name = "Homeix.Auth";
         options.LoginPath = "/Account/Login";
@@ -30,17 +43,26 @@ builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+// ======================
+// MVC + LOCALIZATION
+// ======================
+builder.Services
+    .AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
 builder.Services.AddLocalization(options =>
 {
     options.ResourcesPath = "Resources";
 });
 
-// 3) Localization options
+// ======================
+// REQUEST LOCALIZATION
+// ======================
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[] {
+    var supportedCultures = new[]
+    {
         new CultureInfo("en-US"),
         new CultureInfo("ar-JO")
     };
@@ -49,7 +71,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 
-    // ✅ allow switching via query string and cookie
     options.RequestCultureProviders = new List<IRequestCultureProvider>
     {
         new QueryStringRequestCultureProvider(),
@@ -57,14 +78,24 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     };
 });
 
+// ======================
+// SIGNALR ✅
+// ======================
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
-// Enable localization
-var locOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+// ======================
+// LOCALIZATION MIDDLEWARE
+// ======================
+var locOptions = app.Services
+    .GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+
 app.UseRequestLocalization(locOptions.Value);
 
-
-// 4) Pipeline
+// ======================
+// ERROR HANDLING
+// ======================
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -75,8 +106,13 @@ else
     app.UseHsts();
 }
 
+// ======================
+// STATIC FILES
+// ======================
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// uploads folder
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
@@ -84,12 +120,28 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 
-
+// ======================
+// ROUTING + AUTH
+// ======================
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+// ======================
+// MVC ROUTES
+// ======================
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
+// ======================
+// SIGNALR HUB ROUTE ✅
+// ======================
+app.MapHub<ChatHub>("/chatHub");
+
+// ======================
+// RUN
+// ======================
 app.Run();

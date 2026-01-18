@@ -1,43 +1,52 @@
 ﻿using Homeix.Data;
 using Homeix.Models;
+using Homeix.Hubs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class ChatController : Controller
     {
         private readonly HOMEIXDbContext _context;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public ChatController(HOMEIXDbContext context)
+        public ChatController(
+            HOMEIXDbContext context,
+            IHubContext<ChatHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // =========================
-        // TEMP USER RESOLUTION
+        // CURRENT USER (CLAIMS) ✅ FIXED
         // =========================
-        private async Task<int> GetCurrentUserIdAsync(int? forcedUserId)
+        private int GetCurrentUserId()
         {
-            if (forcedUserId.HasValue)
+            // You store UserId as a CUSTOM claim
+            var userIdClaim = User.FindFirst("UserId");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                bool exists = await _context.Users.AnyAsync(u => u.UserId == forcedUserId);
-                if (exists) return forcedUserId.Value;
+                throw new InvalidOperationException(
+                    "Authenticated user does not have a valid UserId claim."
+                );
             }
 
-            // fallback (safe)
-            return await _context.Users
-                .OrderBy(u => u.UserId)
-                .Select(u => u.UserId)
-                .FirstAsync();
+            return userId;
         }
 
         // =========================
-        // GET: /Chat?userId=5&me=2
+        // GET: /Chat?userId=5
         // =========================
-        public async Task<IActionResult> Index(int? userId, int? me)
+        public async Task<IActionResult> Index(int? userId)
         {
-            int currentUserId = await GetCurrentUserIdAsync(me);
+            int currentUserId = GetCurrentUserId();
 
             // Sidebar users
             var users = await _context.Users
@@ -59,7 +68,7 @@ namespace Homeix.Controllers
 
             var selectedUser = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+                .FirstOrDefaultAsync(u => u.UserId == userId.Value);
 
             if (selectedUser == null)
                 return NotFound();
@@ -101,32 +110,23 @@ namespace Homeix.Controllers
         // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Send(
-            int conversationId,
-            string messageText,
-            int me)
+        public async Task<IActionResult> Send(int conversationId, string messageText)
         {
-            int currentUserId = await GetCurrentUserIdAsync(me);
+            if (string.IsNullOrWhiteSpace(messageText))
+                return RedirectToAction(nameof(Index));
+
+            int currentUserId = GetCurrentUserId();
 
             var conversation = await _context.Conversations.FindAsync(conversationId);
             if (conversation == null)
                 return NotFound();
 
-            if (string.IsNullOrWhiteSpace(messageText))
-            {
-                int other =
-                    conversation.User1Id == currentUserId
-                        ? conversation.User2Id
-                        : conversation.User1Id;
-
-                return RedirectToAction(nameof(Index), new { userId = other, me });
-            }
-
             var message = new Message
             {
                 ConversationId = conversationId,
                 SenderUserId = currentUserId,
-                MessageText = messageText
+                MessageText = messageText,
+                SentAt = DateTime.UtcNow
             };
 
             _context.Messages.Add(message);
@@ -137,7 +137,17 @@ namespace Homeix.Controllers
                     ? conversation.User2Id
                     : conversation.User1Id;
 
-            return RedirectToAction(nameof(Index), new { userId = otherUserId, me });
+            // 🔥 REAL-TIME SIGNALR PUSH
+            await _hubContext.Clients
+                .Groups($"user-{currentUserId}", $"user-{otherUserId}")
+                .SendAsync("ReceiveMessage", new
+                {
+                    senderId = currentUserId,
+                    text = messageText,
+                    sentAt = message.SentAt.ToString("HH:mm")
+                });
+
+            return RedirectToAction(nameof(Index), new { userId = otherUserId });
         }
     }
 }
