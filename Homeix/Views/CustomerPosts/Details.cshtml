@@ -41,6 +41,7 @@
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h2 class="mb-0 fw-bold">@Model.Title</h2>
 
+                <!-- Badges (Category badge changed: no more white box) -->
                 <div class="d-flex flex-wrap gap-2">
                     <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
                         @(Model.IsActive ? "Active" : "Inactive")
@@ -51,9 +52,12 @@
                         <span class="badge bg-info text-dark">@Model.Status</span>
                     }
 
+                    @* Category displayed as colored badge (not white) *@
                     @if (!string.IsNullOrWhiteSpace(Model.PostCategory?.CategoryName))
                     {
-                        <span class="badge text-bg-light border">@Model.PostCategory!.CategoryName</span>
+                        <span class="badge bg-primary">
+                            <i class="bi bi-tags"></i> @Model.PostCategory!.CategoryName
+                        </span>
                     }
                 </div>
             </div>
@@ -68,14 +72,15 @@
 
     <div class="row g-3">
 
-        <!-- LEFT: Images like Marketplace -->
+        <!-- LEFT: Images -->
         <div class="col-12 col-lg-7">
             <div class="card shadow-sm">
 
                 @if (hasMedia && mediaList.Count > 1)
                 {
                     <div id="customerPostCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner bg-light">
+                        <!-- use bg-secondary bg-opacity-10 instead of bg-light to avoid harsh white -->
+                        <div class="carousel-inner bg-secondary bg-opacity-10">
                             @for (int i = 0; i < mediaList.Count; i++)
                             {
                                 var url = mediaList[i].MediaPath.Replace("\\", "/");
@@ -85,23 +90,28 @@
                                     <img src="@url"
                                          class="d-block w-100"
                                          alt="Post image @(i + 1)"
-                                         style="max-height:520px; object-fit:contain; background:#f8f9fa;" />
+                                         style="max-height:520px; object-fit:contain; background:transparent;" />
                                 </div>
                             }
                         </div>
 
+                        <!-- More visible arrows -->
                         <button class="carousel-control-prev" type="button" data-bs-target="#customerPostCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="bg-dark bg-opacity-75 rounded-circle p-2 d-inline-flex align-items-center justify-content-center">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </span>
                             <span class="visually-hidden">Previous</span>
                         </button>
 
                         <button class="carousel-control-next" type="button" data-bs-target="#customerPostCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="bg-dark bg-opacity-75 rounded-circle p-2 d-inline-flex align-items-center justify-content-center">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </span>
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
 
-                    <!-- Thumbnails -->
+                    <!-- Thumbnails (remove “white box” look by using bg-transparent + border-0) -->
                     <div class="card-body border-top">
                         <div class="row row-cols-6 g-2">
                             @for (int i = 0; i < mediaList.Count; i++)
@@ -110,7 +120,7 @@
 
                                 <div class="col">
                                     <button type="button"
-                                            class="btn p-0 w-100 border rounded"
+                                            class="btn p-0 w-100 bg-transparent border-0"
                                             data-bs-target="#customerPostCarousel"
                                             data-bs-slide-to="@i"
                                             aria-label="Image @(i + 1)">
@@ -130,23 +140,23 @@
                     ? mediaList[0].MediaPath.Replace("\\", "/")
                     : fallbackImageUrl;
 
-                    <div class="bg-light">
+                    <div class="bg-secondary bg-opacity-10">
                         <img src="@imageUrl"
                              class="d-block w-100"
                              alt="Post image"
-                             style="max-height:520px; object-fit:contain; background:#f8f9fa;" />
+                             style="max-height:520px; object-fit:contain; background:transparent;" />
                     </div>
                 }
 
             </div>
         </div>
 
-        <!-- RIGHT: Key info + actions like OpenSooq/Marketplace -->
+        <!-- RIGHT: Info -->
         <div class="col-12 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <!-- PRICE FIRST (highlight) -->
+                    <!-- PRICE -->
                     <div class="mb-2">
                         <div class="text-muted small">Price</div>
                         <div class="fs-3 fw-bold text-success">
@@ -160,7 +170,7 @@
 
                     <!-- Posted by -->
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center"
+                        <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
                              style="width:44px; height:44px;">
                             <i class="bi bi-person fs-4 text-muted"></i>
                         </div>
@@ -171,21 +181,21 @@
                         </div>
                     </div>
 
-                    <!-- Quick facts (clear hierarchy) -->
+                    <!-- Quick facts (remove list-group white background using bg-transparent) -->
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item px-0 d-flex justify-content-between">
+                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
                             <span class="text-muted">Category</span>
                             <span class="fw-semibold">@Model.PostCategory?.CategoryName</span>
                         </div>
-                        <div class="list-group-item px-0 d-flex justify-content-between">
+                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
                             <span class="text-muted">Location</span>
                             <span class="fw-semibold">@Model.Location</span>
                         </div>
-                        <div class="list-group-item px-0 d-flex justify-content-between">
+                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
                             <span class="text-muted">Status</span>
                             <span class="fw-semibold">@Model.Status</span>
                         </div>
-                        <div class="list-group-item px-0 d-flex justify-content-between">
+                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
                             <span class="text-muted">Created</span>
                             <span class="fw-semibold">@Model.CreatedAt.ToString("yyyy-MM-dd")</span>
                         </div>
@@ -199,43 +209,45 @@
                         @Model.Description
                     </div>
 
-                    <!-- KEEP your old info (not removed) but make it cleaner -->
-                    <div class="accordion mt-3" id="customerDetailsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingMoreDetailsCustomer">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreDetailsCustomer">
-                                    More details
-                                </button>
-                            </h2>
-                            <div id="collapseMoreDetailsCustomer" class="accordion-collapse collapse" data-bs-parent="#customerDetailsAccordion">
-                                <div class="accordion-body">
-                                    <dl class="row mb-0">
-                                        <dt class="col-sm-4 fw-bold">Customer</dt>
-                                        <dd class="col-sm-8">@Model.User?.FullName</dd>
+                    <!-- More details as a BUTTON (not white accordion header) -->
+                    <div class="mt-3">
+                        <button class="btn btn-primary w-100"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#moreDetailsCustomer"
+                                aria-expanded="false"
+                                aria-controls="moreDetailsCustomer">
+                            <i class="bi bi-list-ul"></i> More details
+                        </button>
 
-                                        <dt class="col-sm-4 fw-bold">Username</dt>
-                                        <dd class="col-sm-8">@creatorUserName</dd>
+                        <div class="collapse mt-3" id="moreDetailsCustomer">
+                            <div class="card card-body">
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-4 fw-bold">Customer</dt>
+                                    <dd class="col-sm-8">@Model.User?.FullName</dd>
 
-                                        <dt class="col-sm-4 fw-bold">Location</dt>
-                                        <dd class="col-sm-8">@Model.Location</dd>
+                                    <dt class="col-sm-4 fw-bold">Username</dt>
+                                    <dd class="col-sm-8">@creatorUserName</dd>
 
-                                        <dt class="col-sm-4 fw-bold">Status</dt>
-                                        <dd class="col-sm-8">@Model.Status</dd>
+                                    <dt class="col-sm-4 fw-bold">Location</dt>
+                                    <dd class="col-sm-8">@Model.Location</dd>
 
-                                        <dt class="col-sm-4 fw-bold">Created On</dt>
-                                        <dd class="col-sm-8">@Model.CreatedAt.ToString("yyyy-MM-dd")</dd>
+                                    <dt class="col-sm-4 fw-bold">Status</dt>
+                                    <dd class="col-sm-8">@Model.Status</dd>
 
-                                        <dt class="col-sm-4 fw-bold">Description</dt>
-                                        <dd class="col-sm-8">@Model.Description</dd>
-                                    </dl>
-                                </div>
+                                    <dt class="col-sm-4 fw-bold">Created On</dt>
+                                    <dd class="col-sm-8">@Model.CreatedAt.ToString("yyyy-MM-dd")</dd>
+
+                                    <dt class="col-sm-4 fw-bold">Description</dt>
+                                    <dd class="col-sm-8">@Model.Description</dd>
+                                </dl>
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Footer buttons (kept) -->
+                <!-- Footer buttons -->
                 <div class="card-footer d-flex justify-content-between">
                     <a asp-controller="Dashboard"
                        asp-action="WorkerDashboard"
