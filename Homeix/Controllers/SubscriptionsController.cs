@@ -35,6 +35,36 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var subs = await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Include(s => s.User)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("SubscriptionId,User,Plan,StartDate,EndDate,Status,Price");
+
+            foreach (var s in subs)
+            {
+                sb.AppendLine(
+                    $"{s.SubscriptionId}," +
+                    $"\"{s.User?.FullName}\"," +
+                    $"\"{s.Plan?.PlanName}\"," +
+                    $"{s.StartDate:yyyy-MM-dd}," +
+                    $"{s.EndDate:yyyy-MM-dd}," +
+                    $"{s.Status}," +
+                    $"{s.Plan?.Price}"
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "SubscriptionsReport.csv");
+        }
+
+        // ========================
         // GET: Subscriptions/Details/5
         // ========================
         public async Task<IActionResult> Details(int? id)
@@ -62,7 +92,6 @@ namespace Homeix.Controllers
                 "PlanName"
             );
 
-            // ✅ Used by payment confirmation modal
             ViewBag.PlanData = _context.SubscriptionPlans
                 .Where(p => p.IsActive)
                 .Select(p => new
@@ -104,11 +133,9 @@ namespace Homeix.Controllers
                 return View(subscription);
             }
 
-            // ✅ AUTO ASSIGN LOGGED-IN USER
             int userId = int.Parse(User.FindFirst("UserId")!.Value);
             subscription.UserId = userId;
 
-            // 🔴 EXPIRE ALL CURRENT ACTIVE SUBSCRIPTIONS
             var activeSubs = await _context.Subscriptions
                 .Where(s => s.UserId == userId && s.Status == "Active")
                 .ToListAsync();
@@ -119,15 +146,11 @@ namespace Homeix.Controllers
                 sub.EndDate = DateTime.Today;
             }
 
-            // 🟢 CREATE NEW ACTIVE SUBSCRIPTION
             subscription.Status = "Active";
 
             _context.Subscriptions.Add(subscription);
-            await _context.SaveChangesAsync(); // SubscriptionId generated
+            await _context.SaveChangesAsync();
 
-            // ===============================
-            // 💳 CREATE PAYMENT RECORD
-            // ===============================
             var plan = await _context.SubscriptionPlans
                 .FirstAsync(p => p.PlanId == subscription.PlanId);
 
@@ -135,7 +158,7 @@ namespace Homeix.Controllers
             {
                 UserId = userId,
                 SubscriptionId = subscription.SubscriptionId,
-                PaymentMethodId = 1, // TEMP / TEST METHOD
+                PaymentMethodId = 1,
                 Amount = plan.Price,
                 PaymentDate = DateTime.Now,
                 Status = "Completed",

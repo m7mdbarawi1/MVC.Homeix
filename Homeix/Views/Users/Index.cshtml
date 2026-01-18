@@ -10,9 +10,17 @@
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Create New
-            </a>
+
+            <div class="d-flex gap-2">
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New
+                </a>
+
+                <!-- ✅ ADDED -->
+                <a asp-action="DownloadReport" class="btn btn-secondary">
+                    <i class="bi bi-download"></i> Download Report
+                </a>
+            </div>
         </div>
     </div>
 
@@ -54,9 +62,7 @@
                                             <td>@item.FullName</td>
                                             <td>@item.Email</td>
                                             <td>@item.PhoneNumber</td>
-                                            <td>
-                                                <span class="badge bg-secondary">••••••</span>
-                                            </td>
+                                            <td><span class="badge bg-secondary">••••••</span></td>
                                             <td>@item.ProfilePicture</td>
                                             <td>@item.Role?.RoleId</td>
                                             <td class="text-center">
@@ -102,8 +108,7 @@
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(term) ? "" : "none";
+                    row.style.display = row.textContent.toLowerCase().includes(term) ? "" : "none";
                 });
             });
         });

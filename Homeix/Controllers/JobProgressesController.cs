@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -30,6 +31,40 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(jobs);
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var jobs = await _context.JobProgresses
+                .Include(j => j.AssignedToUser)
+                .Include(j => j.CustomerPost)
+                .Include(j => j.RequestedByUser)
+                .OrderByDescending(j => j.StartedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("JobProgressId,Status,StartedAt,CompletedAt,IsRatedByCustomer,IsRatedByWorker,AssignedToUserId,CustomerPostId,RequestedByUserId");
+
+            foreach (var j in jobs)
+            {
+                sb.AppendLine(
+                    $"{j.JobProgressId}," +
+                    $"{j.Status}," +
+                    $"{j.StartedAt:yyyy-MM-dd HH:mm}," +
+                    $"{j.CompletedAt?.ToString("yyyy-MM-dd HH:mm")}," +
+                    $"{j.IsRatedByCustomer}," +
+                    $"{j.IsRatedByWorker}," +
+                    $"{j.AssignedToUserId}," +
+                    $"{j.CustomerPostId}," +
+                    $"{j.RequestedByUserId}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "JobProgressReport.csv");
         }
 
         // ========================
@@ -67,11 +102,7 @@ namespace Homeix.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind(
-                "CustomerPostId," +
-                "RequestedByUserId," +
-                "AssignedToUserId"
-            )]
+            [Bind("CustomerPostId,RequestedByUserId,AssignedToUserId")]
             JobProgress jobProgress)
         {
             if (!ModelState.IsValid)
@@ -80,9 +111,6 @@ namespace Homeix.Controllers
                 return View(jobProgress);
             }
 
-            // =========================
-            // System-managed fields
-            // =========================
             jobProgress.Status = "In Progress";
             jobProgress.StartedAt = DateTime.Now;
             jobProgress.IsRatedByCustomer = false;
@@ -117,16 +145,7 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind(
-                "JobProgressId," +
-                "CustomerPostId," +
-                "RequestedByUserId," +
-                "AssignedToUserId," +
-                "Status," +
-                "CompletedAt," +
-                "IsRatedByCustomer," +
-                "IsRatedByWorker"
-            )]
+            [Bind("JobProgressId,CustomerPostId,RequestedByUserId,AssignedToUserId,Status,CompletedAt,IsRatedByCustomer,IsRatedByWorker")]
             JobProgress jobProgress)
         {
             if (id != jobProgress.JobProgressId)
@@ -145,9 +164,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // =========================
-            // Preserve system fields
-            // =========================
             jobProgress.StartedAt = existing.StartedAt;
 
             _context.Update(jobProgress);

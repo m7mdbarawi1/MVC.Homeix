@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using System.Text;
 
 namespace Homeix.Controllers
 {
@@ -22,6 +23,27 @@ namespace Homeix.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.PaymentMethods.ToListAsync());
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var methods = await _context.PaymentMethods
+                .OrderBy(m => m.MethodName)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("PaymentMethodId,MethodName");
+
+            foreach (var m in methods)
+            {
+                sb.AppendLine($"{m.PaymentMethodId},\"{m.MethodName}\"");
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "PaymentMethodsReport.csv");
         }
 
         // ========================

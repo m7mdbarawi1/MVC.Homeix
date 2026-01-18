@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using System.Text;
 
 namespace Homeix.Controllers
 {
@@ -29,6 +30,36 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(offers);
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var offers = await _context.Offers
+                .Include(o => o.CustomerPost)
+                .Include(o => o.User)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("OfferId,ProposedPrice,Status,CreatedAt,CustomerPostId,UserId");
+
+            foreach (var o in offers)
+            {
+                sb.AppendLine(
+                    $"{o.OfferId}," +
+                    $"{o.ProposedPrice}," +
+                    $"{o.Status}," +
+                    $"{o.CreatedAt:yyyy-MM-dd}," +
+                    $"{o.CustomerPostId}," +
+                    $"{o.UserId}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "OffersReport.csv");
         }
 
         // ========================
@@ -65,11 +96,7 @@ namespace Homeix.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind(
-                "CustomerPostId," +
-                "UserId," +
-                "ProposedPrice"
-            )]
+            [Bind("CustomerPostId,UserId,ProposedPrice")]
             Offer offer)
         {
             if (!ModelState.IsValid)
@@ -78,9 +105,6 @@ namespace Homeix.Controllers
                 return View(offer);
             }
 
-            // =========================
-            // System-managed fields
-            // =========================
             offer.CreatedAt = DateTime.Now;
             offer.Status = "Pending";
 
@@ -113,13 +137,7 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind(
-                "OfferId," +
-                "CustomerPostId," +
-                "UserId," +
-                "ProposedPrice," +
-                "Status"
-            )]
+            [Bind("OfferId,CustomerPostId,UserId,ProposedPrice,Status")]
             Offer offer)
         {
             if (id != offer.OfferId)
@@ -138,9 +156,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // =========================
-            // Preserve system fields
-            // =========================
             offer.CreatedAt = existing.CreatedAt;
 
             _context.Update(offer);

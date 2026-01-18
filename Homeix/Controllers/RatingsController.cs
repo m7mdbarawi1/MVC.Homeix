@@ -33,6 +33,36 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var ratings = await _context.Ratings
+                .Include(r => r.RatedUser)
+                .Include(r => r.RaterUser)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("RatingId,RatingValue,Review,CreatedAt,RatedUser,RaterUser");
+
+            foreach (var r in ratings)
+            {
+                sb.AppendLine(
+                    $"{r.RatingId}," +
+                    $"{r.RatingValue}," +
+                    $"\"{r.Review}\"," +
+                    $"{r.CreatedAt:yyyy-MM-dd}," +
+                    $"\"{r.RatedUser?.FullName}\"," +
+                    $"\"{r.RaterUser?.FullName}\""
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "RatingsReport.csv");
+        }
+
+        // ========================
         // GET: Ratings/Details
         // ========================
         public async Task<IActionResult> Details(int? id)
@@ -68,30 +98,20 @@ namespace Homeix.Controllers
             [Bind("RatedUserId,RatingValue,Review")]
             Rating rating)
         {
-            // ✅ Logged-in user becomes the rater
             var userIdClaim = User.FindFirstValue("UserId");
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized();
 
             int loggedUserId = int.Parse(userIdClaim);
 
-            // ❌ Cannot rate yourself
             if (rating.RatedUserId == loggedUserId)
-            {
                 ModelState.AddModelError("", "You cannot rate yourself.");
-            }
 
-            // ❌ Ensure target user selected
             if (rating.RatedUserId <= 0)
-            {
                 ModelState.AddModelError(nameof(Rating.RatedUserId), "Please select a user to rate.");
-            }
 
-            // ❌ Ensure rating selected
             if (rating.RatingValue < 1 || rating.RatingValue > 5)
-            {
                 ModelState.AddModelError(nameof(Rating.RatingValue), "Please select a rating.");
-            }
 
             if (!ModelState.IsValid)
                 return View(rating);
@@ -140,16 +160,12 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // ❌ Cannot rate yourself
             if (rating.RatedUserId == existing.RaterUserId)
-            {
                 ModelState.AddModelError("", "You cannot rate yourself.");
-            }
 
             if (!ModelState.IsValid)
                 return View(rating);
 
-            // Preserve system fields
             rating.RaterUserId = existing.RaterUserId;
             rating.CreatedAt = existing.CreatedAt;
 

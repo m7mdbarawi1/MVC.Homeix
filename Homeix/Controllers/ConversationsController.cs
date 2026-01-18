@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -29,6 +30,34 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(conversations);
+        }
+
+        // ========================
+        // ✅ DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var conversations = await _context.Conversations
+                .Include(c => c.User1)
+                .Include(c => c.User2)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("ConversationId,CreatedAt,User1Id,User2Id");
+
+            foreach (var c in conversations)
+            {
+                sb.AppendLine(
+                    $"{c.ConversationId}," +
+                    $"{c.CreatedAt:yyyy-MM-dd HH:mm}," +
+                    $"{c.User1Id}," +
+                    $"{c.User2Id}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "ConversationsReport.csv");
         }
 
         // ========================
@@ -74,7 +103,6 @@ namespace Homeix.Controllers
                 return View(conversation);
             }
 
-            // ✅ System-managed field
             conversation.CreatedAt = DateTime.Now;
 
             _context.Conversations.Add(conversation);
@@ -125,7 +153,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // ✅ Preserve CreatedAt
             conversation.CreatedAt = existing.CreatedAt;
 
             _context.Update(conversation);

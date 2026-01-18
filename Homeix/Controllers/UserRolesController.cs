@@ -25,6 +25,25 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var roles = await _context.UserRoles.ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("RoleId,RoleName");
+
+            foreach (var role in roles)
+            {
+                sb.AppendLine($"{role.RoleId},\"{role.RoleName}\"");
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "UserRolesReport.csv");
+        }
+
+        // ========================
         // GET: UserRoles/Details
         // ========================
         public async Task<IActionResult> Details(int? id)

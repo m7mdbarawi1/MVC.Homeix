@@ -34,6 +34,38 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var ratings = await _context.RatingCustomerPosts
+                .Include(r => r.JobProgress)
+                .Include(r => r.RaterUser)
+                .Include(r => r.RatedUser)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("RatingId,RatingValue,Review,CreatedAt,JobProgressId,RatedUser,RaterUser");
+
+            foreach (var r in ratings)
+            {
+                sb.AppendLine(
+                    $"{r.RatingCustomerPostId}," +
+                    $"{r.RatingValue}," +
+                    $"\"{r.Review}\"," +
+                    $"{r.CreatedAt:yyyy-MM-dd}," +
+                    $"{r.JobProgressId}," +
+                    $"\"{r.RatedUser?.FullName}\"," +
+                    $"\"{r.RaterUser?.FullName}\""
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "RatingCustomerPostsReport.csv");
+        }
+
+        // ========================
         // GET: RatingCustomerPosts/Details/5
         // ========================
         public async Task<IActionResult> Details(int? id)

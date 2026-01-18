@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -35,6 +36,40 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
+        // DOWNLOAD REPORT (CSV) - NO ROLE
+        // =====================================================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var posts = await _context.CustomerPosts
+                .Include(p => p.PostCategory)
+                .Include(p => p.User)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("PostId,Title,Category,User,Location,MinPrice,MaxPrice,Status,IsActive,CreatedAt");
+
+            foreach (var post in posts)
+            {
+                sb.AppendLine(
+                    $"{post.CustomerPostId}," +
+                    $"\"{post.Title}\"," +
+                    $"\"{post.PostCategory?.CategoryName}\"," +
+                    $"\"{post.User?.FullName}\"," +
+                    $"\"{post.Location}\"," +
+                    $"{post.PriceRangeMin}," +
+                    $"{post.PriceRangeMax}," +
+                    $"{post.Status}," +
+                    $"{post.IsActive}," +
+                    $"{post.CreatedAt:yyyy-MM-dd}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "CustomerPostsReport.csv");
+        }
+
+        // =====================================================
         // DETAILS
         // =====================================================
         public async Task<IActionResult> Details(int? id)
@@ -50,7 +85,6 @@ namespace Homeix.Controllers
             if (post == null)
                 return NotFound();
 
-            // ✅ POLYMORPHIC MEDIA (same logic as WorkerDashboard)
             var mediaList = await _context.PostMedia
                 .Where(m => m.PostType == "CustomerPost" && m.PostId == id)
                 .ToListAsync();
@@ -59,7 +93,6 @@ namespace Homeix.Controllers
 
             return View(post);
         }
-
 
         // =====================================================
         // CREATE (GET)
@@ -190,14 +223,12 @@ namespace Homeix.Controllers
         {
             int userId = GetUserId();
 
-            // 1️⃣ Load customer posts
             var posts = await _context.CustomerPosts
                 .Where(p => p.UserId == userId)
                 .Include(p => p.PostCategory)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            // 2️⃣ Load media manually (POLYMORPHIC FIX)
             var postIds = posts.Select(p => p.CustomerPostId).ToList();
 
             var mediaLookup = await _context.PostMedia
@@ -209,7 +240,6 @@ namespace Homeix.Controllers
 
             return View(posts);
         }
-
 
         // =====================================================
         // HELPERS

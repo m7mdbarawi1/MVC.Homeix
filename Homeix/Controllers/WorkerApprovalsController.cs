@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -30,6 +31,37 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(approvals);
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var approvals = await _context.WorkerApprovals
+                .Include(w => w.User)
+                .Include(w => w.ReviewedByUser)
+                .OrderByDescending(w => w.RequestedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("ApprovalId,Status,Notes,RequestedAt,ReviewedAt,ReviewedBy,User");
+
+            foreach (var a in approvals)
+            {
+                sb.AppendLine(
+                    $"{a.ApprovalId}," +
+                    $"{a.Status}," +
+                    $"\"{a.Notes}\"," +
+                    $"{a.RequestedAt:yyyy-MM-dd}," +
+                    $"{a.ReviewedAt:yyyy-MM-dd}," +
+                    $"\"{a.ReviewedByUser?.FullName}\"," +
+                    $"\"{a.User?.FullName}\""
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "WorkerApprovalsReport.csv");
         }
 
         // ========================
@@ -73,7 +105,6 @@ namespace Homeix.Controllers
                 return View(workerApproval);
             }
 
-            // Prevent duplicate pending request for same user
             bool exists = await _context.WorkerApprovals.AnyAsync(w =>
                 w.UserId == workerApproval.UserId &&
                 w.Status == "Pending");
@@ -85,7 +116,6 @@ namespace Homeix.Controllers
                 return View(workerApproval);
             }
 
-            // System-controlled fields
             workerApproval.Status = "Pending";
             workerApproval.RequestedAt = DateTime.Now;
             workerApproval.ReviewedAt = null;
@@ -138,7 +168,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // Preserve system fields
             workerApproval.Status = existing.Status;
             workerApproval.RequestedAt = existing.RequestedAt;
             workerApproval.ReviewedAt = existing.ReviewedAt;

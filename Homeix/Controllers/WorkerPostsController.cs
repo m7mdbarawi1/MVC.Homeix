@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -44,6 +45,46 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
+        // DOWNLOAD REPORT (CSV)
+        // =====================================================
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DownloadReport()
+        {
+            var posts = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .Include(w => w.User)
+                    .ThenInclude(u => u.RatingRatedUsers)
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("PostId,Title,Category,Worker,Location,MinPrice,MaxPrice,AvgRating,TotalRatings,IsActive,CreatedAt");
+
+            foreach (var post in posts)
+            {
+                var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
+                var avgRating = ratings.Any() ? ratings.Average(r => r.RatingValue) : 0;
+
+                sb.AppendLine(
+                    $"{post.WorkerPostId}," +
+                    $"\"{post.Title}\"," +
+                    $"\"{post.PostCategory?.CategoryName}\"," +
+                    $"\"{post.User?.FullName}\"," +
+                    $"\"{post.Location}\"," +
+                    $"{post.PriceRangeMin}," +
+                    $"{post.PriceRangeMax}," +
+                    $"{avgRating:0.0}," +
+                    $"{ratings.Count()}," +
+                    $"{post.IsActive}," +
+                    $"{post.CreatedAt:yyyy-MM-dd}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "WorkerPostsReport.csv");
+        }
+
+        // =====================================================
         // DETAILS
         // =====================================================
         public async Task<IActionResult> Details(int id)
@@ -69,16 +110,12 @@ namespace Homeix.Controllers
         {
             int userId = GetUserId();
 
-            _logger.LogInformation("Create(GET) | UserId={UserId}", userId);
-            _logger.LogInformation("IsInRole(worker) = {IsWorker}", User.IsInRole("worker"));
-
             if (User.IsInRole("worker"))
             {
                 var subscription = await GetCurrentSubscriptionAsync(userId);
 
                 if (subscription == null)
                 {
-                    _logger.LogWarning("No active subscription found");
                     TempData["Error"] = "You must have an active subscription to create posts.";
                     return RedirectToAction("Index", "SubscriptionPlans");
                 }
@@ -104,42 +141,28 @@ namespace Homeix.Controllers
             {
                 var subscription = await GetCurrentSubscriptionAsync(userId);
 
-                if (subscription == null)
-                {
-                    ModelState.AddModelError("", "You must have an active subscription to create posts.");
-                    LoadCategories(workerPost);
-                    return View(workerPost);
-                }
-
-                if (subscription.StartDate > DateTime.Today || subscription.EndDate < DateTime.Today)
+                if (subscription == null ||
+                    subscription.StartDate > DateTime.Today ||
+                    subscription.EndDate < DateTime.Today)
                 {
                     ModelState.AddModelError("", "Your subscription is not currently valid.");
                     LoadCategories(workerPost);
                     return View(workerPost);
                 }
 
-                // 🔴 FIX: rolling 30-day window (ONLY CHANGE)
                 var windowStart = DateTime.Now.AddDays(-30);
 
                 int postsThisMonth = await _context.WorkerPosts.CountAsync(w =>
                     w.UserId == userId &&
                     w.CreatedAt >= windowStart);
 
-                _logger.LogInformation(
-                    "LIMIT CHECK → User={UserId}, PostsLast30Days={Count}, MaxAllowed={Max}",
-                    userId,
-                    postsThisMonth,
-                    subscription.Plan?.MaxPostsPerMonth
-                );
-
                 if (subscription.Plan?.MaxPostsPerMonth.HasValue == true &&
                     postsThisMonth >= subscription.Plan.MaxPostsPerMonth.Value)
                 {
                     TempData["Error"] =
-     $"You have reached your limit of {subscription.Plan.MaxPostsPerMonth} posts. Upgrade your plan to create more.";
+                        $"You have reached your limit of {subscription.Plan.MaxPostsPerMonth} posts.";
 
                     return RedirectToAction("Index", "SubscriptionPlans");
-
                 }
             }
 
@@ -177,19 +200,8 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // SUBSCRIPTION LOGIC
+        // DELETE
         // =====================================================
-        private async Task<Subscription?> GetCurrentSubscriptionAsync(int userId)
-        {
-            return await _context.Subscriptions
-                .Include(s => s.Plan)
-                .Where(s =>
-                    s.UserId == userId &&
-                    s.Status.Trim().ToLower() == "active")
-                .OrderByDescending(s => s.EndDate)
-                .FirstOrDefaultAsync();
-        }
-
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -201,7 +213,6 @@ namespace Homeix.Controllers
 
             if (post == null) return NotFound();
 
-            // owner check
             if (post.UserId != GetUserId() && !User.IsInRole("admin"))
                 return Forbid();
 
@@ -225,7 +236,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-
         // =====================================================
         // HELPERS
         // =====================================================
@@ -248,6 +258,15 @@ namespace Homeix.Controllers
             );
         }
 
+        private async Task<Subscription?> GetCurrentSubscriptionAsync(int userId)
+        {
+            return await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Where(s => s.UserId == userId && s.Status.Trim().ToLower() == "active")
+                .OrderByDescending(s => s.EndDate)
+                .FirstOrDefaultAsync();
+        }
+
         private async Task DebugSubscriptions(int userId)
         {
             var subs = await _context.Subscriptions
@@ -256,12 +275,10 @@ namespace Homeix.Controllers
                 .OrderByDescending(s => s.EndDate)
                 .ToListAsync();
 
-            _logger.LogInformation("==== SUBSCRIPTIONS DEBUG ====");
-
             foreach (var s in subs)
             {
                 _logger.LogInformation(
-                    "ID={Id} | Status={Status} | Start={Start:d} | End={End:d} | Plan={Plan}",
+                    "ID={Id} | Status={Status} | Start={Start} | End={End} | Plan={Plan}",
                     s.SubscriptionId,
                     s.Status,
                     s.StartDate,
@@ -269,8 +286,6 @@ namespace Homeix.Controllers
                     s.Plan?.PlanName
                 );
             }
-
-            _logger.LogInformation("================================");
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using System.Text;
 
 namespace Homeix.Controllers
 {
@@ -29,6 +30,35 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(messages);
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var messages = await _context.Messages
+                .Include(m => m.Conversation)
+                .Include(m => m.SenderUser)
+                .OrderByDescending(m => m.SentAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("MessageId,MessageText,SentAt,ConversationId,SenderUserId");
+
+            foreach (var m in messages)
+            {
+                sb.AppendLine(
+                    $"{m.MessageId}," +
+                    $"\"{m.MessageText?.Replace("\"", "\"\"")}\"," +
+                    $"{m.SentAt:yyyy-MM-dd HH:mm}," +
+                    $"{m.ConversationId}," +
+                    $"{m.SenderUserId}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "MessagesReport.csv");
         }
 
         // ========================
@@ -65,11 +95,7 @@ namespace Homeix.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind(
-                "ConversationId," +
-                "SenderUserId," +
-                "MessageText"
-            )]
+            [Bind("ConversationId,SenderUserId,MessageText")]
             Message message)
         {
             if (!ModelState.IsValid)
@@ -78,9 +104,6 @@ namespace Homeix.Controllers
                 return View(message);
             }
 
-            // =========================
-            // System-managed fields
-            // =========================
             message.SentAt = DateTime.Now;
 
             _context.Messages.Add(message);
@@ -112,12 +135,7 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind(
-                "MessageId," +
-                "ConversationId," +
-                "SenderUserId," +
-                "MessageText"
-            )]
+            [Bind("MessageId,ConversationId,SenderUserId,MessageText")]
             Message message)
         {
             if (id != message.MessageId)
@@ -136,9 +154,6 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // =========================
-            // Preserve system fields
-            // =========================
             message.SentAt = existing.SentAt;
 
             _context.Update(message);

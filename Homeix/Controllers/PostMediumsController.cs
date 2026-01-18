@@ -27,6 +27,33 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var media = await _context.PostMedia
+                .OrderByDescending(m => m.UploadedAt)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("MediaId,PostType,PostId,MediaPath,UploadedAt");
+
+            foreach (var m in media)
+            {
+                sb.AppendLine(
+                    $"{m.MediaId}," +
+                    $"{m.PostType}," +
+                    $"{m.PostId}," +
+                    $"\"{m.MediaPath}\"," +
+                    $"{m.UploadedAt:yyyy-MM-dd HH:mm}"
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "PostMediaReport.csv");
+        }
+
+        // ========================
         // GET: PostMediums/Details/5
         // ========================
         public async Task<IActionResult> Details(int? id)
@@ -138,11 +165,9 @@ namespace Homeix.Controllers
             if (existing == null)
                 return NotFound();
 
-            // Update editable fields
             existing.PostType = postMedium.PostType;
             existing.PostId = postMedium.PostId;
 
-            // Replace media ONLY if new file uploaded
             if (postMedium.MediaFile != null && postMedium.MediaFile.Length > 0)
             {
                 var extension = Path.GetExtension(postMedium.MediaFile.FileName).ToLowerInvariant();
@@ -160,7 +185,6 @@ namespace Homeix.Controllers
                     await postMedium.MediaFile.CopyToAsync(stream);
                 }
 
-                // delete old file
                 if (!string.IsNullOrEmpty(existing.MediaPath))
                 {
                     var oldPath = Path.Combine(

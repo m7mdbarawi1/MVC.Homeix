@@ -25,6 +25,32 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var plans = await _context.SubscriptionPlans.ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("PlanId,PlanName,Price,DurationDays,MaxPostsPerMonth,IsActive");
+
+            foreach (var p in plans)
+            {
+                sb.AppendLine(
+                    $"{p.PlanId}," +
+                    $"\"{p.PlanName}\"," +
+                    $"{p.Price}," +
+                    $"{p.DurationDays}," +
+                    $"{(p.MaxPostsPerMonth.HasValue ? p.MaxPostsPerMonth.ToString() : "Unlimited")}," +
+                    $"{p.IsActive}"
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "SubscriptionPlansReport.csv");
+        }
+
+        // ========================
         // GET: SubscriptionPlans/Details
         // ========================
         public async Task<IActionResult> Details(int? id)

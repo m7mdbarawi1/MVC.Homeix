@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using System.Linq;
+using System.Text;
 
 namespace Homeix.Controllers
 {
@@ -28,6 +30,38 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(payments);
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var payments = await _context.Payments
+                .Include(p => p.User)
+                .Include(p => p.Subscription)
+                .Include(p => p.PaymentMethod)
+                .OrderByDescending(p => p.PaymentDate)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("PaymentId,Amount,PaymentDate,Status,PaymentMethod,SubscriptionId,UserId");
+
+            foreach (var p in payments)
+            {
+                sb.AppendLine(
+                    $"{p.PaymentId}," +
+                    $"{p.Amount}," +
+                    $"{p.PaymentDate:yyyy-MM-dd}," +
+                    $"{p.Status}," +
+                    $"{p.PaymentMethod?.PaymentMethodId}," +
+                    $"{p.Subscription?.SubscriptionId}," +
+                    $"{p.User?.UserId}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "PaymentsReport.csv");
         }
 
         // ========================

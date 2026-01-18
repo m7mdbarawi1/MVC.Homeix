@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 
 namespace Homeix.Controllers
 {
@@ -337,5 +339,88 @@ namespace Homeix.Controllers
 
             return true;
         }
+
+        // =============================================================
+        // FORGOT PASSWORD (GET)  🔥 NEW
+        // =============================================================
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ViewBag.Error = "Email is required.";
+                return View();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+            {
+                ViewBag.Error = "This email is not registered.";
+                return View();
+            }
+
+            string tempPassword = Guid.NewGuid().ToString("N").Substring(0, 10) + "!A1";
+
+            try
+            {
+                var smtp = new SmtpClient("smtp.gmail.com")
+                {
+                    Port = 587,
+                    EnableSsl = true,
+                    Credentials = new NetworkCredential(
+                        "homeix.jo@gmail.com",
+                        "hzvtxpummkppegkv"
+                    )
+                };
+
+                var mail = new MailMessage
+                {
+                    From = new MailAddress("homeix.jo@gmail.com", "Homeix Support"),
+                    Subject = "Homeix Password Reset",
+                    Body = $@"
+Hello {user.FullName},
+
+Your password has been reset.
+
+Temporary Password:
+{tempPassword}
+
+Please log in and change your password immediately.
+
+Regards,
+Homeix Support
+",
+                    IsBodyHtml = false
+                };
+
+                mail.To.Add(user.Email);
+
+                // 1️⃣ SEND EMAIL FIRST
+                await smtp.SendMailAsync(mail);
+
+                // 2️⃣ THEN UPDATE PASSWORD
+                user.PasswordHash = HashPassword(tempPassword);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Failed to send email. Please try again later.";
+                return View();
+            }
+
+            ViewBag.Success = "A new password has been sent to your email.";
+            return View();
+        }
+
+
     }
 }

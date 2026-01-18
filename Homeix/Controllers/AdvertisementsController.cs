@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,36 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // ✅ DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var ads = await _context.Advertisements
+                .Include(a => a.CreatedByUser)
+                .OrderByDescending(a => a.StartDate)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("AdId,Title,ImagePath,StartDate,EndDate,IsActive,CreatedByUserId");
+
+            foreach (var a in ads)
+            {
+                sb.AppendLine(
+                    $"{a.AdId}," +
+                    $"\"{a.Title}\"," +
+                    $"{a.ImagePath}," +
+                    $"{a.StartDate:yyyy-MM-dd}," +
+                    $"{a.EndDate:yyyy-MM-dd}," +
+                    $"{a.IsActive}," +
+                    $"{a.CreatedByUserId}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "AdvertisementsReport.csv");
+        }
+
+        // ========================
         // GET: Advertisements/Create
         // ========================
         public IActionResult Create()
@@ -57,11 +88,9 @@ namespace Homeix.Controllers
             if (!ModelState.IsValid)
                 return View(advertisement);
 
-            // ✅ Auto assign logged-in user
             advertisement.CreatedByUserId =
                 int.Parse(User.FindFirstValue("UserId")!);
 
-            // ✅ Validate extension
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
             var extension = Path.GetExtension(advertisement.ImageFile!.FileName).ToLowerInvariant();
 
@@ -71,7 +100,6 @@ namespace Homeix.Controllers
                 return View(advertisement);
             }
 
-            // ✅ Save file
             var uploadPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "wwwroot", "uploads", "advertisements"
@@ -123,7 +151,6 @@ namespace Homeix.Controllers
 
             if (advertisement != null)
             {
-                // delete image file
                 if (!string.IsNullOrEmpty(advertisement.ImagePath))
                 {
                     var physicalPath = Path.Combine(

@@ -25,6 +25,27 @@ namespace Homeix.Controllers
         }
 
         // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var categories = await _context.PostCategories
+                .OrderBy(c => c.CategoryName)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("PostCategoryId,CategoryName");
+
+            foreach (var c in categories)
+            {
+                sb.AppendLine($"{c.PostCategoryId},\"{c.CategoryName}\"");
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "PostCategoriesReport.csv");
+        }
+
+        // ========================
         // GET: PostCategories/Details
         // ========================
         public async Task<IActionResult> Details(int? id)

@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Models;
 using Homeix.Data;
-using System.Linq;
-
 
 namespace Homeix.Controllers
 {
@@ -29,6 +27,34 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(users);
+        }
+
+        // ========================
+        // DOWNLOAD REPORT (CSV)
+        // ========================
+        public async Task<IActionResult> DownloadReport()
+        {
+            var users = await _context.Users
+                .Include(u => u.Role)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("UserId,FullName,Email,PhoneNumber,Role");
+
+            foreach (var u in users)
+            {
+                sb.AppendLine(
+                    $"{u.UserId}," +
+                    $"\"{u.FullName}\"," +
+                    $"\"{u.Email}\"," +
+                    $"\"{u.PhoneNumber}\"," +
+                    $"\"{u.Role?.RoleName}\""
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "UsersReport.csv");
         }
 
         // GET: Users/Details/5
@@ -54,13 +80,10 @@ namespace Homeix.Controllers
         }
 
         // POST: Users/Create
-        // NOTE: We do NOT bind UserId. It is IDENTITY.
-        // NOTE: We do NOT accept PasswordHash from UI. We accept a plain password and hash it.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int roleId, string fullName, string email, string phoneNumber, string password)
         {
-            // basic validation
             if (string.IsNullOrWhiteSpace(fullName))
                 ModelState.AddModelError("FullName", "Full name is required.");
 
@@ -72,6 +95,7 @@ namespace Homeix.Controllers
 
             if (string.IsNullOrWhiteSpace(password))
                 ModelState.AddModelError("Password", "Password is required.");
+
             if (!IsStrongPassword(password, out var passError))
             {
                 ModelState.AddModelError("Password", passError);
@@ -79,8 +103,6 @@ namespace Homeix.Controllers
                 return View();
             }
 
-
-            // unique email check
             var emailExists = await _context.Users.AnyAsync(u => u.Email == email);
             if (emailExists)
                 ModelState.AddModelError("Email", "Email already exists.");
@@ -97,7 +119,7 @@ namespace Homeix.Controllers
                 FullName = fullName,
                 Email = email,
                 PhoneNumber = phoneNumber,
-                PasswordHash = HashPassword(password), //  BCrypt hash
+                PasswordHash = HashPassword(password),
                 ProfilePicture = null
             };
 
@@ -106,7 +128,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -121,8 +142,6 @@ namespace Homeix.Controllers
         }
 
         // POST: Users/Edit/5
-        // NOTE: We load the existing user, then update only allowed fields.
-        // NOTE: We do NOT edit PasswordHash here.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, int roleId, string fullName, string email, string phoneNumber)
@@ -139,7 +158,6 @@ namespace Homeix.Controllers
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 ModelState.AddModelError("PhoneNumber", "Phone number is required.");
 
-            // unique email check (ignore current user)
             var emailUsed = await _context.Users.AnyAsync(u => u.Email == email && u.UserId != id);
             if (emailUsed)
                 ModelState.AddModelError("Email", "Email already exists.");
@@ -197,12 +215,11 @@ namespace Homeix.Controllers
             ViewData["RoleId"] = new SelectList(
                 _context.UserRoles.AsNoTracking().OrderBy(r => r.RoleName),
                 "RoleId",
-                "RoleName",   //show RoleName 
+                "RoleName",
                 selectedRoleId
             );
         }
 
-        // Replace this with your real secure hashing method (BCrypt recommended)
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
@@ -236,7 +253,5 @@ namespace Homeix.Controllers
 
             return true;
         }
-
     }
 }
-

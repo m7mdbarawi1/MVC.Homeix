@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -33,6 +34,35 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             return View(favorites);
+        }
+
+        // =====================================================
+        // ✅ DOWNLOAD REPORT (CSV)
+        // =====================================================
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DownloadReport()
+        {
+            var favorites = await _context.FavoritePosts
+                .Include(f => f.User)
+                .OrderByDescending(f => f.AddedAt)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("FavoritePostId,PostType,PostId,AddedAt,UserId");
+
+            foreach (var f in favorites)
+            {
+                sb.AppendLine(
+                    $"{f.FavoritePostId}," +
+                    $"{f.PostType}," +
+                    $"{f.PostId}," +
+                    $"{f.AddedAt:yyyy-MM-dd HH:mm}," +
+                    $"{f.UserId}"
+                );
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "FavoritePostsReport.csv");
         }
 
         // =====================================================
