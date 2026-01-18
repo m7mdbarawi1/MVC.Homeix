@@ -29,9 +29,6 @@ namespace Homeix.Controllers
             _logger = logger;
         }
 
-        // =====================================================
-        // ADMIN: VIEW ALL WORKER POSTS
-        // =====================================================
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
@@ -46,9 +43,6 @@ namespace Homeix.Controllers
             return View(posts);
         }
 
-        // =====================================================
-        // DOWNLOAD REPORT (CSV)
-        // =====================================================
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
@@ -86,9 +80,6 @@ namespace Homeix.Controllers
             return File(bytes, "text/csv", "WorkerPostsReport.csv");
         }
 
-        // =====================================================
-        // DETAILS
-        // =====================================================
         public async Task<IActionResult> Details(int id)
         {
             var post = await _context.WorkerPosts
@@ -101,7 +92,6 @@ namespace Homeix.Controllers
             if (post == null)
                 return NotFound();
 
-            // Ensure only WorkerPost media is shown
             post.PostMedia = await _context.PostMedia
                 .Where(m => m.PostType == "WorkerPost" && m.PostId == id)
                 .OrderByDescending(m => m.UploadedAt)
@@ -110,9 +100,6 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =====================================================
-        // CREATE (GET)
-        // =====================================================
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Create()
         {
@@ -133,9 +120,6 @@ namespace Homeix.Controllers
             return View();
         }
 
-        // =====================================================
-        // CREATE (POST) + MEDIA UPLOAD
-        // =====================================================
         [HttpPost]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
@@ -187,10 +171,18 @@ namespace Homeix.Controllers
             _context.WorkerPosts.Add(workerPost);
             await _context.SaveChangesAsync();
 
-            // Save uploaded images (optional)
-            if (mediaFiles != null && mediaFiles.Any(f => f != null && f.Length > 0))
+            // ✅ IMPORTANT: Use Request.Form.Files as the source of truth for multiple files
+            var postedFiles = Request.Form.Files
+                .Where(f => f.Name == "mediaFiles" && f.Length > 0)
+                .ToList();
+
+            // fallback to model binding list if needed
+            if (postedFiles.Count == 0 && mediaFiles != null)
+                postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
+
+            if (postedFiles.Count > 0)
             {
-                foreach (var file in mediaFiles.Where(f => f != null && f.Length > 0))
+                foreach (var file in postedFiles)
                 {
                     var savedPath = await SaveWorkerPostMediaAsync(file);
 
@@ -209,9 +201,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =====================================================
-        // MY POSTS  ✅ FIXED TO LOAD PostMedia
-        // =====================================================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> MyPosts()
         {
@@ -223,7 +212,6 @@ namespace Homeix.Controllers
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
 
-            // ✅ Load all media for these posts (WorkerPost only) and attach
             var postIds = posts.Select(p => p.WorkerPostId).ToList();
 
             var allMedia = await _context.PostMedia
@@ -242,9 +230,6 @@ namespace Homeix.Controllers
             return View(posts);
         }
 
-        // =====================================================
-        // EDIT (GET) + LOAD MEDIA
-        // =====================================================
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -259,7 +244,6 @@ namespace Homeix.Controllers
             if (post.UserId != GetUserId() && !User.IsInRole("admin"))
                 return Forbid();
 
-            // Load current media for this WorkerPost
             post.PostMedia = await _context.PostMedia
                 .Where(m => m.PostType == "WorkerPost" && m.PostId == post.WorkerPostId)
                 .OrderByDescending(m => m.UploadedAt)
@@ -267,7 +251,6 @@ namespace Homeix.Controllers
 
             LoadCategories(post);
 
-            // Keep your existing Edit view behavior (it expects ViewBag.UserId)
             if (User.IsInRole("admin"))
             {
                 ViewData["UserId"] = new SelectList(
@@ -282,9 +265,6 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =====================================================
-        // EDIT (POST) + ADD/DELETE MEDIA
-        // =====================================================
         [HttpPost]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
@@ -306,7 +286,6 @@ namespace Homeix.Controllers
             if (existing.UserId != GetUserId() && !User.IsInRole("admin"))
                 return Forbid();
 
-            // If worker: do not allow changing owner
             if (!User.IsInRole("admin"))
                 workerPost.UserId = existing.UserId;
 
@@ -332,7 +311,6 @@ namespace Homeix.Controllers
                 return View(workerPost);
             }
 
-            // Update fields
             existing.Title = workerPost.Title;
             existing.Description = workerPost.Description;
             existing.Location = workerPost.Location;
@@ -341,14 +319,12 @@ namespace Homeix.Controllers
             existing.PostCategoryId = workerPost.PostCategoryId;
             existing.IsActive = workerPost.IsActive;
 
-            // If admin, allow changing user + createdAt
             if (User.IsInRole("admin"))
             {
                 existing.UserId = workerPost.UserId;
                 existing.CreatedAt = workerPost.CreatedAt;
             }
 
-            // Delete selected media
             if (deleteMediaIds != null && deleteMediaIds.Length > 0)
             {
                 var mediaToDelete = await _context.PostMedia
@@ -364,7 +340,6 @@ namespace Homeix.Controllers
                 }
             }
 
-            // Add new media files
             if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
             {
                 foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
@@ -385,9 +360,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =====================================================
-        // DELETE
-        // =====================================================
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -416,7 +388,6 @@ namespace Homeix.Controllers
             if (post.UserId != GetUserId() && !User.IsInRole("admin"))
                 return Forbid();
 
-            // Delete related media
             var media = await _context.PostMedia
                 .Where(m => m.PostType == "WorkerPost" && m.PostId == id)
                 .ToListAsync();

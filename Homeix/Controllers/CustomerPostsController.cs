@@ -24,9 +24,6 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // =====================================================
-        // VIEW ALL CUSTOMER POSTS
-        // =====================================================
         public async Task<IActionResult> Index()
         {
             var posts = await _context.CustomerPosts
@@ -38,9 +35,6 @@ namespace Homeix.Controllers
             return View(posts);
         }
 
-        // =====================================================
-        // DOWNLOAD REPORT (CSV) - NO ROLE
-        // =====================================================
         public async Task<IActionResult> DownloadReport()
         {
             var posts = await _context.CustomerPosts
@@ -72,9 +66,6 @@ namespace Homeix.Controllers
             return File(bytes, "text/csv", "CustomerPostsReport.csv");
         }
 
-        // =====================================================
-        // DETAILS
-        // =====================================================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -98,32 +89,20 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =====================================================
-        // CREATE (GET)
-        // =====================================================
         public IActionResult Create()
         {
             LoadDropdowns();
-
-            // Optional: if you want to show it in the UI (not required)
             ViewBag.LoggedInUserId = GetUserId();
-
             return View();
         }
 
-        // =====================================================
-        // CREATE (POST) + MEDIA UPLOAD
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind(
             "PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax"
         )] CustomerPost customerPost, List<IFormFile>? mediaFiles)
         {
-            // ✅ Force the logged-in user id (not from the form)
             customerPost.UserId = GetUserId();
-
-            // ✅ If your model has validation on UserId, remove stale modelstate for it
             ModelState.Remove(nameof(CustomerPost.UserId));
 
             if (!ModelState.IsValid)
@@ -140,17 +119,21 @@ namespace Homeix.Controllers
             _context.CustomerPosts.Add(customerPost);
             await _context.SaveChangesAsync();
 
-            // ✅ Save uploaded images (optional)
-            if (mediaFiles != null && mediaFiles.Any(f => f != null && f.Length > 0))
+            // ✅ Source of truth
+            var postedFiles = Request.Form.Files
+                .Where(f => f.Name == "mediaFiles" && f.Length > 0)
+                .ToList();
+
+            if (postedFiles.Count == 0 && mediaFiles != null)
+                postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
+
+            if (postedFiles.Count > 0)
             {
-                foreach (var file in mediaFiles.Where(f => f != null && f.Length > 0))
+                foreach (var file in postedFiles)
                 {
                     var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
                     if (!AllowedImageExtensions.Contains(extension))
-                    {
-                        // Skip invalid extensions (you can also add ModelState error if you prefer)
                         continue;
-                    }
 
                     var savedPath = await SaveCustomerPostMediaAsync(file);
 
@@ -169,9 +152,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =====================================================
-        // EDIT (GET)
-        // =====================================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -193,9 +173,6 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =====================================================
-        // EDIT (POST)
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind(
@@ -226,13 +203,12 @@ namespace Homeix.Controllers
                 return View(customerPost);
             }
 
-            customerPost.UserId = existing.UserId;       // keep original owner
-            customerPost.CreatedAt = existing.CreatedAt; // keep original created
-            customerPost.Status = existing.Status;       // keep original status
+            customerPost.UserId = existing.UserId;
+            customerPost.CreatedAt = existing.CreatedAt;
+            customerPost.Status = existing.Status;
 
             _context.CustomerPosts.Update(customerPost);
 
-            // Delete selected media
             if (deleteMediaIds != null && deleteMediaIds.Length > 0)
             {
                 var mediaToDelete = await _context.PostMedia
@@ -248,7 +224,6 @@ namespace Homeix.Controllers
                 }
             }
 
-            // Add new media
             if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
             {
                 foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
@@ -274,9 +249,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =====================================================
-        // DELETE (GET)
-        // =====================================================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -293,9 +265,6 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =====================================================
-        // DELETE (POST)
-        // =====================================================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -320,9 +289,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =====================================================
-        // MY POSTS (CUSTOMER)
-        // =====================================================
         public async Task<IActionResult> MyPosts()
         {
             int userId = GetUserId();
