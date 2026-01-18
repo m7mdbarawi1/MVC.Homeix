@@ -14,14 +14,13 @@
     <div class="row g-0 h-100">
 
         <!-- ================= USERS LIST ================= -->
-        <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column" style="height: 100vh;">
-            <!-- List Header -->
-            <div class="p-3 fw-bold border-bottom bg-white" style="flex-shrink: 0;">
+        <div class="col-12 col-md-4 col-lg-3 border-end d-flex flex-column">
+
+            <div class="p-3 fw-bold border-bottom bg-white">
                 Chats
             </div>
 
-            <!-- User List with independent scrollbar -->
-            <div class="flex-grow-1 overflow-auto" style="min-height: 0;">
+            <div class="flex-grow-1 overflow-auto">
                 <div class="list-group list-group-flush">
                     @if (users != null)
                     {
@@ -32,19 +31,20 @@
                             <a asp-controller="Chat"
                                asp-action="Index"
                                asp-route-userId="@user.UserId"
-                               class="list-group-item list-group-item-action @(isActive ? "active" : "") border-0 rounded-0">
+                               class="list-group-item list-group-item-action @(isActive ? "active" : "")">
 
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="online-dot" id="online-@user.UserId"></span>
+
                                     <img src="@(string.IsNullOrEmpty(user.ProfilePicture)
                                         ? Url.Content("~/images/default-user.png")
                                         : user.ProfilePicture)"
-                                         class="rounded-circle object-fit-cover"
-                                         width="40" height="40"
-                                         style="aspect-ratio: 1/1;" />
+                                         class="rounded-circle"
+                                         width="40" height="40" />
 
                                     <div class="text-truncate">
-                                        <div class="fw-semibold text-truncate">@user.FullName</div>
-                                        <small class="@(isActive ? "text-white-50" : "text-muted") text-truncate d-block">@user.Email</small>
+                                        <div class="fw-semibold">@user.FullName</div>
+                                        <small class="text-muted">@user.Email</small>
                                     </div>
                                 </div>
                             </a>
@@ -55,104 +55,159 @@
         </div>
 
         <!-- ================= CHAT AREA ================= -->
-        <div class="col-12 col-md-8 col-lg-9 d-flex flex-column" style="height: 100vh;">
+        <div class="col-12 col-md-8 col-lg-9 d-flex flex-column">
+
             @if (selectedUser == null)
             {
-                <!-- Empty state -->
                 <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
-                    <div class="text-center">
-                        <p class="mb-0">Select a chat to start messaging</p>
-                    </div>
+                    Select a chat to start messaging
                 </div>
             }
             else
             {
-                <!-- CHAT HEADER (Fixed height) -->
-                <div class="border-bottom p-3 d-flex align-items-center gap-2 bg-white" style="flex-shrink: 0;">
-                    <img src="@(string.IsNullOrEmpty(selectedUser.ProfilePicture)
-                        ? Url.Content("~/images/default-user.png")
-                        : selectedUser.ProfilePicture)"
-                         class="rounded-circle object-fit-cover"
-                         width="40" height="40"
-                         style="aspect-ratio: 1/1;" />
-
-                    <div>
-                        <strong>@selectedUser.FullName</strong>
-                        <div class="text-muted small">Online</div>
-                    </div>
+                <!-- HEADER -->
+                <div class="border-bottom p-3 bg-white">
+                    <strong>@selectedUser.FullName</strong>
+                    <div class="small text-muted" id="typingIndicator"></div>
                 </div>
 
-                <!-- MESSAGES AREA (Scrollable) -->
-                <div class="flex-grow-1 overflow-auto bg-light" style="min-height: 0;">
-                    <div class="p-3 d-flex flex-column">
-                        @if (messages != null)
+                <!-- MESSAGES -->
+                <div class="flex-grow-1 overflow-auto bg-light">
+                    <div class="p-3 d-flex flex-column" id="messagesContainer">
+                        @foreach (var msg in messages ?? new List<Message>())
                         {
-                            foreach (var msg in messages)
-                            {
-                                bool isMe = msg.SenderUserId == currentUserId;
+                            bool isMe = msg.SenderUserId == currentUserId;
 
-                                <div class="mb-2 @(isMe ? "align-self-end" : "align-self-start")" style="max-width: 75%;">
-                                    <div class="px-3 py-2 rounded @(isMe ? "bg-primary text-white" : "bg-white border")">
-                                        @msg.MessageText
+                            <div class="mb-2 @(isMe ? "align-self-end" : "align-self-start")">
+                                <div class="px-3 py-2 rounded @(isMe ? "bg-primary text-white" : "bg-white border")">
+                                    @msg.MessageText
+                                    <div class="small text-end opacity-75">
+                                        @msg.SentAt.ToString("HH:mm")
                                     </div>
                                 </div>
-                            }
+                            </div>
                         }
                     </div>
                 </div>
 
-                <!-- INPUT AREA (Fixed height) -->
-                <div class="border-top p-3 bg-white" style="flex-shrink: 0;">
-                    <form asp-action="Send" method="post" class="d-flex gap-2 align-items-end" id="chatForm">
-                        <input type="hidden" name="conversationId" value="@conversationId" />
+                <!-- INPUT -->
+                <div class="border-top p-3 bg-white">
+                    <form id="chatForm" class="d-flex gap-2">
+                        <input type="hidden" id="conversationId" value="@conversationId" />
 
-                        <div class="flex-grow-1">
-                            <textarea id="messageInput"
-                                      name="messageText"
-                                      class="form-control"
-                                      rows="1"
-                                      placeholder="Type a message..."
-                                      style="resize: none; max-height: 120px;"
-                                      oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px';"
-                                      required></textarea>
-                        </div>
+                        <textarea id="messageInput"
+                                  class="form-control"
+                                  placeholder="Type a message..."
+                                  rows="1"
+                                  required></textarea>
 
-                        <button type="submit" class="btn btn-primary px-4 py-2" style="height: fit-content;">
+                        <button type="submit" class="btn btn-primary">
                             Send
                         </button>
                     </form>
+
+                    <div class="small text-muted mt-1" id="seenIndicator"></div>
                 </div>
             }
         </div>
     </div>
 </div>
 
+<style>
+    .online-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: gray;
+    }
+
+    .online {
+        background: #28a745;
+    }
+</style>
+
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
     <script>
-        // Auto-scroll messages to bottom
-        const messagesContainer = document.querySelector('.flex-grow-1.overflow-auto');
-        if (messagesContainer) {
+        const currentUserId = @currentUserId;
+        const conversationId = @conversationId ?? 0;
+        const receiverId = @selectedUser?.UserId ?? 0;
+
+        const messagesContainer = document.getElementById("messagesContainer");
+        const typingIndicator = document.getElementById("typingIndicator");
+        const seenIndicator = document.getElementById("seenIndicator");
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.start();
+
+        // ================= RECEIVE MESSAGE =================
+        connection.on("ReceiveMessage", data => {
+            const isMe = data.senderId === currentUserId;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "mb-2 " + (isMe ? "align-self-end" : "align-self-start");
+
+            wrapper.innerHTML = `
+                <div class="px-3 py-2 rounded ${isMe ? "bg-primary text-white" : "bg-white border"}">
+                    ${data.message}
+                    <div class="small text-end opacity-75">${data.sentAt}</div>
+                </div>
+            `;
+
+            messagesContainer.appendChild(wrapper);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
 
-        // Enter to send (Shift+Enter = new line)
-        const input = document.getElementById("messageInput");
-        const form = document.getElementById("chatForm");
+            if (!isMe) {
+                connection.invoke("MessageSeen", data.senderId);
+            }
+        });
 
-        if (input && form) {
-            input.addEventListener("keydown", function (e) {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    if (input.value.trim()) {
-                        form.submit();
-                    }
-                }
-            });
-        }
+        // ================= SEND MESSAGE =================
+        document.getElementById("chatForm")?.addEventListener("submit", e => {
+            e.preventDefault();
 
-        // Auto-focus on message input
-        if (input) {
-            input.focus();
-        }
+            const input = document.getElementById("messageInput");
+            const text = input.value.trim();
+            if (!text) return;
+
+            connection.invoke(
+                "SendMessage",
+                conversationId,
+                currentUserId,
+                receiverId,
+                text
+            );
+
+            input.value = "";
+            seenIndicator.innerText = "";
+        });
+
+        // ================= TYPING =================
+        document.getElementById("messageInput")?.addEventListener("input", () => {
+            connection.invoke("Typing", receiverId);
+        });
+
+        connection.on("UserTyping", () => {
+            typingIndicator.innerText = "Typing...";
+            setTimeout(() => typingIndicator.innerText = "", 1000);
+        });
+
+        // ================= ONLINE / OFFLINE =================
+        connection.on("UserOnline", id => {
+            document.getElementById("online-" + id)?.classList.add("online");
+        });
+
+        connection.on("UserOffline", id => {
+            document.getElementById("online-" + id)?.classList.remove("online");
+        });
+
+        // ================= SEEN =================
+        connection.on("MessageSeen", () => {
+            seenIndicator.innerText = "Seen ✔";
+        });
     </script>
 }
