@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Homeix.Data;
+using Homeix.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Homeix.Data;
-using Homeix.Models;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Homeix.Controllers
@@ -99,6 +101,12 @@ namespace Homeix.Controllers
             if (post == null)
                 return NotFound();
 
+            // Ensure only WorkerPost media is shown
+            post.PostMedia = await _context.PostMedia
+                .Where(m => m.PostType == "WorkerPost" && m.PostId == id)
+                .OrderByDescending(m => m.UploadedAt)
+                .ToListAsync();
+
             return View(post);
         }
 
@@ -126,12 +134,12 @@ namespace Homeix.Controllers
         }
 
         // =====================================================
-        // CREATE (POST)
+        // CREATE (POST) + MEDIA UPLOAD
         // =====================================================
         [HttpPost]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(WorkerPost workerPost)
+        public async Task<IActionResult> Create(WorkerPost workerPost, List<IFormFile>? mediaFiles)
         {
             int userId = GetUserId();
 
@@ -179,11 +187,30 @@ namespace Homeix.Controllers
             _context.WorkerPosts.Add(workerPost);
             await _context.SaveChangesAsync();
 
+            // Save uploaded images (optional)
+            if (mediaFiles != null && mediaFiles.Any(f => f != null && f.Length > 0))
+            {
+                foreach (var file in mediaFiles.Where(f => f != null && f.Length > 0))
+                {
+                    var savedPath = await SaveWorkerPostMediaAsync(file);
+
+                    _context.PostMedia.Add(new PostMedium
+                    {
+                        PostType = "WorkerPost",
+                        PostId = workerPost.WorkerPostId,
+                        MediaPath = savedPath,
+                        UploadedAt = DateTime.Now
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(MyPosts));
         }
 
         // =====================================================
-        // MY POSTS
+        // MY POSTS  ✅ FIXED TO LOAD PostMedia
         // =====================================================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> MyPosts()
@@ -196,7 +223,166 @@ namespace Homeix.Controllers
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
 
+            // ✅ Load all media for these posts (WorkerPost only) and attach
+            var postIds = posts.Select(p => p.WorkerPostId).ToList();
+
+            var allMedia = await _context.PostMedia
+                .Where(m => m.PostType == "WorkerPost" && postIds.Contains(m.PostId))
+                .OrderByDescending(m => m.UploadedAt)
+                .ToListAsync();
+
+            foreach (var p in posts)
+            {
+                p.PostMedia = allMedia
+                    .Where(m => m.PostId == p.WorkerPostId && m.PostType == "WorkerPost")
+                    .OrderByDescending(m => m.UploadedAt)
+                    .ToList();
+            }
+
             return View(posts);
+        }
+
+        // =====================================================
+        // EDIT (GET) + LOAD MEDIA
+        // =====================================================
+        [Authorize(Roles = "worker, admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var post = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
+            if (post == null) return NotFound();
+
+            if (post.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
+            // Load current media for this WorkerPost
+            post.PostMedia = await _context.PostMedia
+                .Where(m => m.PostType == "WorkerPost" && m.PostId == post.WorkerPostId)
+                .OrderByDescending(m => m.UploadedAt)
+                .ToListAsync();
+
+            LoadCategories(post);
+
+            // Keep your existing Edit view behavior (it expects ViewBag.UserId)
+            if (User.IsInRole("admin"))
+            {
+                ViewData["UserId"] = new SelectList(
+                    _context.Users.AsNoTracking()
+                        .OrderBy(u => u.FullName),
+                    "UserId",
+                    "FullName",
+                    post.UserId
+                );
+            }
+
+            return View(post);
+        }
+
+        // =====================================================
+        // EDIT (POST) + ADD/DELETE MEDIA
+        // =====================================================
+        [HttpPost]
+        [Authorize(Roles = "worker, admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id,
+            WorkerPost workerPost,
+            List<IFormFile>? newMediaFiles,
+            int[]? deleteMediaIds)
+        {
+            if (id != workerPost.WorkerPostId)
+                return NotFound();
+
+            var existing = await _context.WorkerPosts
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
+            if (existing == null)
+                return NotFound();
+
+            if (existing.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
+            // If worker: do not allow changing owner
+            if (!User.IsInRole("admin"))
+                workerPost.UserId = existing.UserId;
+
+            if (!ModelState.IsValid)
+            {
+                workerPost.PostMedia = await _context.PostMedia
+                    .Where(m => m.PostType == "WorkerPost" && m.PostId == id)
+                    .OrderByDescending(m => m.UploadedAt)
+                    .ToListAsync();
+
+                LoadCategories(workerPost);
+
+                if (User.IsInRole("admin"))
+                {
+                    ViewData["UserId"] = new SelectList(
+                        _context.Users.AsNoTracking().OrderBy(u => u.FullName),
+                        "UserId",
+                        "FullName",
+                        workerPost.UserId
+                    );
+                }
+
+                return View(workerPost);
+            }
+
+            // Update fields
+            existing.Title = workerPost.Title;
+            existing.Description = workerPost.Description;
+            existing.Location = workerPost.Location;
+            existing.PriceRangeMin = workerPost.PriceRangeMin;
+            existing.PriceRangeMax = workerPost.PriceRangeMax;
+            existing.PostCategoryId = workerPost.PostCategoryId;
+            existing.IsActive = workerPost.IsActive;
+
+            // If admin, allow changing user + createdAt
+            if (User.IsInRole("admin"))
+            {
+                existing.UserId = workerPost.UserId;
+                existing.CreatedAt = workerPost.CreatedAt;
+            }
+
+            // Delete selected media
+            if (deleteMediaIds != null && deleteMediaIds.Length > 0)
+            {
+                var mediaToDelete = await _context.PostMedia
+                    .Where(m => deleteMediaIds.Contains(m.MediaId)
+                                && m.PostType == "WorkerPost"
+                                && m.PostId == id)
+                    .ToListAsync();
+
+                foreach (var media in mediaToDelete)
+                {
+                    DeletePhysicalFile(media.MediaPath);
+                    _context.PostMedia.Remove(media);
+                }
+            }
+
+            // Add new media files
+            if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
+            {
+                foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
+                {
+                    var savedPath = await SaveWorkerPostMediaAsync(file);
+
+                    _context.PostMedia.Add(new PostMedium
+                    {
+                        PostType = "WorkerPost",
+                        PostId = id,
+                        MediaPath = savedPath,
+                        UploadedAt = DateTime.Now
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(MyPosts));
         }
 
         // =====================================================
@@ -229,6 +415,17 @@ namespace Homeix.Controllers
 
             if (post.UserId != GetUserId() && !User.IsInRole("admin"))
                 return Forbid();
+
+            // Delete related media
+            var media = await _context.PostMedia
+                .Where(m => m.PostType == "WorkerPost" && m.PostId == id)
+                .ToListAsync();
+
+            foreach (var m in media)
+            {
+                DeletePhysicalFile(m.MediaPath);
+                _context.PostMedia.Remove(m);
+            }
 
             _context.WorkerPosts.Remove(post);
             await _context.SaveChangesAsync();
@@ -286,6 +483,54 @@ namespace Homeix.Controllers
                     s.Plan?.PlanName
                 );
             }
+        }
+
+        // =====================================================
+        // MEDIA HELPERS
+        // =====================================================
+        private static readonly string[] AllowedImageExtensions =
+        {
+            ".jpg", ".jpeg", ".png", ".gif", ".webp"
+        };
+
+        private async Task<string> SaveWorkerPostMediaAsync(IFormFile file)
+        {
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!AllowedImageExtensions.Contains(extension))
+                throw new InvalidOperationException("Only image files are allowed.");
+
+            var uploadPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "uploads", "post-media"
+            );
+
+            Directory.CreateDirectory(uploadPath);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var fullPath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return "/uploads/post-media/" + fileName;
+        }
+
+        private void DeletePhysicalFile(string? relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return;
+
+            var physicalPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                relativePath.TrimStart('/')
+            );
+
+            if (System.IO.File.Exists(physicalPath))
+                System.IO.File.Delete(physicalPath);
         }
     }
 }

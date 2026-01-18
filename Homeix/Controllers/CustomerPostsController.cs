@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Homeix.Controllers
 {
@@ -87,6 +90,7 @@ namespace Homeix.Controllers
 
             var mediaList = await _context.PostMedia
                 .Where(m => m.PostType == "CustomerPost" && m.PostId == id)
+                .OrderByDescending(m => m.UploadedAt)
                 .ToListAsync();
 
             ViewBag.PostMedia = mediaList;
@@ -100,31 +104,67 @@ namespace Homeix.Controllers
         public IActionResult Create()
         {
             LoadDropdowns();
+
+            // Optional: if you want to show it in the UI (not required)
+            ViewBag.LoggedInUserId = GetUserId();
+
             return View();
         }
 
         // =====================================================
-        // CREATE (POST)
+        // CREATE (POST) + MEDIA UPLOAD
         // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind(
             "PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax"
-        )] CustomerPost customerPost)
+        )] CustomerPost customerPost, List<IFormFile>? mediaFiles)
         {
+            // ✅ Force the logged-in user id (not from the form)
+            customerPost.UserId = GetUserId();
+
+            // ✅ If your model has validation on UserId, remove stale modelstate for it
+            ModelState.Remove(nameof(CustomerPost.UserId));
+
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(customerPost);
+                ViewBag.LoggedInUserId = customerPost.UserId;
                 return View(customerPost);
             }
 
-            customerPost.UserId = GetUserId();
             customerPost.CreatedAt = DateTime.Now;
             customerPost.Status = "Open";
             customerPost.IsActive = true;
 
             _context.CustomerPosts.Add(customerPost);
             await _context.SaveChangesAsync();
+
+            // ✅ Save uploaded images (optional)
+            if (mediaFiles != null && mediaFiles.Any(f => f != null && f.Length > 0))
+            {
+                foreach (var file in mediaFiles.Where(f => f != null && f.Length > 0))
+                {
+                    var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                    if (!AllowedImageExtensions.Contains(extension))
+                    {
+                        // Skip invalid extensions (you can also add ModelState error if you prefer)
+                        continue;
+                    }
+
+                    var savedPath = await SaveCustomerPostMediaAsync(file);
+
+                    _context.PostMedia.Add(new PostMedium
+                    {
+                        PostType = "CustomerPost",
+                        PostId = customerPost.CustomerPostId,
+                        MediaPath = savedPath,
+                        UploadedAt = DateTime.Now
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction(nameof(MyPosts));
         }
@@ -142,6 +182,14 @@ namespace Homeix.Controllers
                 return NotFound();
 
             LoadDropdowns(post);
+
+            var mediaList = await _context.PostMedia
+                .Where(m => m.PostType == "CustomerPost" && m.PostId == post.CustomerPostId)
+                .OrderByDescending(m => m.UploadedAt)
+                .ToListAsync();
+
+            ViewBag.PostMedia = mediaList;
+
             return View(post);
         }
 
@@ -152,7 +200,7 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind(
             "CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive"
-        )] CustomerPost customerPost)
+        )] CustomerPost customerPost, List<IFormFile>? newMediaFiles, int[]? deleteMediaIds)
         {
             if (id != customerPost.CustomerPostId)
                 return NotFound();
@@ -167,14 +215,60 @@ namespace Homeix.Controllers
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(customerPost);
+
+                var mediaList = await _context.PostMedia
+                    .Where(m => m.PostType == "CustomerPost" && m.PostId == id)
+                    .OrderByDescending(m => m.UploadedAt)
+                    .ToListAsync();
+
+                ViewBag.PostMedia = mediaList;
+
                 return View(customerPost);
             }
 
-            customerPost.UserId = existing.UserId;
-            customerPost.CreatedAt = existing.CreatedAt;
-            customerPost.Status = existing.Status;
+            customerPost.UserId = existing.UserId;       // keep original owner
+            customerPost.CreatedAt = existing.CreatedAt; // keep original created
+            customerPost.Status = existing.Status;       // keep original status
 
             _context.CustomerPosts.Update(customerPost);
+
+            // Delete selected media
+            if (deleteMediaIds != null && deleteMediaIds.Length > 0)
+            {
+                var mediaToDelete = await _context.PostMedia
+                    .Where(m => deleteMediaIds.Contains(m.MediaId)
+                                && m.PostType == "CustomerPost"
+                                && m.PostId == id)
+                    .ToListAsync();
+
+                foreach (var media in mediaToDelete)
+                {
+                    DeletePhysicalFile(media.MediaPath);
+                    _context.PostMedia.Remove(media);
+                }
+            }
+
+            // Add new media
+            if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
+            {
+                foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
+                {
+                    var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                    if (!AllowedImageExtensions.Contains(extension))
+                        continue;
+
+                    var savedPath = await SaveCustomerPostMediaAsync(file);
+
+                    _context.PostMedia.Add(new PostMedium
+                    {
+                        PostType = "CustomerPost",
+                        PostId = id,
+                        MediaPath = savedPath,
+                        UploadedAt = DateTime.Now
+                    });
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(MyPosts));
@@ -209,6 +303,16 @@ namespace Homeix.Controllers
             var post = await _context.CustomerPosts.FindAsync(id);
             if (post == null)
                 return NotFound();
+
+            var media = await _context.PostMedia
+                .Where(m => m.PostType == "CustomerPost" && m.PostId == id)
+                .ToListAsync();
+
+            foreach (var m in media)
+            {
+                DeletePhysicalFile(m.MediaPath);
+                _context.PostMedia.Remove(m);
+            }
 
             _context.CustomerPosts.Remove(post);
             await _context.SaveChangesAsync();
@@ -263,6 +367,51 @@ namespace Homeix.Controllers
                 "CategoryName",
                 post?.PostCategoryId
             );
+        }
+
+        // =====================================================
+        // MEDIA HELPERS
+        // =====================================================
+        private static readonly string[] AllowedImageExtensions =
+        {
+            ".jpg", ".jpeg", ".png", ".gif", ".webp"
+        };
+
+        private async Task<string> SaveCustomerPostMediaAsync(IFormFile file)
+        {
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            var uploadPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "uploads", "post-media"
+            );
+
+            Directory.CreateDirectory(uploadPath);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var fullPath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return "/uploads/post-media/" + fileName;
+        }
+
+        private void DeletePhysicalFile(string? relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return;
+
+            var physicalPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                relativePath.TrimStart('/')
+            );
+
+            if (System.IO.File.Exists(physicalPath))
+                System.IO.File.Delete(physicalPath);
         }
     }
 }

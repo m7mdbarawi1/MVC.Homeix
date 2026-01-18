@@ -19,20 +19,27 @@
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Edit">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <input type="hidden" asp-for="WorkerPostId" />
 
-                        <!-- User -->
-                        <div class="mb-3">
-                            <label asp-for="UserId" class="form-label"></label>
-                            <select asp-for="UserId"
-                                    class="form-control"
-                                    asp-items="ViewBag.UserId">
-                            </select>
-                            <span asp-validation-for="UserId" class="text-danger"></span>
-                        </div>
+                        <!-- User (Admin only) -->
+                        @if (User.IsInRole("admin"))
+                        {
+                            <div class="mb-3">
+                                <label asp-for="UserId" class="form-label"></label>
+                                <select asp-for="UserId"
+                                        class="form-control"
+                                        asp-items="ViewBag.UserId">
+                                </select>
+                                <span asp-validation-for="UserId" class="text-danger"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="UserId" />
+                        }
 
                         <!-- Category -->
                         <div class="mb-3">
@@ -69,23 +76,30 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMin" class="form-label"></label>
-                                <input asp-for="PriceRangeMin" type="number" class="form-control" />
+                                <input asp-for="PriceRangeMin" type="number" step="0.01" class="form-control" />
                                 <span asp-validation-for="PriceRangeMin" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMax" class="form-label"></label>
-                                <input asp-for="PriceRangeMax" type="number" class="form-control" />
+                                <input asp-for="PriceRangeMax" type="number" step="0.01" class="form-control" />
                                 <span asp-validation-for="PriceRangeMax" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <!-- Created At -->
-                        <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label"></label>
-                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        </div>
+                        <!-- Created At (Admin only, but kept because your original view had it) -->
+                        @if (User.IsInRole("admin"))
+                        {
+                            <div class="mb-3">
+                                <label asp-for="CreatedAt" class="form-label"></label>
+                                <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="CreatedAt" />
+                        }
 
                         <!-- Active -->
                         <div class="form-check mb-4">
@@ -93,6 +107,64 @@
                             <label class="form-check-label" asp-for="IsActive">
                                 @Html.DisplayNameFor(model => model.IsActive)
                             </label>
+                        </div>
+
+                        <!-- EXISTING MEDIA (NEW) -->
+                        <div class="mb-4">
+                            <h5 class="mb-2">Current Images</h5>
+
+                            @if (Model.PostMedia != null && Model.PostMedia.Any())
+                            {
+                                <div class="row g-3">
+                                    @foreach (var media in Model.PostMedia)
+                                    {
+                                        <div class="col-6 col-md-4">
+                                            <div class="border rounded p-2 h-100">
+                                                <img src="@media.MediaPath"
+                                                     class="img-fluid rounded border"
+                                                     style="max-height:160px; object-fit:cover; width:100%;" />
+
+                                                <div class="form-check mt-2">
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="deleteMediaIds"
+                                                           value="@media.MediaId"
+                                                           id="del_@media.MediaId" />
+                                                    <label class="form-check-label" for="del_@media.MediaId">
+                                                        Delete
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-0">No images uploaded for this post.</p>
+                            }
+                        </div>
+
+                        <!-- ADD NEW MEDIA (NEW) -->
+                        <div class="mb-4">
+                            <label class="form-label">Add New Images</label>
+
+                            <div id="dropZone"
+                                 class="border border-2 border-dashed rounded p-4 text-center"
+                                 style="cursor:pointer;">
+                                <p class="text-muted mb-2">
+                                    Drag & drop here or click to select (multiple allowed)
+                                </p>
+
+                                <input type="file"
+                                       id="mediaInput"
+                                       name="newMediaFiles"
+                                       class="d-none"
+                                       accept="image/*"
+                                       multiple />
+
+                                <div id="preview" class="row g-2 mt-3"></div>
+                            </div>
                         </div>
 
                         <!-- Buttons -->
@@ -117,4 +189,52 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        const dropZone = document.getElementById("dropZone");
+        const input = document.getElementById("mediaInput");
+        const preview = document.getElementById("preview");
+
+        dropZone.onclick = () => input.click();
+
+        dropZone.ondragover = e => {
+            e.preventDefault();
+            dropZone.classList.add("bg-light");
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.classList.remove("bg-light");
+        };
+
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            dropZone.classList.remove("bg-light");
+            input.files = e.dataTransfer.files;
+            showPreview(input.files);
+        };
+
+        input.onchange = () => showPreview(input.files);
+
+        function showPreview(files) {
+            preview.innerHTML = "";
+            if (!files || files.length === 0) return;
+
+            [...files].forEach(file => {
+                if (!file.type.startsWith("image")) return;
+
+                const col = document.createElement("div");
+                col.className = "col-6 col-md-4";
+
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.className = "img-fluid rounded border";
+                img.style.maxHeight = "160px";
+                img.style.objectFit = "cover";
+                img.onload = () => URL.revokeObjectURL(img.src);
+
+                col.appendChild(img);
+                preview.appendChild(col);
+            });
+        }
+    </script>
 }

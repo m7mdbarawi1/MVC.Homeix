@@ -69,6 +69,7 @@
         @foreach (var post in Model)
         {
             var media = post.PostMedia?
+            .Where(m => m.PostType == "WorkerPost")   // ✅ safer
             .OrderByDescending(m => m.UploadedAt)
             .FirstOrDefault();
 
@@ -172,8 +173,8 @@
             }
 
             search.oninput =
-            category.onchange =
-            status.onchange = filter;
+                category.onchange =
+                status.onchange = filter;
 
             filter();
         });

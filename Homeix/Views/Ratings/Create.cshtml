@@ -1,7 +1,13 @@
 ﻿@model Homeix.Models.Rating
+@using System.Linq
 
 @{
     ViewData["Title"] = "Create Rating";
+
+    var ratedUserIdStr = Context.Request.Query["ratedUserId"].FirstOrDefault();
+    var ratedUserNameFromQuery = Context.Request.Query["ratedUserName"].FirstOrDefault();
+
+    var hasRatedUser = int.TryParse(ratedUserIdStr, out var ratedUserIdFromQuery);
 }
 
 <div class="container-fluid mt-4">
@@ -17,15 +23,19 @@
 
                         <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-                        <!-- 🔍 Search User -->
+                        <!-- 🔍 Search User / Preselected User -->
                         <div class="mb-3">
                             <label class="form-label">User to Rate</label>
+
                             <input type="text"
                                    id="userSearch"
                                    class="form-control"
-                                   placeholder="Search user by name..." />
+                                   placeholder="Search user by name..."
+                                   value="@(hasRatedUser ? ratedUserNameFromQuery : "")"
+                            @(hasRatedUser ? "readonly" : "") />
 
-                            <input type="hidden" asp-for="RatedUserId" />
+                            <!-- keep binding -->
+                            <input type="hidden" asp-for="RatedUserId" value="@(hasRatedUser ? ratedUserIdFromQuery : 0)" />
                             <div id="searchResults" class="list-group mt-1"></div>
                         </div>
 
@@ -82,33 +92,38 @@
             });
         });
 
-        // 🔍 USER SEARCH
+        // 🔍 USER SEARCH (keep your existing feature)
         const searchInput = document.getElementById("userSearch");
         const results = document.getElementById("searchResults");
         const hiddenUserId = document.querySelector("input[name='RatedUserId']");
 
-        searchInput.addEventListener("input", async () => {
-            const term = searchInput.value.trim();
+        // If preselected (readonly), don't allow searching
+        if (searchInput.hasAttribute("readonly")) {
             results.innerHTML = "";
-            if (term.length < 2) return;
+        } else {
+            searchInput.addEventListener("input", async () => {
+                const term = searchInput.value.trim();
+                results.innerHTML = "";
+                if (term.length < 2) return;
 
-            const res = await fetch(`/Ratings/SearchUsers?term=${term}`);
-            const users = await res.json();
+                const res = await fetch(`/Ratings/SearchUsers?term=${term}`);
+                const users = await res.json();
 
-            users.forEach(u => {
-                const item = document.createElement("button");
-                item.type = "button";
-                item.className = "list-group-item list-group-item-action";
-                item.textContent = u.fullName;
+                users.forEach(u => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.textContent = u.fullName;
 
-                item.onclick = () => {
-                    searchInput.value = u.fullName;
-                    hiddenUserId.value = u.userId;
-                    results.innerHTML = "";
-                };
+                    item.onclick = () => {
+                        searchInput.value = u.fullName;
+                        hiddenUserId.value = u.userId;
+                        results.innerHTML = "";
+                    };
 
-                results.appendChild(item);
+                    results.appendChild(item);
+                });
             });
-        });
+        }
     </script>
 }

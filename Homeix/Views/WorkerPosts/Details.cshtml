@@ -1,16 +1,32 @@
 ﻿@model Homeix.Models.WorkerPost
 @using Homeix.Models
+@using System.Linq
+
+@functions {
+    string? GetUserNameSafe(User? u)
+    {
+        if (u == null) return null;
+
+        var prop = u.GetType().GetProperty("UserName")
+                   ?? u.GetType().GetProperty("Username");
+
+        return prop?.GetValue(u)?.ToString();
+    }
+}
 
 @{
     ViewData["Title"] = "Worker Post Details";
 
-    var media = Model.PostMedia?
+    var mediaList = (Model.PostMedia ?? new List<PostMedium>())
+        .Where(m => !string.IsNullOrWhiteSpace(m.MediaPath))
         .OrderByDescending(m => m.UploadedAt)
-        .FirstOrDefault();
+        .ToList();
 
-    var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
-        ? media.MediaPath.Replace("\\", "/")
-        : "/images/no-image.png";
+    var firstMedia = mediaList.FirstOrDefault();
+
+    var fallbackImageUrl = "/images/no-image.png";
+
+    var creatorUserName = GetUserNameSafe(Model.User) ?? Model.User?.FullName ?? "—";
 }
 
 <div class="container-fluid page-wrapper mt-4">
@@ -28,10 +44,58 @@
 
             <div class="card shadow-sm">
 
-                <!-- 🖼 IMAGE (SAME STYLE AS GRID) -->
-                <img src="@imageUrl"
-                     class="card-img-top"
-                     style="height:300px; object-fit:cover" />
+                <!-- 🖼 IMAGES CAROUSEL (NEW) -->
+                @if (mediaList.Count > 1)
+                {
+                    <div id="workerPostCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            @for (int i = 0; i < mediaList.Count; i++)
+                            {
+                                <button type="button"
+                                        data-bs-target="#workerPostCarousel"
+                                        data-bs-slide-to="@i"
+                                        class="@(i == 0 ? "active" : "")"
+                                        aria-current="@(i == 0 ? "true" : "false")"
+                                        aria-label="Slide @(i + 1)">
+                                </button>
+                            }
+                        </div>
+
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < mediaList.Count; i++)
+                            {
+                                var url = mediaList[i].MediaPath.Replace("\\", "/");
+
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <img src="@url"
+                                         class="d-block w-100"
+                                         style="height:300px; object-fit:cover" />
+                                </div>
+                            }
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#workerPostCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#workerPostCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    // Keep your original behavior (single image)
+                    var imageUrl = !string.IsNullOrWhiteSpace(firstMedia?.MediaPath)
+                    ? firstMedia!.MediaPath.Replace("\\", "/")
+                    : fallbackImageUrl;
+
+                    <img src="@imageUrl"
+                         class="card-img-top"
+                         style="height:300px; object-fit:cover" />
+                }
 
                 <div class="card-body">
 
@@ -43,9 +107,16 @@
 
                         <div>
                             <h3 class="fw-bold mb-1">@Model.Title</h3>
+
+                            <!-- ✅ Creator Username (NEW) -->
+                            <p class="mb-1 text-muted">
+                                Posted by: <strong>@creatorUserName</strong>
+                            </p>
+
                             <p class="mb-0 text-muted">
                                 Category: @Model.PostCategory?.CategoryName
                             </p>
+
                             <p class="mb-0 fw-bold text-success">
                                 @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
                                     ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax} JD"
@@ -63,6 +134,10 @@
 
                         <dt class="col-sm-4 fw-bold">Worker</dt>
                         <dd class="col-sm-8">@Model.User?.FullName</dd>
+
+                        <!-- ✅ Username row (NEW) -->
+                        <dt class="col-sm-4 fw-bold">Username</dt>
+                        <dd class="col-sm-8">@creatorUserName</dd>
 
                         <dt class="col-sm-4 fw-bold">Location</dt>
                         <dd class="col-sm-8">@Model.Location</dd>
@@ -89,16 +164,26 @@
                         <i class="bi bi-arrow-left-circle"></i> Back
                     </a>
 
+                    <div class="d-flex gap-2">
+                        <!-- ✅ RATE BUTTON (NEW) -->
+                        <a asp-controller="Ratings"
+                           asp-action="Create"
+                           asp-route-ratedUserId="@Model.UserId"
+                           asp-route-ratedUserName="@creatorUserName"
+                           class="btn btn-outline-warning">
+                            <i class="bi bi-star"></i> Rate
+                        </a>
 
-                    <!-- 💬 CHAT BUTTON -->
-                    <a asp-controller="Chat"
-                       asp-action="Index"
-                       asp-route-postType="WorkerPost"
-                       asp-route-postId="@Model.WorkerPostId"
-                       asp-route-userId="@Model.UserId"
-                       class="btn btn-primary">
-                        <i class="bi bi-chat-dots"></i> Chat
-                    </a>
+                        <!-- 💬 CHAT BUTTON -->
+                        <a asp-controller="Chat"
+                           asp-action="Index"
+                           asp-route-postType="WorkerPost"
+                           asp-route-postId="@Model.WorkerPostId"
+                           asp-route-userId="@Model.UserId"
+                           class="btn btn-primary">
+                            <i class="bi bi-chat-dots"></i> Chat
+                        </a>
+                    </div>
 
                 </div>
             </div>

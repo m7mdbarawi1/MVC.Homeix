@@ -19,7 +19,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Create" method="post">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -78,6 +78,28 @@
                             </div>
                         </div>
 
+                        <!-- MEDIA UPLOAD (NEW) -->
+                        <div class="mb-4">
+                            <label class="form-label">Upload Images (optional)</label>
+
+                            <div id="dropZone"
+                                 class="border border-2 border-dashed rounded p-4 text-center"
+                                 style="cursor:pointer;">
+                                <p class="text-muted mb-2">
+                                    Drag & drop here or click to select (multiple allowed)
+                                </p>
+
+                                <input type="file"
+                                       id="mediaInput"
+                                       name="mediaFiles"
+                                       class="d-none"
+                                       accept="image/*"
+                                       multiple />
+
+                                <div id="preview" class="row g-2 mt-3"></div>
+                            </div>
+                        </div>
+
                         <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
@@ -101,4 +123,52 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        const dropZone = document.getElementById("dropZone");
+        const input = document.getElementById("mediaInput");
+        const preview = document.getElementById("preview");
+
+        dropZone.onclick = () => input.click();
+
+        dropZone.ondragover = e => {
+            e.preventDefault();
+            dropZone.classList.add("bg-light");
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.classList.remove("bg-light");
+        };
+
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            dropZone.classList.remove("bg-light");
+            input.files = e.dataTransfer.files;
+            showPreview(input.files);
+        };
+
+        input.onchange = () => showPreview(input.files);
+
+        function showPreview(files) {
+            preview.innerHTML = "";
+            if (!files || files.length === 0) return;
+
+            [...files].forEach(file => {
+                if (!file.type.startsWith("image")) return;
+
+                const col = document.createElement("div");
+                col.className = "col-6 col-md-4";
+
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.className = "img-fluid rounded border";
+                img.style.maxHeight = "160px";
+                img.style.objectFit = "cover";
+                img.onload = () => URL.revokeObjectURL(img.src);
+
+                col.appendChild(img);
+                preview.appendChild(col);
+            });
+        }
+    </script>
 }
