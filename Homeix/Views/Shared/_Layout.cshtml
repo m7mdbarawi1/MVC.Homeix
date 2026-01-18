@@ -91,14 +91,12 @@
                             else if (roleName == "customer")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="CustomerPosts" asp-action="MyPosts">My Posts</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">My Favorites</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="Index">History</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerApprovals" asp-action="Index">Become a Professional</a></li>
                             }
                             else if (roleName == "worker")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="FavoritePosts" asp-action="Index">My Favorites</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="JobProgresses" asp-action="Index">History</a></li>
                             }
                         }
