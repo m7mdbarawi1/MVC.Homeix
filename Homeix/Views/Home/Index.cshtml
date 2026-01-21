@@ -1,152 +1,376 @@
 ﻿@{
     ViewData["Title"] = "Home";
+    bool isAuth = User?.Identity?.IsAuthenticated ?? false;
 }
 
 <!-- ==========================================
-   HERO SECTION
+   HERO (clear hierarchy, fewer elements)
 ========================================== -->
-<section class="hero-section py-5">
-    <div class="container text-center">
-        <h1 class="display-3 fw-bold hero-title">
-            Welcome to Homeix
-        </h1>
-
-        <p class="lead mt-3 hero-subtitle">
-            Discover how <strong>Homeix</strong> transforms your experience with
-            modern dashboards, analytics, and community-driven support.
-        </p>
-
-        <a href="#features-section" class="btn btn-accent btn-lg mt-4 fw-bold">
-            Explore Features
-        </a>
-    </div>
-</section>
-
-
-
-<!-- ==========================================
-   FEATURES CARDS
-========================================== -->
-<section class="py-5 features-bg">
+<section class="bg-dark text-white py-5">
     <div class="container">
-        <div class="row g-4 text-center">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge text-bg-light text-dark">
+                        <i class="bi bi-shield-check me-1"></i> Verified professionals
+                    </span>
+                    <span class="badge text-bg-light text-dark">
+                        <i class="bi bi-lock-fill me-1"></i> Secure payments
+                    </span>
+                    <span class="badge text-bg-light text-dark">
+                        <i class="bi bi-chat-dots-fill me-1"></i> In-app chat
+                    </span>
+                </div>
 
-            <!-- Card 1 -->
-            <div class="col-md-4">
-                <div class="card h-100 shadow feature-card">
-                    <div class="feature-card-header fw-bold">
-                        Modern Dashboard
+                <h1 class="display-5 fw-bold mb-3">Home services made simple.</h1>
+                <p class="lead text-white-50 mb-4">
+                    Post a job, connect with professionals, chat instantly, and track progress — all in one place.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    @if (isAuth)
+                    {
+                        <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-accent btn-lg fw-bold">
+                            Go to Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-accent btn-lg fw-bold">
+                            Create Account
+                        </a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">
+                            Login
+                        </a>
+                    }
+
+                    <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-light btn-lg">
+                        Browse Professionals
+                    </a>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3 mt-4 text-white-50 small">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check2-circle"></i> Quick matching
                     </div>
-                    <div class="card-body">
-                        <p>
-                            Manage all your tasks and activities in one intuitive dashboard.
-                        </p>
-                        <a href="#" class="btn btn-accent btn-lg fw-bold">Explore</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check2-circle"></i> One dashboard
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check2-circle"></i> Organized history
                     </div>
                 </div>
             </div>
 
-            <!-- Card 2 -->
-            <div class="col-md-4">
-                <div class="card h-100 shadow feature-card">
-                    <div class="feature-card-header fw-bold">
-                        Secure & Reliable
-                    </div>
-                    <div class="card-body">
-                        <p>
-                            Your data is protected with enterprise-grade encryption.
-                        </p>
-                        <a href="#" class="btn btn-accent btn-lg fw-bold">Learn More</a>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold mb-0">Get started in minutes</h5>
+                            <span class="badge text-bg-success">Simple flow</span>
+                        </div>
+
+                        <div class="list-group list-group-flush mb-3">
+                            <div class="list-group-item px-0 d-flex gap-3">
+                                <i class="bi bi-clipboard-check fs-4 text-primary"></i>
+                                <div>
+                                    <div class="fw-semibold">Post your job</div>
+                                    <div class="text-muted small">Describe what you need and when.</div>
+                                </div>
+                            </div>
+                            <div class="list-group-item px-0 d-flex gap-3">
+                                <i class="bi bi-chat-dots fs-4 text-primary"></i>
+                                <div>
+                                    <div class="fw-semibold">Chat & confirm</div>
+                                    <div class="text-muted small">Agree on scope, timing, and price.</div>
+                                </div>
+                            </div>
+                            <div class="list-group-item px-0 d-flex gap-3">
+                                <i class="bi bi-graph-up-arrow fs-4 text-primary"></i>
+                                <div>
+                                    <div class="fw-semibold">Track progress</div>
+                                    <div class="text-muted small">Updates + job history stay saved.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border mb-0">
+                            <div class="d-flex gap-2 align-items-start">
+                                <i class="bi bi-info-circle"></i>
+                                <div class="small">
+                                    Tip: Use <strong>Messages</strong> to keep details documented inside Homeix.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Card 3 -->
-            <div class="col-md-4">
-                <div class="card h-100 shadow feature-card">
-                    <div class="feature-card-header fw-bold">
-                        Analytics & Insights
-                    </div>
-                    <div class="card-body">
-                        <p>
-                            Gain insights with interactive charts and real-time reports.
-                        </p>
-                        <a href="#" class="btn btn-accent btn-lg fw-bold">View Reports</a>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
 
-
-
 <!-- ==========================================
-   WHY CHOOSE HOMEIX
+   CHOOSE YOUR PATH (separate section, clearer than tabs)
 ========================================== -->
-<section id="features-section" class="py-5 text-center features-section">
+<section class="py-5 bg-body-tertiary">
     <div class="container">
-        <h2 class="fw-bold mb-5 features-title">
-            Why Choose Homeix?
-        </h2>
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-2">Choose your path</h2>
+            <p class="text-muted mb-0">Customer or Professional — both managed from one dashboard.</p>
+        </div>
 
         <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-person fs-3 text-primary"></i>
+                            <h5 class="fw-bold mb-0">For Customers</h5>
+                        </div>
+                        <p class="text-muted mb-3">Post work, talk to pros, and track everything in one place.</p>
 
-            <!-- Feature 1 -->
-            <div class="col-md-4">
-                <i class="bi bi-speedometer2 fs-1 feature-icon"></i>
-                <h5 class="fw-bold mt-3">Fast Performance</h5>
-                <p>
-                    Optimized for speed to give you the smoothest experience.
-                </p>
+                        <ol class="mb-4">
+                            <li class="mb-2">Create a job post with details and timing</li>
+                            <li class="mb-2">Chat to confirm scope and price</li>
+                            <li>Track progress + keep job history</li>
+                        </ol>
+
+                        <div class="d-grid gap-2 d-sm-flex">
+                            <a asp-controller="CustomerPosts" asp-action="Create" class="btn btn-primary">
+                                Post a Job
+                            </a>
+                            <a asp-controller="Chat" asp-action="Index" class="btn btn-outline-secondary">
+                                Open Messages
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Feature 2 -->
-            <div class="col-md-4">
-                <i class="bi bi-palette fs-1 feature-icon"></i>
-                <h5 class="fw-bold mt-3">Customizable Themes</h5>
-                <p>
-                    Adjust colors and layouts to match your brand and style.
-                </p>
-            </div>
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-person-badge fs-3 text-primary"></i>
+                            <h5 class="fw-bold mb-0">For Professionals</h5>
+                        </div>
+                        <p class="text-muted mb-3">Get approved, publish services, and manage jobs with confidence.</p>
 
-            <!-- Feature 3 -->
-            <div class="col-md-4">
-                <i class="bi bi-people fs-1 feature-icon"></i>
-                <h5 class="fw-bold mt-3">Community & Support</h5>
-                <p>
-                    Connect with experts and get support anytime.
-                </p>
-            </div>
+                        <ol class="mb-4">
+                            <li class="mb-2">Apply & get approved</li>
+                            <li class="mb-2">Create posts with services and pricing</li>
+                            <li>Manage jobs and build trust</li>
+                        </ol>
 
+                        <div class="d-grid gap-2 d-sm-flex">
+                            <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-accent fw-bold">
+                                Apply to Become a Professional
+                            </a>
+                            <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-secondary">
+                                Browse Worker Posts
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
+<!-- ==========================================
+   FEATURES (kept, but simplified spacing)
+========================================== -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-2">Why Homeix?</h2>
+            <p class="text-muted mb-0">Built for real home-service workflows.</p>
+        </div>
 
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <i class="bi bi-shield-lock fs-1 text-primary"></i>
+                        <h5 class="fw-bold mt-3">Secure & reliable</h5>
+                        <p class="text-muted mb-0">Account and payments handled with a safe flow.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <i class="bi bi-chat-square-dots fs-1 text-primary"></i>
+                        <h5 class="fw-bold mt-3">Built-in messaging</h5>
+                        <p class="text-muted mb-0">Discuss details and keep communication in one place.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <i class="bi bi-clipboard-data fs-1 text-primary"></i>
+                        <h5 class="fw-bold mt-3">Track job history</h5>
+                        <p class="text-muted mb-0">Progress tracking + completed job records.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- ==========================================
-   CALL TO ACTION (CTA)
+   POPULAR SERVICES (less crowded: 6 + a CTA)
 ========================================== -->
-<section class="py-5 text-center cta-section">
+<section class="py-5 bg-body-tertiary">
     <div class="container">
-        <h2 class="fw-bold mb-4 cta-title">
-            Enhance Your Workflow
-        </h2>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-2 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Popular services</h2>
+                <p class="text-muted mb-0">Pick a category, then find professionals quickly.</p>
+            </div>
+            <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-secondary">
+                View all professionals
+            </a>
+        </div>
 
-        <p class="mb-4 cta-text">
-            Homeix provides tools and insights to streamline your tasks,
-            improve collaboration, and track progress in real-time.
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-wrench-adjustable fs-2 text-primary"></i>
+                        <div class="fw-semibold mt-2">Plumbing</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-lightning-charge fs-2 text-primary"></i>
+                        <div class="fw-semibold mt-2">Electrical</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-snow fs-2 text-primary"></i>
+                        <div class="fw-semibold mt-2">AC / Cooling</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-brush fs-2 text-primary"></i>
+                        <div class="fw-semibold mt-2">Painting</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-bucket fs-2 text-primary"></i>
+                        <div class="fw-semibold mt-2">Cleaning</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
+                    <div class="card-body py-4">
+                        <i class="bi bi-tools fs-2 text-primary"></i>
+                        <div class="fw-semibold mt-2">Repairs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+   FAQ
+========================================== -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-2">Frequently asked questions</h2>
+            <p class="text-muted mb-0">Quick answers to common questions.</p>
+        </div>
+
+        <div class="accordion accordion-flush border rounded-4 overflow-hidden" id="homeixFaq">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+                        How do I post a job?
+                    </button>
+                </h2>
+                <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#homeixFaq">
+                    <div class="accordion-body text-muted">
+                        Create an account, then create a post describing what you need, when you need it, and any details.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+                        How do I become a professional on Homeix?
+                    </button>
+                </h2>
+                <div id="a2" class="accordion-collapse collapse" data-bs-parent="#homeixFaq">
+                    <div class="accordion-body text-muted">
+                        Submit your application from “Become a Professional”, then once approved you can create worker posts and get customers.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="q3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+                        Can I chat before confirming?
+                    </button>
+                </h2>
+                <div id="a3" class="accordion-collapse collapse" data-bs-parent="#homeixFaq">
+                    <div class="accordion-body text-muted">
+                        Yes—use Messages to discuss price, timing, and scope before starting.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+   CTA (single strong CTA area)
+========================================== -->
+<section class="bg-dark text-white py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-2">Ready to start?</h2>
+        <p class="text-white-50 mb-4">
+            Join Homeix as a customer or a professional and manage everything from one modern dashboard.
         </p>
 
-        <div class="d-flex justify-content-center flex-wrap gap-3">
-            <a href="#" class="btn btn-accent btn-lg fw-bold">
-                Get Started
-            </a>
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            @if (isAuth)
+            {
+                <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-accent btn-lg fw-bold">
+                    Open My Homeix
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-accent btn-lg fw-bold">
+                    Create Account
+                </a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">
+                    Login
+                </a>
+            }
 
-            <a href="#" class="btn btn-outline-light btn-lg">
-                Learn More
+            <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-outline-light btn-lg">
+                Become a Professional
             </a>
         </div>
     </div>

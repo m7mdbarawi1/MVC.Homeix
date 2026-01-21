@@ -1,8 +1,8 @@
+
 /* ==========================================================
    HOMEIX MASTER THEME — COMPREHENSIVE VERSION
    Light + Dark Mode | Bootstrap 5 Extension
 ========================================================== */
-
 /* =========================
    COLOR VARIABLES (UNCHANGED)
 ========================= */
@@ -451,7 +451,6 @@ html.dark-theme #chatbot-box {
         object-fit: cover;
     }
 
-
 /* =========================
    RESPONSIVE
 ========================= */
@@ -471,7 +470,6 @@ html.dark-theme #chatbot-box {
         margin-bottom: 1rem;
     }
 }
-
 
 /* ==========================================================
    ? LANGUAGE DROPDOWN — MOBILE RESPONSIVE FIX (ADDED ONLY)
@@ -499,4 +497,386 @@ html.dark-theme #chatbot-box {
             text-align: center;
             padding: 0.6rem 1rem;
         }
+}
+
+/* ==========================================================
+   HOMEIX SAFE ENHANCEMENTS (ADDED ONLY — nothing removed)
+   Fixes requested:
+   - Removes Bootstrap white panels/boxes in dark mode (accordion, list-group, bg-light, text-bg-light)
+   - Keeps same color scheme
+   - Makes carousel arrows/icons more visible globally
+   - Prevents accidental image stretching (safe default)
+   - Removes hover “jumping” on mobile/touch screens
+========================================================== */
+
+/* -------------------------
+   1) Dark-mode: remove Bootstrap “white blocks”
+-------------------------- */
+html.dark-theme .bg-light,
+html.dark-theme .bg-white,
+html.dark-theme .bg-body,
+html.dark-theme .bg-body-tertiary,
+html.dark-theme .bg-body-secondary {
+    background-color: var(--dark-card) !important;
+    color: var(--dark-text) !important;
+}
+
+/* Bootstrap light badges look like white boxes in dark mode */
+html.dark-theme .text-bg-light {
+    background-color: rgba(255,255,255,0.08) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Borders */
+html.dark-theme .border,
+html.dark-theme .border-top,
+html.dark-theme .border-bottom,
+html.dark-theme .border-start,
+html.dark-theme .border-end {
+    border-color: var(--dark-border) !important;
+}
+
+/* Muted text */
+html.dark-theme .text-muted {
+    color: rgba(230,230,230,0.72) !important;
+}
+
+/* HR visibility */
+html.dark-theme hr {
+    border-color: rgba(255,255,255,0.12) !important;
+}
+
+/* -------------------------
+   2) Accordion in dark mode
+-------------------------- */
+html.dark-theme .accordion-item {
+    background-color: var(--dark-card) !important;
+    border-color: var(--dark-border) !important;
+}
+
+html.dark-theme .accordion-button {
+    background-color: var(--dark-card) !important;
+    color: var(--dark-text) !important;
+}
+
+    html.dark-theme .accordion-button:not(.collapsed) {
+        background-color: rgba(26,35,126,0.35) !important;
+        color: #fff !important;
+    }
+
+html.dark-theme .accordion-body {
+    background-color: transparent !important;
+    color: var(--dark-text) !important;
+}
+
+.accordion-button:focus {
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,215,0,0.25) !important;
+}
+
+/* -------------------------
+   3) List-group in dark mode
+-------------------------- */
+html.dark-theme .list-group {
+    background-color: transparent !important;
+}
+
+html.dark-theme .list-group-item {
+    background-color: transparent !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* In general, list group inside cards looks better transparent */
+.card .list-group-item {
+    background-color: transparent;
+}
+
+/* -------------------------
+   4) Carousel arrows/icons visibility (global)
+-------------------------- */
+.carousel-control-prev,
+.carousel-control-next {
+    opacity: 1;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    filter: drop-shadow(0 2px 10px rgba(0,0,0,0.70));
+}
+
+/* -------------------------
+   5) Prevent accidental image stretching (safe)
+   - Does NOT override your .post-card img height rule because it is more specific.
+-------------------------- */
+img {
+    max-width: 100%;
+}
+
+.carousel-inner img,
+.card-img-top,
+.card-img {
+    height: auto;
+}
+
+/* -------------------------
+   6) Mobile/touch: remove hover jumping
+-------------------------- */
+@media (hover: none) {
+    .card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .post-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+}
+/* ==========================================================
+   MODAL (BOOTSTRAP) VISIBILITY FIX — Added only
+   Fixes unreadable text inside modals (especially text-muted)
+   Keeps your theme colors for light/dark modes
+========================================================== */
+
+/* Make modal follow your theme (instead of always white) */
+.modal-content {
+    background: var(--light-card) !important;
+    color: var(--light-text) !important;
+    border: 1px solid var(--light-border) !important;
+}
+
+/* Borders inside modal */
+.modal-header,
+.modal-footer {
+    border-color: var(--light-border) !important;
+}
+
+/* Muted text inside modal should still be readable */
+.modal-content .text-muted,
+.modal-content small.text-muted {
+    color: rgba(10, 15, 43, 0.65) !important; /* readable on light cards */
+}
+
+/* Dark theme: modal becomes dark-card so muted text stays visible */
+html.dark-theme .modal-content {
+    background: var(--dark-card) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+html.dark-theme .modal-header,
+html.dark-theme .modal-footer {
+    border-color: var(--dark-border) !important;
+}
+
+html.dark-theme .modal-content .text-muted,
+html.dark-theme .modal-content small.text-muted {
+    color: rgba(230, 230, 230, 0.78) !important; /* readable on dark cards */
+}
+
+/* Close (X) button visibility in dark mode */
+html.dark-theme .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) !important;
+    opacity: 0.85;
+}
+
+/* =========================
+   HOME PAGE ENHANCEMENTS
+========================= */
+.home-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+}
+
+    /* subtle grid overlay */
+    .home-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+        background-size: 42px 42px;
+        opacity: 0.25;
+        pointer-events: none;
+    }
+
+/* floating blobs */
+.home-blob {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 999px;
+    filter: blur(18px);
+    opacity: 0.55;
+    pointer-events: none;
+    transform: translateZ(0);
+    animation: homeFloat 10s ease-in-out infinite;
+}
+
+.blob-1 {
+    top: -140px;
+    left: -120px;
+    background: radial-gradient(circle at 30% 30%, var(--gold), transparent 60%);
+}
+
+.blob-2 {
+    bottom: -160px;
+    right: -120px;
+    background: radial-gradient(circle at 30% 30%, #3b82f6, transparent 60%);
+    animation-delay: 1.2s;
+}
+
+@keyframes homeFloat {
+    0%, 100% {
+        transform: translateY(0px) scale(1);
+    }
+
+    50% {
+        transform: translateY(18px) scale(1.03);
+    }
+}
+
+/* reveal animation (scroll) */
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 650ms ease, transform 650ms ease;
+}
+
+    .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+
+/* badge */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    padding: .45rem .75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+}
+
+.hero-lead {
+    max-width: 820px;
+    margin: 0 auto;
+    opacity: 0.95;
+}
+
+.hero-actions .btn {
+    min-width: 200px;
+}
+
+/* stats card */
+.stat-card {
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+}
+
+html.dark-theme .stat-card {
+    border-color: rgba(255,255,255,0.10);
+    background: rgba(0,0,0,0.18);
+}
+
+.stat-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1.1;
+}
+
+.icon-bubble {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.22);
+    color: var(--gold);
+    font-size: 1.55rem;
+}
+
+.step-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    background: var(--gold);
+    color: #000;
+}
+
+/* You were using features-bg in the view; define it */
+.features-bg {
+    background: var(--light-bg);
+}
+
+html.dark-theme .features-bg {
+    background: var(--dark-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-blob {
+        animation: none !important;
+    }
+
+    .reveal {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* ==========================================================
+   FIX: Light mode heading/body color on gray backgrounds
+   + Respect Bootstrap .text-white sections (Hero, etc.)
+   (ADDED ONLY)
+========================================================== */
+
+/* 1) Light mode: soften text colors (better on gray bg) */
+html:not(.dark-theme) {
+    --light-text: #1f2937; /* slate for body text */
+    --light-heading: #0f172a; /* deep slate for headings */
+}
+
+    html:not(.dark-theme),
+    html:not(.dark-theme) body {
+        color: var(--light-text) !important;
+    }
+
+        html:not(.dark-theme) .page-title,
+        html:not(.dark-theme) h1,
+        html:not(.dark-theme) h2,
+        html:not(.dark-theme) h3,
+        html:not(.dark-theme) h4,
+        html:not(.dark-theme) h5 {
+            color: var(--light-heading) !important;
+        }
+
+/* 2) If a section uses Bootstrap text-white, headings should not become #0A0F2B */
+.text-white .page-title:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h1:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h2:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h3:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h4:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h5:not(.hero-title):not(.features-title):not(.cta-title) {
+    color: inherit !important; /* keeps them white in .text-white areas */
 }
