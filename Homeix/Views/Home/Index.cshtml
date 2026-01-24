@@ -4,30 +4,37 @@
 }
 
 <!-- ==========================================
-   HERO (clear hierarchy, fewer elements)
+   HERO (Centered, no right box, animated background)
 ========================================== -->
-<section class="bg-dark text-white py-5">
-    <div class="container">
-        <div class="row align-items-center gy-4">
-            <div class="col-lg-7">
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge text-bg-light text-dark">
-                        <i class="bi bi-shield-check me-1"></i> Verified professionals
-                    </span>
-                    <span class="badge text-bg-light text-dark">
-                        <i class="bi bi-lock-fill me-1"></i> Secure payments
-                    </span>
-                    <span class="badge text-bg-light text-dark">
-                        <i class="bi bi-chat-dots-fill me-1"></i> In-app chat
-                    </span>
+<section class="home-hero text-white py-5 position-relative">
+    <!-- Decorative pattern -->
+    <img src="~/images/home/tools-pattern.png"
+         alt=""
+         class="position-absolute top-0 start-0 w-100 h-100 opacity-25"
+         style="object-fit: cover; pointer-events: none;" />
+
+    <!-- Animated blobs -->
+    <div class="home-blob blob-1"></div>
+    <div class="home-blob blob-2"></div>
+
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9 text-center">
+                <div class="hero-badge mb-3 justify-content-center">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Verified professionals • Secure payments • In-app chat</span>
                 </div>
 
-                <h1 class="display-5 fw-bold mb-3">Home services made simple.</h1>
-                <p class="lead text-white-50 mb-4">
-                    Post a job, connect with professionals, chat instantly, and track progress — all in one place.
+                <h1 class="display-3 fw-bold mb-3">
+                    Fix your home.<br class="d-none d-md-block" />
+                    Faster. Safer. Smarter.
+                </h1>
+
+                <p class="lead hero-lead mb-4">
+                    Post a job, connect with trusted professionals, chat instantly, and track progress — all in one place.
                 </p>
 
-                <div class="d-flex flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2 justify-content-center hero-actions">
                     @if (isAuth)
                     {
                         <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-accent btn-lg fw-bold">
@@ -49,171 +56,87 @@
                     </a>
                 </div>
 
-                <div class="d-flex flex-wrap gap-3 mt-4 text-white-50 small">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check2-circle"></i> Quick matching
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check2-circle"></i> One dashboard
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check2-circle"></i> Organized history
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h5 class="fw-bold mb-0">Get started in minutes</h5>
-                            <span class="badge text-bg-success">Simple flow</span>
-                        </div>
-
-                        <div class="list-group list-group-flush mb-3">
-                            <div class="list-group-item px-0 d-flex gap-3">
-                                <i class="bi bi-clipboard-check fs-4 text-primary"></i>
-                                <div>
-                                    <div class="fw-semibold">Post your job</div>
-                                    <div class="text-muted small">Describe what you need and when.</div>
-                                </div>
-                            </div>
-                            <div class="list-group-item px-0 d-flex gap-3">
-                                <i class="bi bi-chat-dots fs-4 text-primary"></i>
-                                <div>
-                                    <div class="fw-semibold">Chat & confirm</div>
-                                    <div class="text-muted small">Agree on scope, timing, and price.</div>
-                                </div>
-                            </div>
-                            <div class="list-group-item px-0 d-flex gap-3">
-                                <i class="bi bi-graph-up-arrow fs-4 text-primary"></i>
-                                <div>
-                                    <div class="fw-semibold">Track progress</div>
-                                    <div class="text-muted small">Updates + job history stay saved.</div>
-                                </div>
+                <div class="row g-3 justify-content-center mt-4">
+                    <div class="col-12 col-md-4">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <div class="stat-value">Fast</div>
+                                <div class="small text-white-50">Quick matching</div>
                             </div>
                         </div>
-
-                        <div class="alert alert-light border mb-0">
-                            <div class="d-flex gap-2 align-items-start">
-                                <i class="bi bi-info-circle"></i>
-                                <div class="small">
-                                    Tip: Use <strong>Messages</strong> to keep details documented inside Homeix.
-                                </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <div class="stat-value">Simple</div>
+                                <div class="small text-white-50">One dashboard</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <div class="stat-value">Secure</div>
+                                <div class="small text-white-50">Safe workflow</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 </section>
 
 <!-- ==========================================
-   CHOOSE YOUR PATH (separate section, clearer than tabs)
-========================================== -->
-<section class="py-5 bg-body-tertiary">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold mb-2">Choose your path</h2>
-            <p class="text-muted mb-0">Customer or Professional — both managed from one dashboard.</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-person fs-3 text-primary"></i>
-                            <h5 class="fw-bold mb-0">For Customers</h5>
-                        </div>
-                        <p class="text-muted mb-3">Post work, talk to pros, and track everything in one place.</p>
-
-                        <ol class="mb-4">
-                            <li class="mb-2">Create a job post with details and timing</li>
-                            <li class="mb-2">Chat to confirm scope and price</li>
-                            <li>Track progress + keep job history</li>
-                        </ol>
-
-                        <div class="d-grid gap-2 d-sm-flex">
-                            <a asp-controller="CustomerPosts" asp-action="Create" class="btn btn-primary">
-                                Post a Job
-                            </a>
-                            <a asp-controller="Chat" asp-action="Index" class="btn btn-outline-secondary">
-                                Open Messages
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-person-badge fs-3 text-primary"></i>
-                            <h5 class="fw-bold mb-0">For Professionals</h5>
-                        </div>
-                        <p class="text-muted mb-3">Get approved, publish services, and manage jobs with confidence.</p>
-
-                        <ol class="mb-4">
-                            <li class="mb-2">Apply & get approved</li>
-                            <li class="mb-2">Create posts with services and pricing</li>
-                            <li>Manage jobs and build trust</li>
-                        </ol>
-
-                        <div class="d-grid gap-2 d-sm-flex">
-                            <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-accent fw-bold">
-                                Apply to Become a Professional
-                            </a>
-                            <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-secondary">
-                                Browse Worker Posts
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   FEATURES (kept, but simplified spacing)
+   WHY HOMEIX
 ========================================== -->
 <section class="py-5">
     <div class="container">
-        <div class="text-center mb-4">
+        <div class="text-center mb-4 reveal">
             <h2 class="fw-bold mb-2">Why Homeix?</h2>
             <p class="text-muted mb-0">Built for real home-service workflows.</p>
         </div>
 
         <div class="row g-4 text-center">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
-                        <i class="bi bi-shield-lock fs-1 text-primary"></i>
+                        <div class="icon-bubble mx-auto">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
                         <h5 class="fw-bold mt-3">Secure & reliable</h5>
-                        <p class="text-muted mb-0">Account and payments handled with a safe flow.</p>
+                        <p class="text-muted mb-0">
+                            Your account, activity, and payments follow a safe flow.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
-                        <i class="bi bi-chat-square-dots fs-1 text-primary"></i>
+                        <div class="icon-bubble mx-auto">
+                            <i class="bi bi-chat-square-dots"></i>
+                        </div>
                         <h5 class="fw-bold mt-3">Built-in messaging</h5>
-                        <p class="text-muted mb-0">Discuss details and keep communication in one place.</p>
+                        <p class="text-muted mb-0">
+                            Confirm details, share updates, keep everything documented.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
-                        <i class="bi bi-clipboard-data fs-1 text-primary"></i>
+                        <div class="icon-bubble mx-auto">
+                            <i class="bi bi-clipboard-data"></i>
+                        </div>
                         <h5 class="fw-bold mt-3">Track job history</h5>
-                        <p class="text-muted mb-0">Progress tracking + completed job records.</p>
+                        <p class="text-muted mb-0">
+                            Stay organized with progress tracking and completed records.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -222,66 +145,119 @@
 </section>
 
 <!-- ==========================================
-   POPULAR SERVICES (less crowded: 6 + a CTA)
+   POPULAR SERVICES (Flip Cards, auto-moving row, no scrollbar)
 ========================================== -->
 <section class="py-5 bg-body-tertiary">
     <div class="container">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-2 mb-4">
-            <div>
-                <h2 class="fw-bold mb-1">Popular services</h2>
-                <p class="text-muted mb-0">Pick a category, then find professionals quickly.</p>
-            </div>
-            <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-secondary">
-                View all professionals
-            </a>
+        <div class="text-center mb-4 reveal">
+            <h2 class="fw-bold mb-1">Popular services</h2>
+            <p class="text-muted mb-0">Hover (or tap) to preview — the row moves automatically.</p>
         </div>
 
-        <div class="row g-3">
-            <div class="col-6 col-md-4 col-lg-2">
-                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
-                    <div class="card-body py-4">
-                        <i class="bi bi-wrench-adjustable fs-2 text-primary"></i>
-                        <div class="fw-semibold mt-2">Plumbing</div>
+        @functions {
+            string ServiceImg(string file) => Url.Content("~/images/home/services/" + file);
+        }
+
+        @{
+            var services = new[]
+            {
+        new { Name = "Plumbing",    Icon = "bi-wrench-adjustable", Img = "plumbing.jpg" },
+        new { Name = "Electrical",  Icon = "bi-lightning-charge",  Img = "electrical.jpg" },
+        new { Name = "AC / Cooling",Icon = "bi-snow",              Img = "ac.jpg" },
+        new { Name = "Painting",    Icon = "bi-brush",             Img = "painting.jpg" },
+        new { Name = "Cleaning",    Icon = "bi-bucket",            Img = "cleaning.jpg" },
+        new { Name = "Repairs",     Icon = "bi-tools",             Img = "repairs.jpg" },
+        new { Name = "Carpentry",   Icon = "bi-door-open",         Img = "carpentry.jpg" },
+        new { Name = "Maintenance", Icon = "bi-house-gear",        Img = "maintenance.jpg" },
+        };
+        }
+
+        <div class="popular-marquee reveal">
+            <div class="popular-track">
+
+                @* Render twice for seamless loop *@
+                @for (int loop = 0; loop < 2; loop++)
+                {
+                    foreach (var s in services)
+                    {
+                        <div class="service-flip popular-item" role="button" tabindex="0" aria-label="@s.Name">
+                            <div class="flip-inner">
+                                <div class="flip-face flip-front card shadow-sm border-0 rounded-4">
+                                    <div class="card-body text-center py-4">
+                                        <i class="bi @s.Icon fs-1 text-primary"></i>
+                                        <div class="fw-bold mt-2">@s.Name</div>
+                                        <div class="text-muted small">Tap to flip</div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-face flip-back card shadow-sm border-0 rounded-4 overflow-hidden">
+                                    <img src="@ServiceImg(s.Img)" alt="@s.Name" />
+                                    <div class="flip-back-overlay">
+                                        <div class="fw-bold">@s.Name</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+   CHOOSE YOUR PATH (unchanged)
+========================================== -->
+<section class="py-5 position-relative overflow-hidden choose-path-section">
+    <img src="~/images/home/choose-path-bg.png"
+         alt=""
+         class="position-absolute top-0 start-0 w-100 h-100"
+         style="object-fit: cover; opacity: 1; pointer-events: none; z-index: 0;" />
+
+    <div class="container position-relative" style="z-index: 1;">
+        <div class="text-center mb-4 text-white reveal">
+            <h2 class="fw-bold mb-2">Choose your path</h2>
+            <p class="mb-0 text-white-50">Customer or Professional — both managed from one dashboard.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-5 reveal">
+                <div class="card border border-light border-opacity-25 bg-white bg-opacity-10 text-white shadow rounded-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="display-6 mb-2"><i class="bi bi-gear-fill"></i></div>
+                        <h5 class="fw-bold mb-2">Customer</h5>
+                        <p class="text-white-50 small mb-4">
+                            Create a job post, compare, chat, and track everything.
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="CustomerPosts" asp-action="Create" class="btn btn-accent fw-bold">
+                                Create
+                            </a>
+                            <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-light">
+                                Search
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-md-4 col-lg-2">
-                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
-                    <div class="card-body py-4">
-                        <i class="bi bi-lightning-charge fs-2 text-primary"></i>
-                        <div class="fw-semibold mt-2">Electrical</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-lg-2">
-                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
-                    <div class="card-body py-4">
-                        <i class="bi bi-snow fs-2 text-primary"></i>
-                        <div class="fw-semibold mt-2">AC / Cooling</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-lg-2">
-                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
-                    <div class="card-body py-4">
-                        <i class="bi bi-brush fs-2 text-primary"></i>
-                        <div class="fw-semibold mt-2">Painting</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-lg-2">
-                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
-                    <div class="card-body py-4">
-                        <i class="bi bi-bucket fs-2 text-primary"></i>
-                        <div class="fw-semibold mt-2">Cleaning</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-lg-2">
-                <div class="card h-100 text-center border-0 shadow-sm rounded-4">
-                    <div class="card-body py-4">
-                        <i class="bi bi-tools fs-2 text-primary"></i>
-                        <div class="fw-semibold mt-2">Repairs</div>
+
+            <div class="col-lg-5 reveal">
+                <div class="card border border-light border-opacity-25 bg-white bg-opacity-10 text-white shadow rounded-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="display-6 mb-2"><i class="bi bi-person-badge-fill"></i></div>
+                        <h5 class="fw-bold mb-2">Professional</h5>
+                        <p class="text-white-50 small mb-4">
+                            Apply, publish your services, and manage jobs professionally.
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-accent fw-bold">
+                                Apply
+                            </a>
+                            <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-light">
+                                Browse posts
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -290,16 +266,16 @@
 </section>
 
 <!-- ==========================================
-   FAQ
+   FAQ (unchanged)
 ========================================== -->
 <section class="py-5">
     <div class="container">
-        <div class="text-center mb-4">
+        <div class="text-center mb-4 reveal">
             <h2 class="fw-bold mb-2">Frequently asked questions</h2>
             <p class="text-muted mb-0">Quick answers to common questions.</p>
         </div>
 
-        <div class="accordion accordion-flush border rounded-4 overflow-hidden" id="homeixFaq">
+        <div class="accordion accordion-flush border rounded-4 overflow-hidden reveal" id="homeixFaq">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="q1">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
@@ -343,10 +319,10 @@
 </section>
 
 <!-- ==========================================
-   CTA (single strong CTA area)
+   CTA (unchanged)
 ========================================== -->
 <section class="bg-dark text-white py-5">
-    <div class="container text-center">
+    <div class="container text-center reveal">
         <h2 class="fw-bold mb-2">Ready to start?</h2>
         <p class="text-white-50 mb-4">
             Join Homeix as a customer or a professional and manage everything from one modern dashboard.
@@ -375,3 +351,31 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Reveal animation
+            const els = document.querySelectorAll(".reveal");
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) e.target.classList.add("is-visible");
+                });
+            }, { threshold: 0.12 });
+
+            els.forEach(el => obs.observe(el));
+
+            // Flip cards (tap/click support)
+            document.querySelectorAll(".service-flip").forEach(card => {
+                card.addEventListener("click", () => card.classList.toggle("is-flipped"));
+                card.addEventListener("keypress", (ev) => {
+                    if (ev.key === "Enter" || ev.key === " ") {
+                        ev.preventDefault();
+                        card.classList.toggle("is-flipped");
+                    }
+                });
+            });
+        });
+    </script>
+}

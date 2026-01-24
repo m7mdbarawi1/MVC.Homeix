@@ -880,3 +880,229 @@ html:not(.dark-theme) {
 .text-white h5:not(.hero-title):not(.features-title):not(.cta-title) {
     color: inherit !important; /* keeps them white in .text-white areas */
 }
+
+/* ==========================================================
+   DARK MODE TEXT VISIBILITY FIX (ADDED ONLY)
+   Fixes Bootstrap utilities like .text-dark (#212529) used in
+   dashboards/cards (customer/worker) and in WorkerPosts links.
+========================================================== */
+
+/* Any element forced to Bootstrap "dark text" becomes readable in dark theme */
+html.dark-theme .text-dark,
+html.dark-theme a.text-dark,
+html.dark-theme .link-dark,
+html.dark-theme .text-black,
+html.dark-theme .link-body-emphasis,
+html.dark-theme .text-body {
+    color: var(--dark-text) !important;
+}
+
+/* Secondary text in dark mode should not be too dim */
+html.dark-theme .text-secondary,
+html.dark-theme .text-body-secondary,
+html.dark-theme .text-body-tertiary {
+    color: rgba(230, 230, 230, 0.78) !important;
+}
+
+/* If you used text-bg-dark or bg-dark blocks, keep text readable */
+html.dark-theme .bg-dark {
+    color: var(--dark-text) !important;
+}
+
+/* Common case: links wrapping entire cards with text-dark */
+html.dark-theme .card a.text-dark,
+html.dark-theme .card a.link-dark {
+    color: var(--dark-text) !important;
+}
+
+/* Optional: if any small/lead text looks too dark inside dark cards */
+html.dark-theme .card small,
+html.dark-theme .card .small {
+    color: rgba(230, 230, 230, 0.78) !important;
+}
+
+
+/* ==========================================================
+   HOME: Popular services flip cards + choose-path section
+   (ADDED ONLY)
+========================================================== */
+
+/* Choose-path section: ensures text stays readable over image */
+.choose-path-section {
+    background: linear-gradient(135deg, rgba(10,15,43,0.85), rgba(26,35,126,0.55));
+}
+
+/* Flip cards */
+.service-flip {
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+    .service-flip .flip-inner {
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 700ms ease;
+        min-height: 190px;
+    }
+
+    /* Hover flip on desktop + click flip on mobile (via .is-flipped) */
+    .service-flip:hover .flip-inner,
+    .service-flip.is-flipped .flip-inner {
+        transform: rotateY(180deg);
+    }
+
+    /* Two faces */
+    .service-flip .flip-face {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        position: absolute;
+        inset: 0;
+    }
+
+    .service-flip .flip-front {
+        position: relative;
+    }
+
+    .service-flip .flip-back {
+        transform: rotateY(180deg);
+    }
+
+        .service-flip .flip-back img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    /* Overlay on the back image */
+    .service-flip .flip-back-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.45);
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+    }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .service-flip .flip-inner {
+        transition: none !important;
+    }
+}
+
+/* ==========================================================
+   HOME HERO: moving lights animation (ADDED ONLY)
+========================================================== */
+.home-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    background-image: radial-gradient(circle at 20% 20%, rgba(255,215,0,0.22), transparent 55%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.22), transparent 60%), radial-gradient(circle at 55% 45%, rgba(255,255,255,0.08), transparent 55%);
+    background-size: 140% 140%, 160% 160%, 180% 180%;
+    animation: heroLightsMove 12s ease-in-out infinite;
+}
+
+@keyframes heroLightsMove {
+    0% {
+        background-position: 0% 0%, 100% 100%, 50% 50%;
+    }
+
+    50% {
+        background-position: 35% 15%, 65% 85%, 55% 45%;
+    }
+
+    100% {
+        background-position: 0% 0%, 100% 100%, 50% 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-hero::after {
+        animation: none !important;
+    }
+}
+
+/* ==========================================================
+   POPULAR SERVICES: one-row layout polish (ADDED ONLY)
+========================================================== */
+.popular-services-row {
+    scroll-snap-type: x mandatory;
+}
+
+    .popular-services-row > .service-flip {
+        scroll-snap-align: start;
+    }
+
+/* ==========================================================
+   FLIP CARDS: ensure consistent height (ADDED ONLY)
+========================================================== */
+.service-flip .flip-inner {
+    height: 200px;
+}
+
+.service-flip .flip-back-overlay {
+    gap: .25rem;
+}
+
+/* ==========================================================
+   POPULAR SERVICES: auto-moving marquee row (ADDED ONLY)
+   - Removes scrollbar/sliders
+   - Automatically moves to reveal all services
+========================================================== */
+
+.popular-marquee {
+    overflow: hidden; /* removes scrollbar */
+    position: relative;
+    padding-bottom: .25rem;
+}
+
+/* The moving track (two identical sets inside) */
+.popular-track {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    width: max-content;
+    animation: popularMarquee 28s linear infinite;
+    will-change: transform;
+}
+
+/* Fixed card width so the loop is smooth */
+.popular-item {
+    flex: 0 0 auto;
+    width: 240px;
+}
+
+    /* Keep your flip height consistent */
+    .popular-item .flip-inner {
+        height: 200px;
+    }
+
+/* Pause animation on hover (desktop) */
+.popular-marquee:hover .popular-track {
+    animation-play-state: paused;
+}
+
+/* Smooth loop: we translate exactly half of the duplicated track */
+@keyframes popularMarquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .popular-track {
+        animation: none !important;
+    }
+}
