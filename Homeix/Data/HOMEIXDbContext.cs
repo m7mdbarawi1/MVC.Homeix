@@ -20,7 +20,6 @@ namespace Homeix.Data
         public virtual DbSet<PostCategory> PostCategories { get; set; }
         public virtual DbSet<PostMedium> PostMedia { get; set; }
         public virtual DbSet<Rating> Ratings { get; set; }
-        public virtual DbSet<RatingCustomerPost> RatingCustomerPosts { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -102,14 +101,6 @@ namespace Homeix.Data
                 entity.HasOne(e => e.RaterUser).WithMany(u => u.RatingRaterUsers).HasForeignKey(e => e.RaterUserId).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
-            modelBuilder.Entity<RatingCustomerPost>(entity =>
-            {
-                entity.HasKey(e => e.RatingCustomerPostId);
-                entity.HasOne(e => e.JobProgress).WithMany(j => j.RatingCustomerPosts).HasForeignKey(e => e.JobProgressId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(e => e.RatedUser).WithMany(u => u.RatingCustomerPostRatedUsers).HasForeignKey(e => e.RatedUserId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(e => e.RaterUser).WithMany(u => u.RatingCustomerPostRaterUsers).HasForeignKey(e => e.RaterUserId).OnDelete(DeleteBehavior.ClientSetNull);
-            });
-
             modelBuilder.Entity<Subscription>(entity =>
             {
                 entity.HasKey(e => e.SubscriptionId);
@@ -140,11 +131,7 @@ namespace Homeix.Data
             modelBuilder.Entity<PostMedium>(entity =>
             {
                 entity.HasKey(e => e.MediaId);
-
-                entity.HasOne<WorkerPost>()
-                    .WithMany(w => w.PostMedia)
-                    .HasForeignKey(e => e.PostId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<WorkerPost>().WithMany(w => w.PostMedia).HasForeignKey(e => e.PostId).OnDelete(DeleteBehavior.Cascade);
             });
 
 

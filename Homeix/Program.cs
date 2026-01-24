@@ -5,33 +5,21 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
-using Homeix.Hubs; // ✅ SignalR Hub
+using Homeix.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ======================
-// LOGGING
-// ======================
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-// ======================
-// DATABASE
-// ======================
-var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string not found.");
+var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found.");
 
 builder.Services.AddDbContext<HOMEIXDbContext>(opt =>
     opt.UseSqlServer(cs)
 );
 
-// ======================
-// AUTHENTICATION (COOKIE)
-// ======================
-builder.Services
-    .AddAuthentication("HomeixAuth")
-    .AddCookie("HomeixAuth", options =>
+builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options =>
     {
         options.Cookie.Name = "Homeix.Auth";
         options.LoginPath = "/Account/Login";
@@ -44,21 +32,13 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// ======================
-// MVC + LOCALIZATION
-// ======================
-builder.Services
-    .AddControllersWithViews()
-    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
 builder.Services.AddLocalization(options =>
 {
     options.ResourcesPath = "Resources";
 });
 
-// ======================
-// REQUEST LOCALIZATION
-// ======================
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[]
@@ -78,24 +58,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     };
 });
 
-// ======================
-// SIGNALR ✅
-// ======================
 builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-// ======================
-// LOCALIZATION MIDDLEWARE
-// ======================
-var locOptions = app.Services
-    .GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+var locOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
 
 app.UseRequestLocalization(locOptions.Value);
 
-// ======================
-// ERROR HANDLING
-// ======================
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -106,13 +76,9 @@ else
     app.UseHsts();
 }
 
-// ======================
-// STATIC FILES
-// ======================
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// uploads folder
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
@@ -120,28 +86,16 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 
-// ======================
-// ROUTING + AUTH
-// ======================
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ======================
-// MVC ROUTES
-// ======================
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
 
-// ======================
-// SIGNALR HUB ROUTE ✅
-// ======================
 app.MapHub<ChatHub>("/chatHub");
 
-// ======================
-// RUN
-// ======================
 app.Run();
