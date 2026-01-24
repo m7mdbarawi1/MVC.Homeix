@@ -34,9 +34,6 @@ namespace Homeix.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        // =========================
-        // SEND MESSAGE (REAL TIME)
-        // =========================
         public async Task SendMessage(int conversationId, int senderId, int receiverId, string message)
         {
             await Clients.Groups(
@@ -51,18 +48,12 @@ namespace Homeix.Hubs
             });
         }
 
-        // =========================
-        // TYPING INDICATOR
-        // =========================
         public async Task Typing(int receiverId)
         {
             await Clients.Group($"user-{receiverId}")
                 .SendAsync("UserTyping");
         }
 
-        // =========================
-        // MESSAGE SEEN
-        // =========================
         public async Task MessageSeen(int senderId)
         {
             await Clients.Group($"user-{senderId}")

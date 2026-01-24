@@ -12,9 +12,6 @@ namespace Homeix.Models
         [Column("SubscriptionID")]
         public int SubscriptionId { get; set; }
 
-        // =========================
-        // Foreign Keys (USER INPUT)
-        // =========================
         [Required]
         [Column("UserID")]
         public int UserId { get; set; }
@@ -23,9 +20,6 @@ namespace Homeix.Models
         [Column("PlanID")]
         public int PlanId { get; set; }
 
-        // =========================
-        // Editable fields (USER INPUT)
-        // =========================
         [Required]
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
@@ -40,9 +34,6 @@ namespace Homeix.Models
         [StringLength(50)]
         public string Status { get; set; } = "Active";
 
-        // =========================
-        // Navigation
-        // =========================
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
         [ForeignKey(nameof(PlanId))]

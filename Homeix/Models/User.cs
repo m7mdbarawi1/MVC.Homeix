@@ -63,12 +63,6 @@ public partial class User
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     [InverseProperty("RatedUser")]
-    public virtual ICollection<RatingCustomerPost> RatingCustomerPostRatedUsers { get; set; } = new List<RatingCustomerPost>();
-
-    [InverseProperty("RaterUser")]
-    public virtual ICollection<RatingCustomerPost> RatingCustomerPostRaterUsers { get; set; } = new List<RatingCustomerPost>();
-
-    [InverseProperty("RatedUser")]
     public virtual ICollection<Rating> RatingRatedUsers { get; set; } = new List<Rating>();
 
     [InverseProperty("RaterUser")]

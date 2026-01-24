@@ -29,7 +29,6 @@ namespace Homeix.Models
         [BindNever]
         public DateTime UploadedAt { get; set; }
 
-        // ⬇️ NOT saved in DB
         [NotMapped]
         public IFormFile? MediaFile { get; set; }
     }

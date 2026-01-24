@@ -23,7 +23,6 @@ namespace Homeix.Models
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // Navigation
         [ForeignKey(nameof(User1Id))]
         public virtual User? User1 { get; set; }
 

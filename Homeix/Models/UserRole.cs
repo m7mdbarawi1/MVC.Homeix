@@ -15,8 +15,6 @@ namespace Homeix.Models
         [StringLength(50)]
         public string RoleName { get; set; } = string.Empty;
 
-        // Navigation
-        public virtual ICollection<User> Users { get; set; }
-            = new List<User>();
+        public virtual ICollection<User> Users { get; set; } = new List<User>();
     }
 }

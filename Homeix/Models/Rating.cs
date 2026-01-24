@@ -13,9 +13,6 @@ namespace Homeix.Models
         [Column("RatingID")]
         public int RatingId { get; set; }
 
-        // =========================
-        // Foreign Keys
-        // =========================
         [Required]
         [Column("RaterUserID")]
         public int RaterUserId { get; set; }
@@ -24,24 +21,15 @@ namespace Homeix.Models
         [Column("RatedUserID")]
         public int RatedUserId { get; set; }
 
-        // =========================
-        // User-input fields
-        // =========================
         [Range(1, 5)]
         public int RatingValue { get; set; }
 
-        public string? Review { get; set; } // ✅ OPTIONAL
+        public string? Review { get; set; }
 
-        // =========================
-        // System-managed field
-        // =========================
         [Column(TypeName = "datetime")]
         [BindNever]
         public DateTime CreatedAt { get; set; }
 
-        // =========================
-        // Navigation
-        // =========================
         [ValidateNever]
         public virtual User RatedUser { get; set; } = null!;
 

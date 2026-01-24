@@ -13,9 +13,6 @@ namespace Homeix.Models
         [Column("CustomerPostID")]
         public int CustomerPostId { get; set; }
 
-        // =========================
-        // Foreign Keys
-        // =========================
         [Required]
         [Column("UserID")]
         public int UserId { get; set; }
@@ -24,9 +21,6 @@ namespace Homeix.Models
         [Column("PostCategoryID")]
         public int PostCategoryId { get; set; }
 
-        // =========================
-        // User-input fields
-        // =========================
         [Required]
         [StringLength(200)]
         public string Title { get; set; } = string.Empty;
@@ -44,9 +38,6 @@ namespace Homeix.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal? PriceRangeMax { get; set; }
 
-        // =========================
-        // System-controlled fields
-        // =========================
         [Required]
         [StringLength(50)]
         [BindNever]
@@ -59,19 +50,11 @@ namespace Homeix.Models
         [BindNever]
         public bool IsActive { get; set; } = true;
 
-        // =========================
-        // Navigation
-        // =========================
         public virtual User? User { get; set; }
         public virtual PostCategory? PostCategory { get; set; }
 
-        // =========================
-        // Related collections
-        // =========================
-        public virtual ICollection<Offer> Offers { get; set; }
-            = new HashSet<Offer>();
+        public virtual ICollection<Offer> Offers { get; set; } = new HashSet<Offer>();
 
-        public virtual ICollection<JobProgress> JobProgresses { get; set; }
-            = new HashSet<JobProgress>();
+        public virtual ICollection<JobProgress> JobProgresses { get; set; } = new HashSet<JobProgress>();
     }
 }

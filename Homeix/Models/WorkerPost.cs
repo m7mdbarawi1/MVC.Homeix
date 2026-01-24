@@ -43,20 +43,13 @@ namespace Homeix.Models
 
         public bool IsActive { get; set; } = true;
 
-        // =========================
-        // Navigation
-        // =========================
         [ValidateNever]
         public virtual User? User { get; set; }
 
         [ValidateNever]
         public virtual PostCategory? PostCategory { get; set; }
 
-        // 🖼 MEDIA (THIS FIXES YOUR ERROR)
         [ValidateNever]
-        public virtual ICollection<PostMedium> PostMedia { get; set; }
-            = new List<PostMedium>();
-
-      
+        public virtual ICollection<PostMedium> PostMedia { get; set; } = new List<PostMedium>();
     }
 }

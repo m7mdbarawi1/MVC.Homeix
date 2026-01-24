@@ -15,8 +15,6 @@ namespace Homeix.Models
         [StringLength(50)]
         public string MethodName { get; set; } = string.Empty;
 
-        // Navigation
-        public virtual ICollection<Payment> Payments { get; set; }
-            = new List<Payment>();
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

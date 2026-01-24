@@ -38,7 +38,6 @@ namespace Homeix.Models
 
         public bool IsActive { get; set; }
 
-        // Navigation
         [ForeignKey(nameof(CreatedByUserId))]
         public virtual User? CreatedByUser { get; set; }
     }

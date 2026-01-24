@@ -12,16 +12,10 @@ namespace Homeix.Models
         [Column("FavoritePostID")]
         public int FavoritePostId { get; set; }
 
-        // =========================
-        // Foreign Key
-        // =========================
         [Required]
         [Column("UserID")]
         public int UserId { get; set; }
 
-        // =========================
-        // User-input fields
-        // =========================
         [Required]
         [StringLength(20)]
         public string PostType { get; set; } = string.Empty;
@@ -30,16 +24,10 @@ namespace Homeix.Models
         [Column("PostID")]
         public int PostId { get; set; }
 
-        // =========================
-        // System-managed field
-        // =========================
         [Column(TypeName = "datetime")]
         [BindNever]
         public DateTime AddedAt { get; set; }
 
-        // =========================
-        // Navigation
-        // =========================
         [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }
     }

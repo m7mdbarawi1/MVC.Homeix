@@ -13,9 +13,6 @@ namespace Homeix.Models
         [Column("JobProgressID")]
         public int JobProgressId { get; set; }
 
-        // =========================
-        // Foreign keys
-        // =========================
         [Required]
         [Column("CustomerPostID")]
         public int CustomerPostId { get; set; }
@@ -28,9 +25,6 @@ namespace Homeix.Models
         [Column("AssignedToUserID")]
         public int AssignedToUserId { get; set; }
 
-        // =========================
-        // System-controlled fields
-        // =========================
         [Required]
         [StringLength(50)]
         [BindNever]
@@ -46,18 +40,9 @@ namespace Homeix.Models
         public bool IsRatedByCustomer { get; set; }
         public bool IsRatedByWorker { get; set; }
 
-        // =========================
-        // Navigation
-        // =========================
         public virtual User? AssignedToUser { get; set; }
         public virtual User? RequestedByUser { get; set; }
         public virtual CustomerPost? CustomerPost { get; set; }
-
-        // =========================
-        // Related collections
-        // =========================
-        public virtual ICollection<RatingCustomerPost> RatingCustomerPosts { get; set; }
-            = new HashSet<RatingCustomerPost>();
 
         public virtual ICollection<Rating> Ratings { get; set; }
             = new HashSet<Rating>();

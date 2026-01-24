@@ -15,11 +15,8 @@ namespace Homeix.Models
         [StringLength(100)]
         public string CategoryName { get; set; } = string.Empty;
 
-        // Navigation
-        public virtual ICollection<CustomerPost> CustomerPosts { get; set; }
-            = new List<CustomerPost>();
+        public virtual ICollection<CustomerPost> CustomerPosts { get; set; } = new List<CustomerPost>();
 
-        public virtual ICollection<WorkerPost> WorkerPosts { get; set; }
-            = new List<WorkerPost>();
+        public virtual ICollection<WorkerPost> WorkerPosts { get; set; } = new List<WorkerPost>();
     }
 }
