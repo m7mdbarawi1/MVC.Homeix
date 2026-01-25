@@ -1604,3 +1604,46 @@ html.dark-theme .lang-tile {
     background: rgba(0,0,0,0.28);
     border-color: rgba(255,255,255,0.18);
 }
+
+/* ==========================================================
+   HOME PAGE: LIGHT MODE CLARITY FIX (ADDED ONLY)
+   - Ensures hero has a real dark background in light mode
+   - Improves readability of muted text on light gray backgrounds
+========================================================== */
+
+/* 1) HERO MUST HAVE A DARK BACKGROUND (otherwise white text is unreadable) */
+.home-hero {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+    color: #fff !important;
+}
+
+/* Optional: slightly different hero in dark mode (still consistent) */
+html.dark-theme .home-hero {
+    background: linear-gradient(135deg, #000814, #001233) !important;
+}
+
+/* Ensure any muted text inside hero stays readable */
+.home-hero .text-muted,
+.home-hero .text-white-50 {
+    color: rgba(255,255,255,0.72) !important;
+}
+
+/* 2) LIGHT MODE: make muted text darker (Bootstrap muted is too faint on gray) */
+html:not(.dark-theme) .text-muted {
+    color: rgba(31, 41, 55, 0.72) !important; /* slate, readable */
+}
+
+/* 3) LIGHT MODE: make tertiary sections slightly clearer (optional but helps) */
+html:not(.dark-theme) .bg-body-tertiary {
+    background-color: #eef2f7 !important;
+}
+
+/* 4) Light mode: cards on gray backgrounds need a subtle border */
+html:not(.dark-theme) .card.border-0 {
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+/* 5) Popular marquee: keep contrast clean in light mode */
+html:not(.dark-theme) .popular-marquee {
+    background: transparent;
+}
