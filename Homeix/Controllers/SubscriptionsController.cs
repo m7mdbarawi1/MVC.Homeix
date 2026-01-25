@@ -42,30 +42,9 @@ namespace Homeix.Controllers
         }
         public IActionResult Create()
         {
-            ViewData["PlanId"] = new SelectList(
-                _context.SubscriptionPlans.Where(p => p.IsActive),
-                "PlanId",
-                "PlanName"
-            );
-
-            ViewBag.PlanData = _context.SubscriptionPlans
-                .Where(p => p.IsActive)
-                .Select(p => new
-                {
-                    planId = p.PlanId,
-                    planName = p.PlanName,
-                    price = p.Price,
-                    durationDays = p.DurationDays
-                })
-                .ToList();
-
-            var model = new Subscription
-            {
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today.AddDays(30),
-                Status = "Active"
-            };
-
+            ViewData["PlanId"] = new SelectList( _context.SubscriptionPlans.Where(p => p.IsActive), "PlanId", "PlanName");
+            ViewBag.PlanData = _context.SubscriptionPlans.Where(p => p.IsActive).Select(p => new {planId = p.PlanId, planName = p.PlanName, price = p.Price, durationDays = p.DurationDays}).ToList();
+            var model = new Subscription {StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(30), Status = "Active"};
             return View(model);
         }
         [HttpPost]

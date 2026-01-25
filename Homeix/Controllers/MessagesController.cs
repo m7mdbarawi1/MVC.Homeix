@@ -26,13 +26,7 @@ namespace Homeix.Controllers
             sb.AppendLine("MessageId,MessageText,SentAt,ConversationId,SenderUserId");
             foreach (var m in messages)
             {
-                sb.AppendLine(
-                    $"{m.MessageId}," +
-                    $"\"{m.MessageText?.Replace("\"", "\"\"")}\"," +
-                    $"{m.SentAt:yyyy-MM-dd HH:mm}," +
-                    $"{m.ConversationId}," +
-                    $"{m.SenderUserId}"
-                );
+                sb.AppendLine($"{m.MessageId}," + $"\"{m.MessageText?.Replace("\"", "\"\"")}\"," + $"{m.SentAt:yyyy-MM-dd HH:mm}," + $"{m.ConversationId}," + $"{m.SenderUserId}");
             }
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "MessagesReport.csv");

@@ -26,12 +26,7 @@ namespace Homeix.Controllers
             sb.AppendLine("ConversationId,CreatedAt,User1Id,User2Id");
             foreach (var c in conversations)
             {
-                sb.AppendLine(
-                    $"{c.ConversationId}," +
-                    $"{c.CreatedAt:yyyy-MM-dd HH:mm}," +
-                    $"{c.User1Id}," +
-                    $"{c.User2Id}"
-                );
+                sb.AppendLine($"{c.ConversationId}," + $"{c.CreatedAt:yyyy-MM-dd HH:mm}," + $"{c.User1Id}," + $"{c.User2Id}");
             }
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "ConversationsReport.csv");
@@ -39,14 +34,8 @@ namespace Homeix.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-            var conversation = await _context.Conversations
-                .Include(c => c.User1)
-                .Include(c => c.User2)
-                .FirstOrDefaultAsync(c => c.ConversationId == id);
-
-            if (conversation == null)
-                return NotFound();
-
+            var conversation = await _context.Conversations.Include(c => c.User1).Include(c => c.User2).FirstOrDefaultAsync(c => c.ConversationId == id);
+            if (conversation == null) return NotFound();
             return View(conversation);
         }
         public IActionResult Create()

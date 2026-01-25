@@ -19,35 +19,15 @@ namespace Homeix.Controllers
         public AdvertisementsController(HOMEIXDbContext context) {_context = context;}
         public async Task<IActionResult> Index()
         {
-            var ads = await _context.Advertisements
-                .Include(a => a.CreatedByUser)
-                .ToListAsync();
-
+            var ads = await _context.Advertisements.Include(a => a.CreatedByUser).ToListAsync();
             return View(ads);
         }
         public async Task<IActionResult> DownloadReport()
         {
-            var ads = await _context.Advertisements
-                .Include(a => a.CreatedByUser)
-                .OrderByDescending(a => a.StartDate)
-                .ToListAsync();
-
+            var ads = await _context.Advertisements.Include(a => a.CreatedByUser).OrderByDescending(a => a.StartDate).ToListAsync();
             var sb = new StringBuilder();
             sb.AppendLine("AdId,Title,ImagePath,StartDate,EndDate,IsActive,CreatedByUserId");
-
-            foreach (var a in ads)
-            {
-                sb.AppendLine(
-                    $"{a.AdId}," +
-                    $"\"{a.Title}\"," +
-                    $"{a.ImagePath}," +
-                    $"{a.StartDate:yyyy-MM-dd}," +
-                    $"{a.EndDate:yyyy-MM-dd}," +
-                    $"{a.IsActive}," +
-                    $"{a.CreatedByUserId}"
-                );
-            }
-
+            foreach (var a in ads){sb.AppendLine($"{a.AdId}," + $"\"{a.Title}\"," + $"{a.ImagePath}," + $"{a.StartDate:yyyy-MM-dd}," + $"{a.EndDate:yyyy-MM-dd}," + $"{a.IsActive}," + $"{a.CreatedByUserId}");}
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "AdvertisementsReport.csv");
         }
@@ -61,57 +41,31 @@ namespace Homeix.Controllers
         {
             ModelState.Remove(nameof(Advertisement.ImagePath));
             ModelState.Remove(nameof(Advertisement.CreatedByUserId));
-
-            if (advertisement.ImageFile == null || advertisement.ImageFile.Length == 0)
-                ModelState.AddModelError(nameof(advertisement.ImageFile), "Please upload an image.");
-
-            if (!ModelState.IsValid)
-                return View(advertisement);
-
+            if (advertisement.ImageFile == null || advertisement.ImageFile.Length == 0) ModelState.AddModelError(nameof(advertisement.ImageFile), "Please upload an image.");
+            if (!ModelState.IsValid) return View(advertisement);
             advertisement.CreatedByUserId = int.Parse(User.FindFirstValue("UserId")!);
-
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
             var extension = Path.GetExtension(advertisement.ImageFile!.FileName).ToLowerInvariant();
-
             if (!allowedExtensions.Contains(extension))
             {
                 ModelState.AddModelError(nameof(advertisement.ImageFile), "Only image files are allowed.");
                 return View(advertisement);
             }
-
-            var uploadPath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot", "uploads", "advertisements"
-            );
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "advertisements");
             Directory.CreateDirectory(uploadPath);
-
             var fileName = $"{Guid.NewGuid()}{extension}";
             var fullPath = Path.Combine(uploadPath, fileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
-            {
-                await advertisement.ImageFile.CopyToAsync(stream);
-            }
-
+            using (var stream = new FileStream(fullPath, FileMode.Create)) {await advertisement.ImageFile.CopyToAsync(stream);}
             advertisement.ImagePath = "/uploads/advertisements/" + fileName;
-
             _context.Advertisements.Add(advertisement);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
-
-            var advertisement = await _context.Advertisements
-                .Include(a => a.CreatedByUser)
-                .FirstOrDefaultAsync(a => a.AdId == id);
-
-            if (advertisement == null)
-                return NotFound();
-
+            if (id == null) return NotFound();
+            var advertisement = await _context.Advertisements.Include(a => a.CreatedByUser).FirstOrDefaultAsync(a => a.AdId == id);
+            if (advertisement == null) return NotFound();
             return View(advertisement);
         }
         [HttpPost, ActionName("Delete")]
@@ -119,25 +73,16 @@ namespace Homeix.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var advertisement = await _context.Advertisements.FindAsync(id);
-
             if (advertisement != null)
             {
                 if (!string.IsNullOrEmpty(advertisement.ImagePath))
                 {
-                    var physicalPath = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot",
-                        advertisement.ImagePath.TrimStart('/')
-                    );
-
-                    if (System.IO.File.Exists(physicalPath))
-                        System.IO.File.Delete(physicalPath);
+                    var physicalPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", advertisement.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(physicalPath)) System.IO.File.Delete(physicalPath);
                 }
-
                 _context.Advertisements.Remove(advertisement);
                 await _context.SaveChangesAsync();
             }
-
             return RedirectToAction(nameof(Index));
         }
     }

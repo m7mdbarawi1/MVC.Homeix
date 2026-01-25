@@ -31,15 +31,8 @@ namespace Homeix.Controllers
             sb.AppendLine("FavoritePostId,PostType,PostId,AddedAt,UserId");
             foreach (var f in favorites)
             {
-                sb.AppendLine(
-                    $"{f.FavoritePostId}," +
-                    $"{f.PostType}," +
-                    $"{f.PostId}," +
-                    $"{f.AddedAt:yyyy-MM-dd HH:mm}," +
-                    $"{f.UserId}"
-                );
+                sb.AppendLine($"{f.FavoritePostId}," + $"{f.PostType}," + $"{f.PostId}," + $"{f.AddedAt:yyyy-MM-dd HH:mm}," + $"{f.UserId}");
             }
-
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "FavoritePostsReport.csv");
         }

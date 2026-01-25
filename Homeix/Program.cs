@@ -16,34 +16,25 @@ builder.Logging.AddDebug();
 var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found.");
 
 builder.Services.AddDbContext<HOMEIXDbContext>(opt =>opt.UseSqlServer(cs));
-builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options =>
-    {
-        options.Cookie.Name = "Homeix.Auth";
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.SlidingExpiration = true;
-        options.ExpireTimeSpan = TimeSpan.FromHours(5);
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    });
+builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options =>{
+    options.Cookie.Name = "Homeix.Auth";
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromHours(5);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
 builder.Services.AddAuthorization();
 builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 builder.Services.AddLocalization(options =>{options.ResourcesPath = "Resources";});
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[]
-    {
-        new CultureInfo("en-US"),
-        new CultureInfo("ar-JO")
-    };
+    var supportedCultures = new[] {new CultureInfo("en-US"), new CultureInfo("ar-JO")};
     options.DefaultRequestCulture = new RequestCulture("en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
-    options.RequestCultureProviders = new List<IRequestCultureProvider>
-    {
-        new QueryStringRequestCultureProvider(),
-        new CookieRequestCultureProvider()
-    };
+    options.RequestCultureProviders = new List<IRequestCultureProvider> {new QueryStringRequestCultureProvider(), new CookieRequestCultureProvider()};
 });
 builder.Services.AddSignalR();
 

@@ -31,18 +31,7 @@ namespace Homeix.Controllers
             sb.AppendLine("PostId,Title,Category,User,Location,MinPrice,MaxPrice,Status,IsActive,CreatedAt");
             foreach (var post in posts)
             {
-                sb.AppendLine(
-                    $"{post.CustomerPostId}," +
-                    $"\"{post.Title}\"," +
-                    $"\"{post.PostCategory?.CategoryName}\"," +
-                    $"\"{post.User?.FullName}\"," +
-                    $"\"{post.Location}\"," +
-                    $"{post.PriceRangeMin}," +
-                    $"{post.PriceRangeMax}," +
-                    $"{post.Status}," +
-                    $"{post.IsActive}," +
-                    $"{post.CreatedAt:yyyy-MM-dd}"
-                );
+                sb.AppendLine($"{post.CustomerPostId}," + $"\"{post.Title}\"," + $"\"{post.PostCategory?.CategoryName}\"," + $"\"{post.User?.FullName}\"," + $"\"{post.Location}\"," + $"{post.PriceRangeMin}," + $"{post.PriceRangeMax}," + $"{post.Status}," + $"{post.IsActive}," + $"{post.CreatedAt:yyyy-MM-dd}");
             }
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "CustomerPostsReport.csv");
@@ -68,24 +57,19 @@ namespace Homeix.Controllers
         {
             customerPost.UserId = GetUserId();
             ModelState.Remove(nameof(CustomerPost.UserId));
-
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(customerPost);
                 ViewBag.LoggedInUserId = customerPost.UserId;
                 return View(customerPost);
             }
-
             customerPost.CreatedAt = DateTime.Now;
             customerPost.Status = "Open";
             customerPost.IsActive = true;
-
             _context.CustomerPosts.Add(customerPost);
             await _context.SaveChangesAsync();
-
             var postedFiles = Request.Form.Files.Where(f => f.Name == "mediaFiles" && f.Length > 0).ToList();
-            if (postedFiles.Count == 0 && mediaFiles != null)
-                postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
+            if (postedFiles.Count == 0 && mediaFiles != null) postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
             if (postedFiles.Count > 0)
             {
                 foreach (var file in postedFiles)
@@ -93,13 +77,7 @@ namespace Homeix.Controllers
                     var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
                     if (!AllowedImageExtensions.Contains(extension)) continue;
                     var savedPath = await SaveCustomerPostMediaAsync(file);
-                    _context.PostMedia.Add(new PostMedium
-                    {
-                        PostType = "CustomerPost",
-                        PostId = customerPost.CustomerPostId,
-                        MediaPath = savedPath,
-                        UploadedAt = DateTime.Now
-                    });
+                    _context.PostMedia.Add(new PostMedium {PostType = "CustomerPost", PostId = customerPost.CustomerPostId,MediaPath = savedPath, UploadedAt = DateTime.Now});
                 }
                 await _context.SaveChangesAsync();
             }
@@ -182,22 +160,10 @@ namespace Homeix.Controllers
         public async Task<IActionResult> MyPosts()
         {
             int userId = GetUserId();
-
-            var posts = await _context.CustomerPosts
-                .Where(p => p.UserId == userId)
-                .Include(p => p.PostCategory)
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
-
+            var posts = await _context.CustomerPosts.Where(p => p.UserId == userId).Include(p => p.PostCategory).OrderByDescending(p => p.CreatedAt).ToListAsync();
             var postIds = posts.Select(p => p.CustomerPostId).ToList();
-
-            var mediaLookup = await _context.PostMedia
-                .Where(m => m.PostType == "CustomerPost" && postIds.Contains(m.PostId))
-                .GroupBy(m => m.PostId)
-                .ToDictionaryAsync(g => g.Key, g => g.ToList());
-
+            var mediaLookup = await _context.PostMedia.Where(m => m.PostType == "CustomerPost" && postIds.Contains(m.PostId)).GroupBy(m => m.PostId).ToDictionaryAsync(g => g.Key, g => g.ToList());
             ViewBag.PostMedia = mediaLookup;
-
             return View(posts);
         }
         private int GetUserId()

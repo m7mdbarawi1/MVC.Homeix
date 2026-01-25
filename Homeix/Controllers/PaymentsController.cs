@@ -40,8 +40,7 @@ namespace Homeix.Controllers
         public IActionResult Create()
         {
             LoadDropdowns();
-            return View(new Payment
-            {PaymentDate = System.DateTime.Now, Status = "Completed"});
+            return View(new Payment {PaymentDate = System.DateTime.Now, Status = "Completed"});
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
