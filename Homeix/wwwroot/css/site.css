@@ -1106,3 +1106,501 @@ html.dark-theme .card .small {
         animation: none !important;
     }
 }
+
+/* ==========================================================
+   FLOATING NAVBAR + SUBTLE TOOLS PATTERN WAVE (ADDED ONLY)
+========================================================== */
+
+/* Smooth language switch animation */
+body {
+    transition: opacity 220ms ease;
+}
+
+    body.lang-switching {
+        opacity: 0;
+    }
+
+/* Floating navbar spacing */
+#mainNavbar.homeix-float-nav {
+    background: transparent !important;
+    padding: 14px 0;
+}
+
+/* The pill shell */
+.homeix-nav-shell {
+    position: relative;
+    width: min(1200px, calc(100% - 1.5rem));
+    margin: 0 auto;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+}
+
+    /* Tools pattern overlay */
+    .homeix-nav-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url('/images/home/tools-pattern.png');
+        background-repeat: repeat;
+        background-size: 520px auto;
+        opacity: 0.07;
+        pointer-events: none;
+        transform: translateZ(0);
+        animation: navToolsWave 18s linear infinite;
+    }
+
+    /* Subtle highlight */
+    .homeix-nav-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
+        pointer-events: none;
+    }
+
+@keyframes navToolsWave {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    50% {
+        background-position: -240px 14px;
+    }
+
+    100% {
+        background-position: -520px 0px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .homeix-nav-shell::before {
+        animation: none !important;
+    }
+
+    body {
+        transition: none !important;
+    }
+}
+
+.homeix-nav-inner {
+    position: relative;
+    z-index: 1;
+    padding: .55rem .85rem;
+}
+
+/* Round logo */
+.homeix-logo-round {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,0.25);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+@media (max-width: 576px) {
+    .homeix-nav-shell {
+        width: calc(100% - 1rem);
+        border-radius: 18px;
+    }
+}
+/* ==========================================================
+   FLOATING NAVBAR + SUBTLE TOOLS PATTERN WAVE (ADDED ONLY)
+========================================================== */
+
+/* Smooth language switch animation */
+body {
+    transition: opacity 220ms ease;
+}
+
+    body.lang-switching {
+        opacity: 0;
+    }
+
+/* Floating navbar spacing */
+#mainNavbar.homeix-float-nav {
+    background: transparent !important;
+    padding: 14px 0;
+}
+
+/* Make navbar longer (wider pill) */
+.homeix-nav-shell {
+    position: relative;
+    width: min(1500px, calc(100% - 0.75rem)); /* longer than before */
+    margin: 0 auto;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+}
+
+    /* Tools pattern overlay (slower wave) */
+    .homeix-nav-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url('/images/home/tools-pattern.png');
+        background-repeat: repeat;
+        background-size: 520px auto;
+        opacity: 0.06; /* subtle */
+        pointer-events: none;
+        transform: translateZ(0);
+        animation: navToolsWave 38s linear infinite; /* slower than before */
+    }
+
+    /* Subtle highlight */
+    .homeix-nav-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
+        pointer-events: none;
+    }
+
+@keyframes navToolsWave {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    50% {
+        background-position: -240px 14px;
+    }
+
+    100% {
+        background-position: -520px 0px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .homeix-nav-shell::before {
+        animation: none !important;
+    }
+
+    body {
+        transition: none !important;
+    }
+}
+
+.homeix-nav-inner {
+    position: relative;
+    z-index: 1;
+    padding: .55rem .85rem;
+}
+
+/* Round logo */
+.homeix-logo-round {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,0.25);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+@media (max-width: 576px) {
+    .homeix-nav-shell {
+        width: calc(100% - 1rem);
+        border-radius: 18px;
+    }
+}
+
+/* ==========================================================
+   NAVBAR FLOATING PILL (THIN) + SUBTLE TOOLS WAVE (SLOW)
+   ADDED ONLY (place at end of site.css)
+========================================================== */
+
+/* Smooth fade for language switch */
+body {
+    transition: opacity 220ms ease;
+}
+
+    body.lang-switching {
+        opacity: 0;
+    }
+
+/* Float spacing */
+#mainNavbar.homeix-float-nav {
+    background: transparent !important;
+    padding: 10px 0; /* thinner */
+}
+
+/* The pill shell is the container-fluid in layout */
+.homeix-nav-shell {
+    width: min(1550px, calc(100% - 1rem)); /* longer */
+    margin: 0 auto;
+    border-radius: 999px;
+    overflow: hidden;
+    padding-top: .25rem; /* thinner */
+    padding-bottom: .25rem; /* thinner */
+
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+    /* Subtle tools pattern overlay */
+    .homeix-nav-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url('/images/home/tools-pattern.png');
+        background-repeat: repeat;
+        background-size: 560px auto;
+        opacity: 0.05; /* very subtle */
+        pointer-events: none;
+        animation: navToolsWave 70s linear infinite; /* slower */
+    }
+
+    /* Soft highlight */
+    .homeix-nav-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
+        pointer-events: none;
+    }
+
+    /* Keep navbar content above overlays */
+    .homeix-nav-shell > * {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Thinner link paddings so it looks modern */
+#mainNavbar .nav-link {
+    padding-top: .35rem;
+    padding-bottom: .35rem;
+}
+
+/* Round logo */
+.homeix-logo-round {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,0.22);
+}
+
+/* Wave animation */
+@keyframes navToolsWave {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    50% {
+        background-position: -300px 10px;
+    }
+
+    100% {
+        background-position: -600px 0px;
+    }
+}
+
+/* Mobile: keep pill comfortable */
+@media (max-width: 576px) {
+    .homeix-nav-shell {
+        width: calc(100% - 1rem);
+        border-radius: 18px;
+    }
+}
+
+/* ==========================================================
+   LANGUAGE ICON BUTTON (A / ?) — ADDED ONLY
+========================================================== */
+.lang-icon-btn {
+    padding: .25rem .45rem;
+    line-height: 1;
+}
+
+.lang-icon {
+    position: relative;
+    width: 34px;
+    height: 28px;
+    display: inline-block;
+}
+
+.lang-tile {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 14px;
+    /* subtle "modern" tiles on your nav */
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    backdrop-filter: blur(6px);
+}
+
+.tile-a {
+    top: 0;
+    left: 0;
+}
+
+.tile-ar {
+    bottom: 0;
+    right: 0;
+}
+
+/* Dark theme: slightly clearer tiles */
+html.dark-theme .lang-tile {
+    background: rgba(0,0,0,0.28);
+    border-color: rgba(255,255,255,0.18);
+}
+
+/* ==========================================================
+   NAVBAR FINAL FIXES (ADDED ONLY)
+   - dropdown visible (no clipping)
+   - pinned fixed-top
+   - slower subtle tools animation
+========================================================== */
+
+/* Smooth fade for language switch */
+body {
+    transition: opacity 220ms ease;
+}
+
+    body.lang-switching {
+        opacity: 0;
+    }
+
+/* Keep navbar pinned and thin */
+#mainNavbar.homeix-float-nav {
+    padding: 0 !important;
+}
+
+/* Pill container: MUST NOT clip dropdown menus */
+.homeix-nav-shell {
+    position: relative;
+    width: min(1550px, calc(100% - 1rem));
+    margin: 0 auto;
+    border-radius: 999px;
+    overflow: visible !important; /* IMPORTANT: allow dropdowns */
+
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+}
+
+    /* Pattern overlay (subtle + slow wave) */
+    .homeix-nav-shell::before,
+    .homeix-nav-shell::after {
+        border-radius: inherit; /* keep rounded look */
+    }
+
+    .homeix-nav-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url('/images/home/tools-pattern.png');
+        background-repeat: repeat;
+        background-size: 560px auto;
+        opacity: 0.05;
+        pointer-events: none;
+        animation: navToolsWave 80s linear infinite; /* slower */
+        z-index: 0;
+    }
+
+    .homeix-nav-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Ensure navbar content sits above overlays */
+    .homeix-nav-shell > * {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Dropdown must appear above everything */
+.navbar .dropdown-menu {
+    z-index: 3000 !important;
+}
+
+/* Make links slightly tighter for thinner navbar */
+#mainNavbar .nav-link {
+    padding-top: .35rem;
+    padding-bottom: .35rem;
+}
+
+/* Round logo */
+.homeix-logo-round {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,0.22);
+}
+
+@keyframes navToolsWave {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    50% {
+        background-position: -320px 10px;
+    }
+
+    100% {
+        background-position: -640px 0px;
+    }
+}
+
+/* ==========================================================
+   LANGUAGE ICON BUTTON (A / ?) — ADDED ONLY
+========================================================== */
+.lang-icon-btn {
+    padding: .25rem .45rem;
+    line-height: 1;
+}
+
+.lang-icon {
+    position: relative;
+    width: 34px;
+    height: 28px;
+    display: inline-block;
+}
+
+.lang-tile {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 14px;
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    backdrop-filter: blur(6px);
+}
+
+.tile-a {
+    top: 0;
+    left: 0;
+}
+
+.tile-ar {
+    bottom: 0;
+    right: 0;
+}
+
+html.dark-theme .lang-tile {
+    background: rgba(0,0,0,0.28);
+    border-color: rgba(255,255,255,0.18);
+}

@@ -30,16 +30,16 @@
 <body class="d-flex flex-column min-vh-100">
 
     <!-- ==========================================
-         NAVBAR
+         NAVBAR (pinned top, thin, single row on desktop)
     =========================================== -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-main shadow-sm fixed-top" id="mainNavbar">
-            <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top homeix-float-nav" id="mainNavbar">
+            <div class="container-fluid homeix-nav-shell bg-main shadow-sm">
 
                 <!-- LOGO -->
                 <a class="navbar-brand d-flex align-items-center"
                    asp-controller="Account" asp-action="HomeRedirect">
-                    <img src="~/homeixlogo.jpg" height="40" class="me-2 logo-3d" />
+                    <img src="~/homeixlogo.jpg" class="homeix-logo-round me-2" alt="Homeix" />
                 </a>
 
                 <!-- MOBILE TOGGLER -->
@@ -108,21 +108,20 @@
                     <!-- RIGHT SIDE BUTTONS -->
                     <div class="d-flex align-items-center gap-2 flex-wrap">
 
-                        <!-- ✅ RESPONSIVE LANGUAGE DROPDOWN -->
-                        <div class="dropdown lang-dropdown">
-                            <button class="btn btn-outline-light btn-sm dropdown-toggle w-100 w-lg-auto"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                🌐 <span class="d-none d-md-inline">Language</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive">
-                                <li><button class="dropdown-item lang-btn" data-lang="en">English</button></li>
-                                <li><button class="dropdown-item lang-btn" data-lang="ar">العربية</button></li>
-                            </ul>
-                        </div>
+                        <!-- ✅ LANGUAGE ICON BUTTON (A / ع) -->
+                        <button id="langToggle"
+                                type="button"
+                                class="btn btn-outline-light btn-sm lang-icon-btn"
+                                aria-label="Switch language"
+                                title="Switch language">
+                            <span class="lang-icon" aria-hidden="true">
+                                <span class="lang-tile tile-a">A</span>
+                                <span class="lang-tile tile-ar">ع</span>
+                            </span>
+                        </button>
 
                         <!-- THEME TOGGLE -->
-                        <button id="themeToggle" class="btn btn-outline-light btn-sm">
+                        <button id="themeToggle" class="btn btn-outline-light btn-sm" type="button">
                             <span id="themeIcon">🌙</span>
                         </button>
 
@@ -162,10 +161,37 @@
         @RenderBody()
     </main>
 
-    <!-- FOOTER -->
-    <footer class="footer text-center mt-auto">
+    <!-- FOOTER (same content, smaller) -->
+    <footer class="footer mt-auto">
         <div class="container py-3">
-            © 2025 - Homeix
+            <div class="row g-2 align-items-start text-start small">
+
+                <div class="col-12 col-md-4">
+                    <div class="fw-bold mb-1">Homeix</div>
+                    <div class="opacity-75">
+                        Verified professionals • Secure workflow • In-app chat
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="fw-bold mb-1">Contact</div>
+                    <div class="d-flex flex-column gap-1 opacity-75">
+                        <div><i class="bi bi-telephone me-2"></i>+962 7 0000 0000</div>
+                        <div><i class="bi bi-geo-alt me-2"></i>Jordan, Amman — Business Park (HTU)</div>
+                        <div><i class="bi bi-envelope me-2"></i>support@homeix.com</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="fw-bold mb-1">Follow</div>
+                    <div class="d-flex flex-wrap gap-3 opacity-75">
+                        <a class="link-light text-decoration-none" href="#"><i class="bi bi-instagram me-1"></i>Instagram</a>
+                        <a class="link-light text-decoration-none" href="#"><i class="bi bi-facebook me-1"></i>Facebook</a>
+                    </div>
+                    <div class="mt-2 opacity-75">© 2025 - Homeix</div>
+                </div>
+
+            </div>
         </div>
     </footer>
 
@@ -179,29 +205,36 @@
         });
     </script>
 
-    <!-- ✅ LANGUAGE SCRIPT -->
+    <!-- ✅ LANGUAGE SCRIPT (toggle button + smooth fade) -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
-            const lang = localStorage.getItem("lang") || "en";
+            const btn = document.getElementById("langToggle");
 
-            applyLang(lang);
+            const saved = localStorage.getItem("lang") || "en";
+            applyLang(saved);
+            syncButton(saved);
 
-            document.querySelectorAll(".lang-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const selected = btn.dataset.lang;
-                    localStorage.setItem("lang", selected);
-                    applyLang(selected);
+            btn.addEventListener("click", () => {
+                const current = localStorage.getItem("lang") || "en";
+                const next = current === "en" ? "ar" : "en";
 
-                    // close dropdown on mobile
-                    btn.closest(".dropdown-menu")
-                       ?.previousElementSibling?.click();
-                });
+                document.body.classList.add("lang-switching");
+                setTimeout(() => {
+                    localStorage.setItem("lang", next);
+                    applyLang(next);
+                    syncButton(next);
+                    setTimeout(() => document.body.classList.remove("lang-switching"), 50);
+                }, 160);
             });
 
             function applyLang(lang) {
                 root.lang = lang;
                 root.dir = lang === "ar" ? "rtl" : "ltr";
+            }
+
+            function syncButton(lang) {
+                btn.title = lang === "en" ? "Switch to العربية" : "Switch to English";
             }
         });
     </script>
@@ -230,8 +263,6 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
-    @inject Homeix.Data.HOMEIXDbContext _context
 
     @{
         var rand = new Random();
