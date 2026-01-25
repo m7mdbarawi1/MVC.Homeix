@@ -6,14 +6,12 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1>Edit Subscription</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
@@ -24,7 +22,6 @@
 
                         <input type="hidden" asp-for="SubscriptionId" />
 
-                        <!-- User -->
                         <div class="mb-3">
                             <label asp-for="UserId" class="form-label"></label>
                             <select asp-for="UserId"
@@ -34,7 +31,6 @@
                             <span asp-validation-for="UserId" class="text-danger"></span>
                         </div>
 
-                        <!-- Plan -->
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label"></label>
                             <select asp-for="PlanId"
@@ -44,28 +40,24 @@
                             <span asp-validation-for="PlanId" class="text-danger"></span>
                         </div>
 
-                        <!-- Start Date -->
                         <div class="mb-3">
                             <label asp-for="StartDate" class="form-label"></label>
                             <input asp-for="StartDate" type="date" class="form-control" />
                             <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
 
-                        <!-- End Date -->
                         <div class="mb-3">
                             <label asp-for="EndDate" class="form-label"></label>
                             <input asp-for="EndDate" type="date" class="form-control" />
                             <span asp-validation-for="EndDate" class="text-danger"></span>
                         </div>
 
-                        <!-- Status -->
                         <div class="mb-3">
                             <label asp-for="Status" class="form-label"></label>
                             <input asp-for="Status" class="form-control" />
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Save

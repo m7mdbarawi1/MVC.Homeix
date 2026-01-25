@@ -6,14 +6,12 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1>Edit Worker Post</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
             <div class="card shadow-sm">
@@ -24,7 +22,6 @@
 
                         <input type="hidden" asp-for="WorkerPostId" />
 
-                        <!-- User (Admin only) -->
                         @if (User.IsInRole("admin"))
                         {
                             <div class="mb-3">
@@ -41,7 +38,6 @@
                             <input type="hidden" asp-for="UserId" />
                         }
 
-                        <!-- Category -->
                         <div class="mb-3">
                             <label asp-for="PostCategoryId" class="form-label"></label>
                             <select asp-for="PostCategoryId"
@@ -51,28 +47,24 @@
                             <span asp-validation-for="PostCategoryId" class="text-danger"></span>
                         </div>
 
-                        <!-- Title -->
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label"></label>
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
-                        <!-- Description -->
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label"></label>
                             <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <!-- Location -->
                         <div class="mb-3">
                             <label asp-for="Location" class="form-label"></label>
                             <input asp-for="Location" class="form-control" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
-                        <!-- Price Range -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMin" class="form-label"></label>
@@ -87,7 +79,6 @@
                             </div>
                         </div>
 
-                        <!-- Created At (Admin only, but kept because your original view had it) -->
                         @if (User.IsInRole("admin"))
                         {
                             <div class="mb-3">
@@ -101,7 +92,6 @@
                             <input type="hidden" asp-for="CreatedAt" />
                         }
 
-                        <!-- Active -->
                         <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="IsActive" />
                             <label class="form-check-label" asp-for="IsActive">
@@ -109,7 +99,6 @@
                             </label>
                         </div>
 
-                        <!-- EXISTING MEDIA (NEW) -->
                         <div class="mb-4">
                             <h5 class="mb-2">Current Images</h5>
 
@@ -145,7 +134,6 @@
                             }
                         </div>
 
-                        <!-- ADD NEW MEDIA (NEW) -->
                         <div class="mb-4">
                             <label class="form-label">Add New Images</label>
 
@@ -167,7 +155,6 @@
                             </div>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Save

@@ -6,14 +6,12 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create User</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm">
@@ -22,7 +20,6 @@
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- Role -->
                         <div class="mb-3">
                             <label class="form-label">Role</label>
                             <select asp-for="RoleId"
@@ -32,45 +29,36 @@
                             <span asp-validation-for="RoleId" class="text-danger"></span>
                         </div>
 
-
-
-                        <!-- Full Name -->
                         <div class="mb-3">
                             <label asp-for="FullName" class="form-label"></label>
                             <input asp-for="FullName" class="form-control" />
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
-                        <!-- Email -->
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label"></label>
                             <input asp-for="Email" type="email" class="form-control" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
-                        <!-- Phone Number -->
                         <div class="mb-3">
                             <label asp-for="PhoneNumber" class="form-label"></label>
                             <input asp-for="PhoneNumber" class="form-control" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
-                        <!-- Password -->
                         <div class="mb-3">
                             <label class="form-label">Password</label>
                             <input name="password" type="password" class="form-control" minlength="8" required />
                             <span class="text-danger"></span>
                         </div>
 
-
-                        <!-- Profile Picture -->
                         <div class="mb-3">
                             <label asp-for="ProfilePicture" class="form-label"></label>
                             <input asp-for="ProfilePicture" class="form-control" />
                             <span asp-validation-for="ProfilePicture" class="text-danger"></span>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Create

@@ -16,15 +16,7 @@ namespace Homeix.Controllers
     public class AdvertisementsController : Controller
     {
         private readonly HOMEIXDbContext _context;
-
-        public AdvertisementsController(HOMEIXDbContext context)
-        {
-            _context = context;
-        }
-
-        // ========================
-        // GET: Advertisements
-        // ========================
+        public AdvertisementsController(HOMEIXDbContext context) {_context = context;}
         public async Task<IActionResult> Index()
         {
             var ads = await _context.Advertisements
@@ -33,10 +25,6 @@ namespace Homeix.Controllers
 
             return View(ads);
         }
-
-        // ========================
-        // ✅ DOWNLOAD REPORT (CSV)
-        // ========================
         public async Task<IActionResult> DownloadReport()
         {
             var ads = await _context.Advertisements
@@ -63,18 +51,10 @@ namespace Homeix.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "AdvertisementsReport.csv");
         }
-
-        // ========================
-        // GET: Advertisements/Create
-        // ========================
         public IActionResult Create()
         {
             return View();
         }
-
-        // ========================
-        // POST: Advertisements/Create
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Advertisement advertisement)
@@ -88,8 +68,7 @@ namespace Homeix.Controllers
             if (!ModelState.IsValid)
                 return View(advertisement);
 
-            advertisement.CreatedByUserId =
-                int.Parse(User.FindFirstValue("UserId")!);
+            advertisement.CreatedByUserId = int.Parse(User.FindFirstValue("UserId")!);
 
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
             var extension = Path.GetExtension(advertisement.ImageFile!.FileName).ToLowerInvariant();
@@ -121,10 +100,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // ========================
-        // GET: Advertisements/Delete/5
-        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,10 +114,6 @@ namespace Homeix.Controllers
 
             return View(advertisement);
         }
-
-        // ========================
-        // POST: Advertisements/Delete
-        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

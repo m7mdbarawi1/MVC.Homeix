@@ -14,47 +14,24 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         private readonly IHubContext<ChatHub> _hubContext;
-
-        public ChatController(
-            HOMEIXDbContext context,
-            IHubContext<ChatHub> hubContext)
+        public ChatController(HOMEIXDbContext context, IHubContext<ChatHub> hubContext)
         {
             _context = context;
             _hubContext = hubContext;
         }
-
-        // =========================
-        // CURRENT USER (CLAIMS) ✅ FIXED
-        // =========================
         private int GetCurrentUserId()
         {
-            // You store UserId as a CUSTOM claim
             var userIdClaim = User.FindFirst("UserId");
-
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                throw new InvalidOperationException(
-                    "Authenticated user does not have a valid UserId claim."
-                );
+                throw new InvalidOperationException("Authenticated user does not have a valid UserId claim.");
             }
-
             return userId;
         }
-
-        // =========================
-        // GET: /Chat?userId=5
-        // =========================
         public async Task<IActionResult> Index(int? userId)
         {
             int currentUserId = GetCurrentUserId();
-
-            // Sidebar users
-            var users = await _context.Users
-                .Where(u => u.UserId != currentUserId)
-                .OrderBy(u => u.FullName)
-                .AsNoTracking()
-                .ToListAsync();
-
+            var users = await _context.Users.Where(u => u.UserId != currentUserId).OrderBy(u => u.FullName).AsNoTracking().ToListAsync();
             ViewBag.Users = users;
             ViewBag.CurrentUserId = currentUserId;
 
@@ -66,16 +43,12 @@ namespace Homeix.Controllers
                 return View();
             }
 
-            var selectedUser = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.UserId == userId.Value);
+            var selectedUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId.Value);
 
             if (selectedUser == null)
                 return NotFound();
 
-            // Find or create conversation
-            var conversation = await _context.Conversations
-                .FirstOrDefaultAsync(c =>
+            var conversation = await _context.Conversations.FirstOrDefaultAsync(c =>
                     (c.User1Id == currentUserId && c.User2Id == userId) ||
                     (c.User1Id == userId && c.User2Id == currentUserId)
                 );
@@ -104,10 +77,6 @@ namespace Homeix.Controllers
 
             return View();
         }
-
-        // =========================
-        // POST: /Chat/Send
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Send(int conversationId, string messageText)
@@ -132,16 +101,9 @@ namespace Homeix.Controllers
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
 
-            int otherUserId =
-                conversation.User1Id == currentUserId
-                    ? conversation.User2Id
-                    : conversation.User1Id;
+            int otherUserId = conversation.User1Id == currentUserId ? conversation.User2Id : conversation.User1Id;
 
-            // 🔥 REAL-TIME SIGNALR PUSH
-            await _hubContext.Clients
-                .Groups($"user-{currentUserId}", $"user-{otherUserId}")
-                .SendAsync("ReceiveMessage", new
-                {
+            await _hubContext.Clients.Groups($"user-{currentUserId}", $"user-{otherUserId}").SendAsync("ReceiveMessage", new{
                     senderId = currentUserId,
                     text = messageText,
                     sentAt = message.SentAt.ToString("HH:mm")

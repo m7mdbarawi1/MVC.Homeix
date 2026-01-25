@@ -21,7 +21,6 @@
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- Logged-in User -->
                         <div class="mb-3">
                             <label class="form-label">User</label>
                             <input class="form-control"
@@ -29,7 +28,6 @@
                                    readonly />
                         </div>
 
-                        <!-- Plan -->
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label"></label>
                             <select asp-for="PlanId"
@@ -40,7 +38,6 @@
                             <span asp-validation-for="PlanId" class="text-danger"></span>
                         </div>
 
-                        <!-- Start Date -->
                         <div class="mb-3">
                             <label asp-for="StartDate" class="form-label"></label>
                             <input asp-for="StartDate"
@@ -49,7 +46,6 @@
                                    id="startDate" />
                         </div>
 
-                        <!-- End Date -->
                         <div class="mb-3">
                             <label asp-for="EndDate" class="form-label"></label>
                             <input asp-for="EndDate"
@@ -77,7 +73,6 @@
     </div>
 </div>
 
-<!-- PAYMENT MODAL -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

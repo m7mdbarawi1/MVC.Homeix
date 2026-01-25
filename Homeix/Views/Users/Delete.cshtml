@@ -6,7 +6,6 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="text-danger">Delete User</h1>
@@ -14,17 +13,14 @@
         </div>
     </div>
 
-    <!-- Centered Card -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-sm border-danger">
 
-                <!-- Card Header -->
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">Confirm Deletion</h5>
                 </div>
 
-                <!-- Card Body -->
                 <div class="card-body">
                     <dl class="row">
 
@@ -61,7 +57,6 @@
                     </dl>
                 </div>
 
-                <!-- Card Footer -->
                 <div class="card-footer d-flex justify-content-end gap-2">
                     <form asp-action="Delete" method="post" class="d-inline">
                         <input type="hidden" asp-for="UserId" />

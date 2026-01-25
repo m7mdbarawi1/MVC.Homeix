@@ -15,10 +15,7 @@ builder.Logging.AddDebug();
 
 var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found.");
 
-builder.Services.AddDbContext<HOMEIXDbContext>(opt =>
-    opt.UseSqlServer(cs)
-);
-
+builder.Services.AddDbContext<HOMEIXDbContext>(opt =>opt.UseSqlServer(cs));
 builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options =>
     {
         options.Cookie.Name = "Homeix.Auth";
@@ -29,16 +26,9 @@ builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     });
-
 builder.Services.AddAuthorization();
-
 builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
-
-builder.Services.AddLocalization(options =>
-{
-    options.ResourcesPath = "Resources";
-});
-
+builder.Services.AddLocalization(options =>{options.ResourcesPath = "Resources";});
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[]
@@ -46,18 +36,15 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
         new CultureInfo("en-US"),
         new CultureInfo("ar-JO")
     };
-
     options.DefaultRequestCulture = new RequestCulture("en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
-
     options.RequestCultureProviders = new List<IRequestCultureProvider>
     {
         new QueryStringRequestCultureProvider(),
         new CookieRequestCultureProvider()
     };
 });
-
 builder.Services.AddSignalR();
 
 var app = builder.Build();
@@ -65,7 +52,6 @@ var app = builder.Build();
 var locOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
 
 app.UseRequestLocalization(locOptions.Value);
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -75,27 +61,12 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(app.Environment.WebRootPath, "uploads")),
-    RequestPath = "/uploads"
-});
-
+app.UseStaticFiles(new StaticFileOptions {FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.WebRootPath, "uploads")), RequestPath = "/uploads"});
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
-);
-
+app.MapControllerRoute(name: "default",pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapHub<ChatHub>("/chatHub");
-
 app.Run();

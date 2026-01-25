@@ -20,216 +20,112 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         private readonly ILogger<WorkerPostsController> _logger;
-
-        public WorkerPostsController(
-            HOMEIXDbContext context,
-            ILogger<WorkerPostsController> logger)
+        public WorkerPostsController(HOMEIXDbContext context, ILogger<WorkerPostsController> logger)
         {
             _context = context;
             _logger = logger;
         }
-
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
-            var posts = await _context.WorkerPosts
-                .Include(w => w.PostCategory)
-                .Include(w => w.User)
-                    .ThenInclude(u => u.RatingRatedUsers)
-                .Where(w => w.IsActive)
-                .OrderByDescending(w => w.CreatedAt)
-                .ToListAsync();
-
+            var posts = await _context.WorkerPosts.Include(w => w.PostCategory).Include(w => w.User).ThenInclude(u => u.RatingRatedUsers).Where(w => w.IsActive).OrderByDescending(w => w.CreatedAt).ToListAsync();
             return View(posts);
         }
-
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
-            var posts = await _context.WorkerPosts
-                .Include(w => w.PostCategory)
-                .Include(w => w.User)
-                    .ThenInclude(u => u.RatingRatedUsers)
-                .OrderByDescending(w => w.CreatedAt)
-                .ToListAsync();
-
+            var posts = await _context.WorkerPosts.Include(w => w.PostCategory).Include(w => w.User).ThenInclude(u => u.RatingRatedUsers).OrderByDescending(w => w.CreatedAt).ToListAsync();
             var sb = new StringBuilder();
             sb.AppendLine("PostId,Title,Category,Worker,Location,MinPrice,MaxPrice,AvgRating,TotalRatings,IsActive,CreatedAt");
-
             foreach (var post in posts)
             {
                 var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
                 var avgRating = ratings.Any() ? ratings.Average(r => r.RatingValue) : 0;
-
-                sb.AppendLine(
-                    $"{post.WorkerPostId}," +
-                    $"\"{post.Title}\"," +
-                    $"\"{post.PostCategory?.CategoryName}\"," +
-                    $"\"{post.User?.FullName}\"," +
-                    $"\"{post.Location}\"," +
-                    $"{post.PriceRangeMin}," +
-                    $"{post.PriceRangeMax}," +
-                    $"{avgRating:0.0}," +
-                    $"{ratings.Count()}," +
-                    $"{post.IsActive}," +
-                    $"{post.CreatedAt:yyyy-MM-dd}"
-                );
+                sb.AppendLine($"{post.WorkerPostId}," + $"\"{post.Title}\"," + $"\"{post.PostCategory?.CategoryName}\"," + $"\"{post.User?.FullName}\"," + $"\"{post.Location}\"," + $"{post.PriceRangeMin}," + $"{post.PriceRangeMax}," + $"{avgRating:0.0}," + $"{ratings.Count()}," + $"{post.IsActive}," + $"{post.CreatedAt:yyyy-MM-dd}");
             }
-
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "WorkerPostsReport.csv");
         }
-
         public async Task<IActionResult> Details(int id)
         {
-            var post = await _context.WorkerPosts
-                .Include(w => w.PostCategory)
-                .Include(w => w.PostMedia)
-                .Include(w => w.User)
-                    .ThenInclude(u => u.RatingRatedUsers)
-                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
-
-            if (post == null)
-                return NotFound();
-
-            post.PostMedia = await _context.PostMedia
-                .Where(m => m.PostType == "WorkerPost" && m.PostId == id)
-                .OrderByDescending(m => m.UploadedAt)
-                .ToListAsync();
-
+            var post = await _context.WorkerPosts.Include(w => w.PostCategory).Include(w => w.PostMedia).Include(w => w.User).ThenInclude(u => u.RatingRatedUsers).FirstOrDefaultAsync(w => w.WorkerPostId == id);
+            if (post == null) return NotFound();
+            post.PostMedia = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && m.PostId == id).OrderByDescending(m => m.UploadedAt).ToListAsync();
             return View(post);
         }
-
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Create()
         {
             int userId = GetUserId();
-
             if (User.IsInRole("worker"))
             {
                 var subscription = await GetCurrentSubscriptionAsync(userId);
-
                 if (subscription == null)
                 {
                     TempData["Error"] = "You must have an active subscription to create posts.";
                     return RedirectToAction("Index", "SubscriptionPlans");
                 }
             }
-
             LoadCategories();
             return View();
         }
-
         [HttpPost]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(WorkerPost workerPost, List<IFormFile>? mediaFiles)
         {
             int userId = GetUserId();
-
             await DebugSubscriptions(userId);
-
             if (User.IsInRole("worker"))
             {
                 var subscription = await GetCurrentSubscriptionAsync(userId);
-
-                if (subscription == null ||
-                    subscription.StartDate > DateTime.Today ||
-                    subscription.EndDate < DateTime.Today)
+                if (subscription == null || subscription.StartDate > DateTime.Today || subscription.EndDate < DateTime.Today)
                 {
                     ModelState.AddModelError("", "Your subscription is not currently valid.");
                     LoadCategories(workerPost);
                     return View(workerPost);
                 }
-
                 var windowStart = DateTime.Now.AddDays(-30);
-
-                int postsThisMonth = await _context.WorkerPosts.CountAsync(w =>
-                    w.UserId == userId &&
-                    w.CreatedAt >= windowStart);
-
-                if (subscription.Plan?.MaxPostsPerMonth.HasValue == true &&
-                    postsThisMonth >= subscription.Plan.MaxPostsPerMonth.Value)
+                int postsThisMonth = await _context.WorkerPosts.CountAsync(w =>w.UserId == userId && w.CreatedAt >= windowStart);
+                if (subscription.Plan?.MaxPostsPerMonth.HasValue == true && postsThisMonth >= subscription.Plan.MaxPostsPerMonth.Value)
                 {
-                    TempData["Error"] =
-                        $"You have reached your limit of {subscription.Plan.MaxPostsPerMonth} posts.";
-
+                    TempData["Error"] = $"You have reached your limit of {subscription.Plan.MaxPostsPerMonth} posts.";
                     return RedirectToAction("Index", "SubscriptionPlans");
                 }
             }
-
             if (!ModelState.IsValid)
             {
                 LoadCategories(workerPost);
                 return View(workerPost);
             }
-
             workerPost.UserId = userId;
             workerPost.CreatedAt = DateTime.Now;
             workerPost.IsActive = true;
-
             _context.WorkerPosts.Add(workerPost);
             await _context.SaveChangesAsync();
-
-            // ✅ IMPORTANT: Use Request.Form.Files as the source of truth for multiple files
-            var postedFiles = Request.Form.Files
-                .Where(f => f.Name == "mediaFiles" && f.Length > 0)
-                .ToList();
-
-            // fallback to model binding list if needed
-            if (postedFiles.Count == 0 && mediaFiles != null)
-                postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
-
+            var postedFiles = Request.Form.Files.Where(f => f.Name == "mediaFiles" && f.Length > 0).ToList();
+            if (postedFiles.Count == 0 && mediaFiles != null) postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
             if (postedFiles.Count > 0)
             {
                 foreach (var file in postedFiles)
                 {
                     var savedPath = await SaveWorkerPostMediaAsync(file);
-
-                    _context.PostMedia.Add(new PostMedium
-                    {
-                        PostType = "WorkerPost",
-                        PostId = workerPost.WorkerPostId,
-                        MediaPath = savedPath,
-                        UploadedAt = DateTime.Now
-                    });
+                    _context.PostMedia.Add(new PostMedium { PostType = "WorkerPost", PostId = workerPost.WorkerPostId, MediaPath = savedPath, UploadedAt = DateTime.Now });
                 }
-
                 await _context.SaveChangesAsync();
             }
-
             return RedirectToAction(nameof(MyPosts));
         }
-
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> MyPosts()
         {
             int userId = GetUserId();
-
-            var posts = await _context.WorkerPosts
-                .Where(w => w.UserId == userId)
-                .Include(w => w.PostCategory)
-                .OrderByDescending(w => w.CreatedAt)
-                .ToListAsync();
-
+            var posts = await _context.WorkerPosts.Where(w => w.UserId == userId).Include(w => w.PostCategory).OrderByDescending(w => w.CreatedAt).ToListAsync();
             var postIds = posts.Select(p => p.WorkerPostId).ToList();
-
-            var allMedia = await _context.PostMedia
-                .Where(m => m.PostType == "WorkerPost" && postIds.Contains(m.PostId))
-                .OrderByDescending(m => m.UploadedAt)
-                .ToListAsync();
-
-            foreach (var p in posts)
-            {
-                p.PostMedia = allMedia
-                    .Where(m => m.PostId == p.WorkerPostId && m.PostType == "WorkerPost")
-                    .OrderByDescending(m => m.UploadedAt)
-                    .ToList();
-            }
-
+            var allMedia = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && postIds.Contains(m.PostId)).OrderByDescending(m => m.UploadedAt).ToListAsync();
+            foreach (var p in posts) { p.PostMedia = allMedia.Where(m => m.PostId == p.WorkerPostId && m.PostType == "WorkerPost").OrderByDescending(m => m.UploadedAt).ToList();}
             return View(posts);
         }
-
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -264,7 +160,6 @@ namespace Homeix.Controllers
 
             return View(post);
         }
-
         [HttpPost]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
@@ -359,7 +254,6 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(MyPosts));
         }
-
         [Authorize(Roles = "worker, admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -376,7 +270,6 @@ namespace Homeix.Controllers
 
             return View(post);
         }
-
         [HttpPost, ActionName("Delete")]
         [Authorize(Roles = "worker, admin")]
         [ValidateAntiForgeryToken]
@@ -403,10 +296,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(MyPosts));
         }
-
-        // =====================================================
-        // HELPERS
-        // =====================================================
         private int GetUserId()
         {
             var claim = User.FindFirst("UserId");
@@ -415,7 +304,6 @@ namespace Homeix.Controllers
 
             return int.Parse(claim.Value);
         }
-
         private void LoadCategories(WorkerPost? post = null)
         {
             ViewData["PostCategoryId"] = new SelectList(
@@ -425,7 +313,6 @@ namespace Homeix.Controllers
                 post?.PostCategoryId
             );
         }
-
         private async Task<Subscription?> GetCurrentSubscriptionAsync(int userId)
         {
             return await _context.Subscriptions
@@ -434,7 +321,6 @@ namespace Homeix.Controllers
                 .OrderByDescending(s => s.EndDate)
                 .FirstOrDefaultAsync();
         }
-
         private async Task DebugSubscriptions(int userId)
         {
             var subs = await _context.Subscriptions
@@ -455,15 +341,10 @@ namespace Homeix.Controllers
                 );
             }
         }
-
-        // =====================================================
-        // MEDIA HELPERS
-        // =====================================================
         private static readonly string[] AllowedImageExtensions =
         {
             ".jpg", ".jpeg", ".png", ".gif", ".webp"
         };
-
         private async Task<string> SaveWorkerPostMediaAsync(IFormFile file)
         {
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -488,11 +369,9 @@ namespace Homeix.Controllers
 
             return "/uploads/post-media/" + fileName;
         }
-
         private void DeletePhysicalFile(string? relativePath)
         {
-            if (string.IsNullOrWhiteSpace(relativePath))
-                return;
+            if (string.IsNullOrWhiteSpace(relativePath)) return;
 
             var physicalPath = Path.Combine(
                 Directory.GetCurrentDirectory(),

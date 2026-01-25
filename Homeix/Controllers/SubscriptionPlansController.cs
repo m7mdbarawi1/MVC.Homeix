@@ -10,23 +10,8 @@ namespace Homeix.Controllers
     public class SubscriptionPlansController : Controller
     {
         private readonly HOMEIXDbContext _context;
-
-        public SubscriptionPlansController(HOMEIXDbContext context)
-        {
-            _context = context;
-        }
-
-        // ========================
-        // GET: SubscriptionPlans
-        // ========================
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.SubscriptionPlans.ToListAsync());
-        }
-
-        // ========================
-        // DOWNLOAD REPORT (CSV)
-        // ========================
+        public SubscriptionPlansController(HOMEIXDbContext context) {_context = context;}
+        public async Task<IActionResult> Index() {return View(await _context.SubscriptionPlans.ToListAsync());}
         public async Task<IActionResult> DownloadReport()
         {
             var plans = await _context.SubscriptionPlans.ToListAsync();
@@ -49,10 +34,6 @@ namespace Homeix.Controllers
             var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "SubscriptionPlansReport.csv");
         }
-
-        // ========================
-        // GET: SubscriptionPlans/Details
-        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -66,90 +47,40 @@ namespace Homeix.Controllers
 
             return View(plan);
         }
-
-        // ========================
-        // GET: SubscriptionPlans/Create
-        // ========================
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // ========================
-        // POST: SubscriptionPlans/Create
-        // ========================
+        public IActionResult Create() {return View();}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("PlanName,Price,DurationDays,IsActive")]
-            SubscriptionPlan subscriptionPlan)
+        public async Task<IActionResult> Create([Bind("PlanName,Price,DurationDays,IsActive")] SubscriptionPlan subscriptionPlan)
         {
-            if (!ModelState.IsValid)
-                return View(subscriptionPlan);
-
+            if (!ModelState.IsValid) return View(subscriptionPlan);
             _context.SubscriptionPlans.Add(subscriptionPlan);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
-
-        // ========================
-        // GET: SubscriptionPlans/Edit
-        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-                return NotFound();
-
+            if (id == null) return NotFound();
             var plan = await _context.SubscriptionPlans.FindAsync(id);
-            if (plan == null)
-                return NotFound();
-
+            if (plan == null) return NotFound();
             return View(plan);
         }
-
-        // ========================
-        // POST: SubscriptionPlans/Edit
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("PlanId,PlanName,Price,DurationDays,IsActive")]
-            SubscriptionPlan subscriptionPlan)
+        public async Task<IActionResult> Edit(int id,[Bind("PlanId,PlanName,Price,DurationDays,IsActive")] SubscriptionPlan subscriptionPlan)
         {
-            if (id != subscriptionPlan.PlanId)
-                return NotFound();
-
-            if (!ModelState.IsValid)
-                return View(subscriptionPlan);
-
+            if (id != subscriptionPlan.PlanId) return NotFound();
+            if (!ModelState.IsValid) return View(subscriptionPlan);
             _context.Update(subscriptionPlan);
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
-
-        // ========================
-        // GET: SubscriptionPlans/Delete
-        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-                return NotFound();
-
-            var plan = await _context.SubscriptionPlans
-                .FirstOrDefaultAsync(m => m.PlanId == id);
-
-            if (plan == null)
-                return NotFound();
-
+            if (id == null) return NotFound();
+            var plan = await _context.SubscriptionPlans.FirstOrDefaultAsync(m => m.PlanId == id);
+            if (plan == null) return NotFound();
             return View(plan);
         }
-
-        // ========================
-        // POST: SubscriptionPlans/Delete
-        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -160,7 +91,6 @@ namespace Homeix.Controllers
                 _context.SubscriptionPlans.Remove(plan);
                 await _context.SaveChangesAsync();
             }
-
             return RedirectToAction(nameof(Index));
         }
     }

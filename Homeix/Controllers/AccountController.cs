@@ -15,25 +15,16 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         private readonly IWebHostEnvironment _env;
-
         public AccountController(HOMEIXDbContext context, IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
         }
-
-        // =============================================================
-        // LOGIN (GET)
-        // =============================================================
         public IActionResult Login(string? returnUrl = null)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-
-        // =============================================================
-        // LOGIN (POST) - BCrypt 
-        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
@@ -44,9 +35,7 @@ namespace Homeix.Controllers
                 return View();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
@@ -85,19 +74,11 @@ namespace Homeix.Controllers
                 _ => RedirectToAction("Index", "Home")
             };
         }
-
-        // =============================================================
-        // REGISTER (GET)
-        // =============================================================
         public IActionResult Register()
         {
             ViewBag.Roles = _context.UserRoles.ToList();
             return View();
         }
-
-        // =============================================================
-        // REGISTER (POST) - BCrypt 
-        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string fullName, string email, string phone, string password, int roleId)
@@ -148,10 +129,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction("Login");
         }
-
-        // =============================================================
-        // MY PROFILE (GET)
-        // =============================================================
         public async Task<IActionResult> MyProfile()
         {
             var idClaim = User.FindFirst("UserId");
@@ -166,10 +143,6 @@ namespace Homeix.Controllers
 
             return View(user);
         }
-
-        // =============================================================
-        // MY PROFILE (POST) - BCrypt 
-        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MyProfile(User model, string? NewPassword, IFormFile? ProfileImage)
@@ -191,7 +164,6 @@ namespace Homeix.Controllers
             if (!string.IsNullOrWhiteSpace(NewPassword))
                 dbUser.PasswordHash = HashPassword(NewPassword);
 
-            // 🔧 ONLY SAFE PROFILE-RELATED FIX
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 string folder = Path.Combine(_env.WebRootPath, "uploads/profile");
@@ -231,16 +203,11 @@ namespace Homeix.Controllers
             ViewBag.Success = "Profile updated successfully.";
             return View(dbUser);
         }
-
-        // =============================================================
-        // LOGOUT
-        // =============================================================
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("HomeixAuth");
             return RedirectToAction("Login");
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogoutPost()
@@ -248,10 +215,6 @@ namespace Homeix.Controllers
             await HttpContext.SignOutAsync("HomeixAuth");
             return RedirectToAction("Login");
         }
-
-        // =============================================================
-        // DELETE ACCOUNT
-        // =============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteMyAccount()
@@ -272,10 +235,6 @@ namespace Homeix.Controllers
             await HttpContext.SignOutAsync("HomeixAuth");
             return RedirectToAction("Login");
         }
-
-        // =============================================================
-        // HOME REDIRECT
-        // =============================================================
         [AllowAnonymous]
         public IActionResult HomeRedirect()
         {
@@ -291,15 +250,10 @@ namespace Homeix.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-        // =============================================================
-        // PASSWORD HASHING / VERIFY (BCrypt)
-        // =============================================================
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
-
         private bool VerifyPassword(string password, string storedHash)
         {
             if (string.IsNullOrWhiteSpace(storedHash))
@@ -310,7 +264,6 @@ namespace Homeix.Controllers
 
             return BCrypt.Net.BCrypt.Verify(password, storedHash);
         }
-
         private bool IsStrongPassword(string password, out string error)
         {
             error = "";
@@ -339,16 +292,11 @@ namespace Homeix.Controllers
 
             return true;
         }
-
-        // =============================================================
-        // FORGOT PASSWORD (GET)  🔥 NEW
-        // =============================================================
         [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return View();
         }
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -387,27 +335,25 @@ namespace Homeix.Controllers
                     From = new MailAddress("homeix.jo@gmail.com", "Homeix Support"),
                     Subject = "Homeix Password Reset",
                     Body = $@"
-Hello {user.FullName},
+                    Hello {user.FullName},
 
-Your password has been reset.
+                    Your password has been reset.
 
-Temporary Password:
-{tempPassword}
+                    Temporary Password:
+                    {tempPassword}
 
-Please log in and change your password immediately.
+                    Please log in and change your password immediately.
 
-Regards,
-Homeix Support
-",
+                    Regards,
+                    Homeix Support
+                    ",
                     IsBodyHtml = false
                 };
 
                 mail.To.Add(user.Email);
 
-                // 1️⃣ SEND EMAIL FIRST
                 await smtp.SendMailAsync(mail);
 
-                // 2️⃣ THEN UPDATE PASSWORD
                 user.PasswordHash = HashPassword(tempPassword);
                 await _context.SaveChangesAsync();
             }
@@ -420,7 +366,5 @@ Homeix Support
             ViewBag.Success = "A new password has been sent to your email.";
             return View();
         }
-
-
     }
 }

@@ -6,14 +6,12 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create Worker Post</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-sm">
@@ -24,7 +22,6 @@
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- Category -->
                         <div class="mb-3">
                             <label asp-for="PostCategoryId" class="form-label"></label>
                             <select asp-for="PostCategoryId"
@@ -34,14 +31,12 @@
                             <span asp-validation-for="PostCategoryId" class="text-danger"></span>
                         </div>
 
-                        <!-- Title -->
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label"></label>
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
-                        <!-- Description -->
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label"></label>
                             <textarea asp-for="Description"
@@ -50,14 +45,12 @@
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <!-- Location -->
                         <div class="mb-3">
                             <label asp-for="Location" class="form-label"></label>
                             <input asp-for="Location" class="form-control" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
-                        <!-- Price Range -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMin" class="form-label"></label>
@@ -78,7 +71,6 @@
                             </div>
                         </div>
 
-                        <!-- MEDIA UPLOAD -->
                         <div class="mb-4">
                             <label class="form-label">Upload Images (optional)</label>
 
@@ -104,7 +96,6 @@
                             </div>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Create Post
@@ -133,9 +124,7 @@
         const input = document.getElementById("mediaInput");
         const preview = document.getElementById("preview");
         const clearBtn = document.getElementById("clearImagesBtn");
-
-        // ✅ We store selected files here so Create can accumulate selections
-        const fileMap = new Map(); // key -> File
+        const fileMap = new Map();
 
         function fileKey(f) {
             return `${f.name}_${f.size}_${f.lastModified}`;
@@ -152,7 +141,7 @@
             if (!fileList) return;
             [...fileList].forEach(f => {
                 if (!f.type.startsWith("image/")) return;
-                fileMap.set(fileKey(f), f); // de-duplicate
+                fileMap.set(fileKey(f), f);
             });
             rebuildInputFiles();
         }
@@ -163,7 +152,6 @@
         }
 
         dropZone.onclick = (e) => {
-            // prevent clicking "Clear" from opening picker
             if (e.target === clearBtn) return;
             input.click();
         };
@@ -180,16 +168,11 @@
         dropZone.ondrop = e => {
             e.preventDefault();
             dropZone.classList.remove("bg-light");
-
-            // ✅ Add dropped files to existing selection
             addFiles(e.dataTransfer.files);
         };
 
         input.onchange = () => {
-            // ✅ Add newly picked files to existing selection (accumulate)
             addFiles(input.files);
-
-            // reset the picker so selecting the same file again triggers change
             input.value = "";
         };
 

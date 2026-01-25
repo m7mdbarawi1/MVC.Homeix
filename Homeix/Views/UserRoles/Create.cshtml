@@ -6,14 +6,12 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create User Role</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-sm">
@@ -22,14 +20,12 @@
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- Role Name -->
                         <div class="mb-3">
                             <label asp-for="RoleName" class="form-label"></label>
                             <input asp-for="RoleName" class="form-control" />
                             <span asp-validation-for="RoleName" class="text-danger"></span>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Create

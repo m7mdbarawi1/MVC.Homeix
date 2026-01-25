@@ -12,15 +12,7 @@ namespace Homeix.Controllers
     public class RatingsController : Controller
     {
         private readonly HOMEIXDbContext _context;
-
-        public RatingsController(HOMEIXDbContext context)
-        {
-            _context = context;
-        }
-
-        // ========================
-        // GET: Ratings
-        // ========================
+        public RatingsController(HOMEIXDbContext context) { _context = context;}
         public async Task<IActionResult> Index()
         {
             var ratings = await _context.Ratings
@@ -31,10 +23,6 @@ namespace Homeix.Controllers
 
             return View(ratings);
         }
-
-        // ========================
-        // DOWNLOAD REPORT (CSV)
-        // ========================
         public async Task<IActionResult> DownloadReport()
         {
             var ratings = await _context.Ratings
@@ -61,10 +49,6 @@ namespace Homeix.Controllers
             var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "RatingsReport.csv");
         }
-
-        // ========================
-        // GET: Ratings/Details
-        // ========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -80,23 +64,13 @@ namespace Homeix.Controllers
 
             return View(rating);
         }
-
-        // ========================
-        // GET: Ratings/Create
-        // ========================
         public IActionResult Create()
         {
             return View();
         }
-
-        // ========================
-        // POST: Ratings/Create
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("RatedUserId,RatingValue,Review")]
-            Rating rating)
+        public async Task<IActionResult> Create([Bind("RatedUserId,RatingValue,Review")] Rating rating)
         {
             var userIdClaim = User.FindFirstValue("UserId");
             if (string.IsNullOrEmpty(userIdClaim))
@@ -124,10 +98,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // ========================
-        // GET: Ratings/Edit
-        // ========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -139,16 +109,9 @@ namespace Homeix.Controllers
 
             return View(rating);
         }
-
-        // ========================
-        // POST: Ratings/Edit
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("RatingId,RatedUserId,RatingValue,Review")]
-            Rating rating)
+        public async Task<IActionResult> Edit(int id, [Bind("RatingId,RatedUserId,RatingValue,Review")] Rating rating)
         {
             if (id != rating.RatingId)
                 return NotFound();
@@ -174,10 +137,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // ========================
-        // GET: Ratings/Delete
-        // ========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -193,10 +152,6 @@ namespace Homeix.Controllers
 
             return View(rating);
         }
-
-        // ========================
-        // POST: Ratings/Delete
-        // ========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -210,10 +165,6 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // ========================
-        // AJAX: Search Users
-        // ========================
         [HttpGet]
         public async Task<IActionResult> SearchUsers(string term)
         {
