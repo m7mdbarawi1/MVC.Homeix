@@ -1647,3 +1647,456 @@ html:not(.dark-theme) .card.border-0 {
 html:not(.dark-theme) .popular-marquee {
     background: transparent;
 }
+
+/* ==========================================================
+   CHAT PAGE (Bootstrap-first) — ADDED ONLY
+========================================================== */
+
+.chat-shell {
+    height: calc(100dvh - 70px); /* body has padding-top:70px in your theme */
+    display: flex;
+    overflow: hidden;
+}
+
+.chat-users {
+    width: 320px;
+    background: var(--light-card);
+    color: var(--light-text);
+}
+
+html.dark-theme .chat-users {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+/* Desktop: make offcanvas behave like a fixed sidebar */
+@media (min-width: 768px) {
+    .chat-users {
+        position: static !important;
+        transform: none !important;
+        visibility: visible !important;
+        border-right: 1px solid var(--light-border);
+    }
+
+    html.dark-theme .chat-users {
+        border-right-color: var(--dark-border);
+    }
+
+    .chat-users .offcanvas-header {
+        display: none;
+    }
+
+    .chat-users .offcanvas-body {
+        height: 100%;
+        overflow: auto;
+    }
+}
+
+.chat-main {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.chat-header,
+.chat-footer {
+    position: sticky;
+    z-index: 5;
+}
+
+.chat-header {
+    top: 0;
+}
+
+.chat-footer {
+    bottom: 0;
+}
+
+.chat-bubble {
+    max-width: min(560px, 78%);
+    border-radius: 14px;
+    padding: .6rem .8rem;
+}
+
+.chat-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.chat-time {
+    font-size: .75rem;
+    opacity: .7;
+    margin-top: .25rem;
+}
+
+.chat-textarea {
+    resize: none;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+.online-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: gray;
+    flex: 0 0 auto;
+}
+
+    .online-dot.online {
+        background: #28a745;
+    }
+/* ==========================================================
+   CHAT PAGE (Bootstrap-first) — ADDED ONLY
+========================================================== */
+
+.chat-shell {
+    height: calc(100dvh - 70px); /* because your body has padding-top:70px */
+    display: flex;
+    overflow: hidden;
+}
+
+/* Users sidebar/offcanvas */
+.chat-users {
+    width: 320px;
+    background: var(--light-card);
+    color: var(--light-text);
+}
+
+html.dark-theme .chat-users {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+/* Desktop: make offcanvas behave like a sidebar */
+@media (min-width: 768px) {
+    .chat-users {
+        position: static !important;
+        transform: none !important;
+        visibility: visible !important;
+        border-right: 1px solid var(--light-border);
+    }
+
+    html.dark-theme .chat-users {
+        border-right-color: var(--dark-border);
+    }
+
+    .chat-users .offcanvas-header {
+        display: none;
+    }
+
+    .chat-users .offcanvas-body {
+        height: 100%;
+        overflow: auto;
+    }
+}
+
+.chat-main {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.chat-header,
+.chat-footer {
+    position: sticky;
+    z-index: 5;
+}
+
+.chat-header {
+    top: 0;
+}
+
+.chat-footer {
+    bottom: 0;
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+
+    /* Fix global mobile .btn{width:100%} for chat UI */
+    .chat-header .btn,
+    .chat-footer .btn {
+        width: auto !important;
+    }
+
+.chat-bubble {
+    max-width: min(560px, 78%);
+    border-radius: 14px;
+    padding: .6rem .8rem;
+}
+
+.chat-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.chat-time {
+    font-size: .75rem;
+    opacity: .7;
+    margin-top: .25rem;
+}
+
+.chat-textarea {
+    resize: none;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+.online-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: gray;
+    flex: 0 0 auto;
+}
+
+    .online-dot.online {
+        background: #28a745;
+    }
+/* ==========================================================
+   CHAT: prevent users list (offcanvas) from covering navbar
+   (ADDED ONLY)
+========================================================== */
+
+:root {
+    --homeix-nav-height: 70px; /* must match your body padding-top */
+}
+
+/* Offcanvas panel should start under the fixed navbar */
+.chat-users.offcanvas,
+.chat-users.offcanvas-start,
+.chat-users.offcanvas-end,
+.chat-users.offcanvas-top,
+.chat-users.offcanvas-bottom {
+    top: var(--homeix-nav-height) !important;
+    height: calc(100dvh - var(--homeix-nav-height)) !important;
+}
+
+/* Backdrop also should not cover the navbar */
+.offcanvas-backdrop.show {
+    top: var(--homeix-nav-height) !important;
+    height: calc(100dvh - var(--homeix-nav-height)) !important;
+}
+
+/* ==========================================================
+   CHAT + NAVBAR: Desktop fix (users list should not cover navbar)
+   ADDED ONLY — put at very end of site.css
+========================================================== */
+
+:root {
+    --homeix-nav-height: 70px; /* keep same as body padding-top */
+}
+
+/* 1) Always keep navbar above any chat panels/offcanvas */
+#mainNavbar {
+    position: fixed !important;
+    z-index: 5000 !important; /* higher than Bootstrap offcanvas (1045) */
+}
+
+/* 2) Desktop: force chatUsers to be a NORMAL sidebar (not fixed offcanvas) */
+@media (min-width: 768px) {
+    #chatUsers.chat-users.offcanvas {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        height: 100% !important;
+        transform: none !important;
+        visibility: visible !important;
+        z-index: auto !important; /* important so it can't sit above navbar */
+    }
+
+    /* backdrop should never appear on desktop */
+    .offcanvas-backdrop {
+        display: none !important;
+    }
+}
+
+/* ==========================================================
+   CHAT: bubble colors (fix light mode visibility)
+   ADDED ONLY — put at end of site.css
+========================================================== */
+
+.chat-bubble-me {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.chat-bubble-them {
+    background: #fff !important;
+    color: var(--light-text) !important;
+    border: 1px solid var(--light-border) !important;
+}
+
+/* Dark theme */
+html.dark-theme .chat-bubble-me {
+    background: var(--blue) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+html.dark-theme .chat-bubble-them {
+    background: var(--dark-card) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* ==========================================================
+   CHAT PAGE (Bootstrap-first) — ADDED ONLY
+   Put at the very end of site.css
+========================================================== */
+
+:root {
+    --homeix-nav-height: 70px; /* must match your body padding-top */
+}
+
+/* Keep navbar always on top */
+#mainNavbar {
+    position: fixed !important;
+    z-index: 5000 !important;
+}
+
+/* Main chat layout height (so it doesn't go under navbar) */
+.chat-shell {
+    height: calc(100dvh - var(--homeix-nav-height));
+    display: flex;
+    overflow: hidden;
+}
+
+/* Users sidebar/offcanvas */
+.chat-users {
+    width: 320px;
+    background: var(--light-card);
+    color: var(--light-text);
+}
+
+html.dark-theme .chat-users {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+/* Desktop: make offcanvas behave like a normal sidebar */
+@media (min-width: 768px) {
+    #chatUsers.chat-users.offcanvas {
+        position: static !important;
+        transform: none !important;
+        visibility: visible !important;
+        height: 100% !important;
+        z-index: auto !important;
+        border-right: 1px solid var(--light-border);
+    }
+
+    html.dark-theme #chatUsers.chat-users.offcanvas {
+        border-right-color: var(--dark-border);
+    }
+
+    #chatUsers .offcanvas-header {
+        display: none;
+    }
+
+    #chatUsers .offcanvas-body {
+        height: 100%;
+        overflow: auto;
+    }
+
+    .offcanvas-backdrop {
+        display: none !important;
+    }
+}
+
+.chat-main {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+/* Sticky header/footer inside the chat panel */
+.chat-header,
+.chat-footer {
+    position: sticky;
+    z-index: 5;
+}
+
+.chat-header {
+    top: 0;
+}
+
+.chat-footer {
+    bottom: 0;
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+
+    /* Fix your global mobile rule: @media (max-width:768px){ .btn{ width:100% } }
+   It breaks chat header/footer buttons */
+    .chat-header .btn,
+    .chat-footer .btn {
+        width: auto !important;
+    }
+
+/* Bubbles */
+.chat-bubble {
+    max-width: min(560px, 78%);
+    border-radius: 14px;
+    padding: .6rem .8rem;
+}
+
+.chat-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.chat-time {
+    font-size: .75rem;
+    opacity: .7;
+    margin-top: .25rem;
+}
+
+/* Light mode bubble colors (fix visibility) */
+.chat-bubble-me {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+}
+
+.chat-bubble-them {
+    background: #fff !important;
+    color: var(--light-text) !important;
+    border: 1px solid var(--light-border) !important;
+}
+
+/* Dark mode bubble colors */
+html.dark-theme .chat-bubble-me {
+    background: var(--blue) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+html.dark-theme .chat-bubble-them {
+    background: var(--dark-card) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Textarea */
+.chat-textarea {
+    resize: none;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+/* Online dot */
+.online-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: gray;
+    flex: 0 0 auto;
+}
+
+    .online-dot.online {
+        background: #28a745;
+    }
