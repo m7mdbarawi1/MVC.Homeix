@@ -89,7 +89,7 @@
 </section>
 
 <!-- ==========================================
-   WHY HOMEIX
+   WHY HOMEIX (with images, professional)
 ========================================== -->
 <section class="py-5">
     <div class="container">
@@ -98,14 +98,22 @@
             <p class="text-muted mb-0">Built for real home-service workflows.</p>
         </div>
 
-        <div class="row g-4 text-center">
+        <div class="row g-4">
+            <!-- 1 -->
             <div class="col-md-4 reveal">
-                <div class="card h-100 shadow-sm border-0 rounded-4">
-                    <div class="card-body p-4">
-                        <div class="icon-bubble mx-auto">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="ratio ratio-16x9">
+                        <img src="~/images/home/why/secure.jpg"
+                             class="w-100 h-100"
+                             style="object-fit: cover;"
+                             alt="Secure and reliable" />
+                    </div>
+
+                    <div class="card-body p-4 text-center">
+                        <div class="icon-bubble mx-auto mb-2">
                             <i class="bi bi-shield-lock"></i>
                         </div>
-                        <h5 class="fw-bold mt-3">Secure & reliable</h5>
+                        <h5 class="fw-bold mb-2">Secure & reliable</h5>
                         <p class="text-muted mb-0">
                             Your account, activity, and payments follow a safe flow.
                         </p>
@@ -113,13 +121,21 @@
                 </div>
             </div>
 
+            <!-- 2 -->
             <div class="col-md-4 reveal">
-                <div class="card h-100 shadow-sm border-0 rounded-4">
-                    <div class="card-body p-4">
-                        <div class="icon-bubble mx-auto">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="ratio ratio-16x9">
+                        <img src="~/images/home/why/chat.jpg"
+                             class="w-100 h-100"
+                             style="object-fit: cover;"
+                             alt="Built-in messaging" />
+                    </div>
+
+                    <div class="card-body p-4 text-center">
+                        <div class="icon-bubble mx-auto mb-2">
                             <i class="bi bi-chat-square-dots"></i>
                         </div>
-                        <h5 class="fw-bold mt-3">Built-in messaging</h5>
+                        <h5 class="fw-bold mb-2">Built-in messaging</h5>
                         <p class="text-muted mb-0">
                             Confirm details, share updates, keep everything documented.
                         </p>
@@ -127,13 +143,21 @@
                 </div>
             </div>
 
+            <!-- 3 -->
             <div class="col-md-4 reveal">
-                <div class="card h-100 shadow-sm border-0 rounded-4">
-                    <div class="card-body p-4">
-                        <div class="icon-bubble mx-auto">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="ratio ratio-16x9">
+                        <img src="~/images/home/why/history.jpg"
+                             class="w-100 h-100"
+                             style="object-fit: cover;"
+                             alt="Track job history" />
+                    </div>
+
+                    <div class="card-body p-4 text-center">
+                        <div class="icon-bubble mx-auto mb-2">
                             <i class="bi bi-clipboard-data"></i>
                         </div>
-                        <h5 class="fw-bold mt-3">Track job history</h5>
+                        <h5 class="fw-bold mb-2">Track job history</h5>
                         <p class="text-muted mb-0">
                             Stay organized with progress tracking and completed records.
                         </p>
@@ -345,9 +369,7 @@
                 </a>
             }
 
-            <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-outline-light btn-lg">
-                Become a Professional
-            </a>
+           
         </div>
     </div>
 </section>
