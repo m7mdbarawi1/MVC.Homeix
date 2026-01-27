@@ -29,15 +29,17 @@
     <!-- ================= FILTERS ================= -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
-            <div class="row g-2">
 
-                <div class="col-md-4">
+            <!-- UPDATED ONLY: responsive row-cols so Favorites stays same line on desktop -->
+            <div class="row g-2 align-items-end row-cols-1 row-cols-md-2 row-cols-lg-6">
+
+                <div class="col">
                     <input id="searchInput"
                            class="form-control"
                            placeholder="@Localizer["SearchPlaceholder"]" />
                 </div>
 
-                <div class="col-md-3">
+                <div class="col">
                     <select id="categoryFilter" class="form-select">
                         <option value="">@Localizer["AllCategories"]</option>
                         @foreach (var cat in Model
@@ -50,21 +52,21 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col">
                     <input id="minPrice"
                            type="number"
                            class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
-                <div class="col-md-2">
+                <div class="col">
                     <input id="maxPrice"
                            type="number"
                            class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
-                <div class="col-md-1">
+                <div class="col">
                     <select id="ratingFilter" class="form-select">
                         <option value="">⭐</option>
                         <option value="1">1+</option>
@@ -76,9 +78,9 @@
                 </div>
 
                 <!-- ❤️ FAVORITES TOGGLE -->
-                <div class="col-md-2 d-grid">
+                <div class="col d-grid">
                     <button id="favoriteToggle"
-                            class="btn btn-outline-danger">
+                            class="btn btn-outline-danger text-nowrap">
                         ❤️ My Favorites
                     </button>
                 </div>
