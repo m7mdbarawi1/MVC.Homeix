@@ -2100,3 +2100,201 @@ html.dark-theme .chat-bubble-them {
     .online-dot.online {
         background: #28a745;
     }
+/* ==========================================================
+   NAVBAR (MOBILE): Collapse + dropdown polish
+   ADDED ONLY — put at the very end of site.css
+========================================================== */
+
+@media (max-width: 991.98px) {
+
+    /* Give the opened collapse a clean panel look */
+    #mainNavbar .navbar-collapse.homeix-collapse-panel {
+        margin-top: .55rem;
+        padding: .75rem;
+        border-radius: 18px;
+        background: rgba(10, 15, 43, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    html.dark-theme #mainNavbar .navbar-collapse.homeix-collapse-panel {
+        background: rgba(0, 8, 20, 0.92);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    /* Space between links */
+    #mainNavbar .navbar-nav {
+        gap: .25rem;
+        margin-top: .25rem;
+    }
+
+        /* Bigger tap targets */
+        #mainNavbar .navbar-nav .nav-link {
+            padding: .55rem .75rem;
+            border-radius: 12px;
+        }
+
+            #mainNavbar .navbar-nav .nav-link:hover {
+                background: rgba(255, 255, 255, 0.08);
+            }
+
+    /* KEY FIX: dropdown menus inside collapsed navbar should NOT float */
+    #mainNavbar .navbar-collapse .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        transform: none !important;
+        width: 100%;
+        margin-top: .35rem;
+        margin-bottom: .25rem;
+        border-radius: 14px;
+        box-shadow: none;
+    }
+
+        /* Keep your dark dropdown style, but make it readable inside collapse */
+        #mainNavbar .navbar-collapse .dropdown-menu.dropdown-menu-dark {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+    html.dark-theme #mainNavbar .navbar-collapse .dropdown-menu.dropdown-menu-dark {
+        background: rgba(0,0,0,0.35);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    #mainNavbar .navbar-collapse .dropdown-item {
+        padding: .6rem .9rem;
+        border-radius: 10px;
+    }
+
+    /* Right-side buttons: stack nicely on mobile */
+    #mainNavbar .navbar-collapse .d-flex.align-items-center.gap-2.flex-wrap {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: .5rem !important;
+        margin-top: .5rem;
+    }
+
+    #mainNavbar .navbar-collapse .btn,
+    #mainNavbar .navbar-collapse .dropdown,
+    #mainNavbar .navbar-collapse .dropdown > .btn {
+        width: 100% !important;
+    }
+}
+
+/* ==========================================================
+   NAVBAR: Fix mobile background image glitches + button sizing
+   ADDED ONLY — put at VERY END of site.css
+========================================================== */
+
+/* 1) Desktop: make all small navbar buttons the same height */
+#mainNavbar .btn.btn-sm {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* Specifically normalize the language icon button (it was slightly taller) */
+#mainNavbar .lang-icon-btn {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+}
+
+/* Reduce/normalize the icon box so it doesn't force extra height */
+#mainNavbar .lang-icon {
+    width: 32px;
+    height: 22px;
+    display: inline-block;
+}
+
+#mainNavbar .lang-tile {
+    width: 20px;
+    height: 20px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* 2) Mobile: background image/pattern fix
+   - On mobile we can safely clip the pill again (dropdown menus are static there)
+   - Disable backdrop-filter on mobile to avoid white/blank rendering bugs
+*/
+@media (max-width: 991.98px) {
+
+    /* Clip the pill background correctly on mobile (prevents weird white areas) */
+    .homeix-nav-shell {
+        overflow: hidden !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* Collapse panel: keep it transparent-ish so the pill background image stays consistent */
+    #mainNavbar .navbar-collapse.homeix-collapse-panel {
+        background: rgba(0, 0, 0, 0.10);
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+}
+/* ==========================================================
+   NAVBAR: Mobile expanded menu not cropped + lang button size
+   ADDED ONLY — put at VERY END of site.css
+========================================================== */
+
+/* Normalize navbar button heights so lang button matches others */
+#mainNavbar .btn.btn-sm {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+#mainNavbar .lang-icon-btn {
+    padding: .25rem .55rem; /* match other btn-sm feel */
+}
+
+#mainNavbar .lang-icon {
+    width: 30px;
+    height: 22px;
+    display: inline-block;
+}
+
+#mainNavbar .lang-tile {
+    width: 20px;
+    height: 20px;
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+/* MOBILE FIX: reduce the huge "pill" radius that crops expanded content */
+@media (max-width: 991.98px) {
+
+    /* tighter corners so the expanded content reaches corners (no giant clipping) */
+    #mainNavbar .homeix-nav-shell {
+        border-radius: 22px !important; /* was 999px / very rounded */
+        overflow: hidden !important; /* safe on mobile (dropdown is static) */
+    }
+
+        /* keep overlays matching the new radius */
+        #mainNavbar .homeix-nav-shell::before,
+        #mainNavbar .homeix-nav-shell::after {
+            border-radius: 22px !important;
+        }
+
+    /* make the opened collapse panel match shell radius */
+    #mainNavbar .navbar-collapse.homeix-collapse-panel {
+        border-radius: 16px;
+    }
+
+        /* prevent mobile menu from being cut by viewport; scroll inside if needed */
+        #mainNavbar .navbar-collapse.homeix-collapse-panel.show {
+            max-height: calc(100dvh - 120px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+}
