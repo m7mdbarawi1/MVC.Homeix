@@ -8,6 +8,9 @@
 
     // Favorites passed from controller
     var favoriteIds = ViewBag.FavoritePostIds as List<int> ?? new List<int>();
+
+    // NEW: returnUrl (current page + querystring) so Details can go back here
+    var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
 <link rel="stylesheet" href="~/css/workerposts/index.css" />
@@ -148,6 +151,7 @@
                     <a asp-controller="WorkerPosts"
                        asp-action="Details"
                        asp-route-id="@post.WorkerPostId"
+                       asp-route-returnUrl="@returnUrl"
                        class="text-decoration-none text-dark">
 
                         <img src="@imageUrl" class="card-img-top" />

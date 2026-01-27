@@ -2298,3 +2298,35 @@ html.dark-theme .chat-bubble-them {
             overscroll-behavior: contain;
         }
 }
+
+/* ==========================================================
+   WorkerPost Details: action buttons sizing on mobile
+   ADDED ONLY — put at VERY END of site.css
+========================================================== */
+@media (max-width: 768px) {
+    .workerpost-details-footer .btn {
+        width: auto !important; /* override global .btn {width:100%} */
+    }
+
+    .workerpost-details-footer {
+        gap: .5rem;
+        flex-wrap: nowrap; /* keep them on one line like your screenshot */
+        align-items: center;
+    }
+}
+
+/* ==========================================================
+   CustomerPost Details: action buttons sizing on mobile
+   ADDED ONLY — put at VERY END of site.css
+========================================================== */
+@media (max-width: 768px) {
+    .customerpost-details-footer .btn {
+        width: auto !important; /* override global .btn { width:100% } */
+    }
+
+    .customerpost-details-footer {
+        gap: .5rem;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+}

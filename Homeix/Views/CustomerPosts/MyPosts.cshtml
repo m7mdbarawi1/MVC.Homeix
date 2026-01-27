@@ -8,6 +8,9 @@
     var mediaLookup =
         ViewBag.PostMedia as Dictionary<int, List<PostMedium>>
         ?? new Dictionary<int, List<PostMedium>>();
+
+    // NEW: returnUrl (current page + querystring) so Details can go back here
+    var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
 <link rel="stylesheet" href="~/css/customerposts/index.css" />
@@ -127,6 +130,7 @@
 
                             <a asp-action="Details"
                                asp-route-id="@post.CustomerPostId"
+                               asp-route-returnUrl="@returnUrl"
                                class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> View
                             </a>
