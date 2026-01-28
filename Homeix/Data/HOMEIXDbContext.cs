@@ -11,7 +11,6 @@ namespace Homeix.Data
         public virtual DbSet<Conversation> Conversations { get; set; }
         public virtual DbSet<CustomerPost> CustomerPosts { get; set; }
         public virtual DbSet<FavoritePost> FavoritePosts { get; set; }
-        public virtual DbSet<JobProgress> JobProgresses { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Offer> Offers { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
@@ -51,13 +50,6 @@ namespace Homeix.Data
             {
                 entity.HasKey(e => e.FavoritePostId);
                 entity.HasOne(e => e.User).WithMany(u => u.FavoritePosts).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.ClientSetNull);
-            });
-            modelBuilder.Entity<JobProgress>(entity =>
-            {
-                entity.HasKey(e => e.JobProgressId);
-                entity.HasOne(e => e.CustomerPost).WithMany(c => c.JobProgresses).HasForeignKey(e => e.CustomerPostId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(e => e.RequestedByUser).WithMany(u => u.JobProgressRequestedByUsers).HasForeignKey(e => e.RequestedByUserId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(e => e.AssignedToUser).WithMany(u => u.JobProgressAssignedToUsers).HasForeignKey(e => e.AssignedToUserId).OnDelete(DeleteBehavior.ClientSetNull);
             });
             modelBuilder.Entity<Message>(entity =>
             {

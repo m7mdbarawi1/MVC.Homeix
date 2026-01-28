@@ -54,7 +54,5 @@ namespace Homeix.Models
         public virtual PostCategory? PostCategory { get; set; }
 
         public virtual ICollection<Offer> Offers { get; set; } = new HashSet<Offer>();
-
-        public virtual ICollection<JobProgress> JobProgresses { get; set; } = new HashSet<JobProgress>();
     }
 }

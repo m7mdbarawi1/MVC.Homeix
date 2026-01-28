@@ -47,12 +47,6 @@ public partial class User
     [InverseProperty("User")]
     public virtual ICollection<FavoritePost> FavoritePosts { get; set; } = new List<FavoritePost>();
 
-    [InverseProperty("AssignedToUser")]
-    public virtual ICollection<JobProgress> JobProgressAssignedToUsers { get; set; } = new List<JobProgress>();
-
-    [InverseProperty("RequestedByUser")]
-    public virtual ICollection<JobProgress> JobProgressRequestedByUsers { get; set; } = new List<JobProgress>();
-
     [InverseProperty("SenderUser")]
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 

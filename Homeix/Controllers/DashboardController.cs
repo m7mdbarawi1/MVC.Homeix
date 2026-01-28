@@ -20,9 +20,6 @@ namespace Homeix.Controllers
             ViewBag.UsersByRoleCounts = JsonSerializer.Serialize(usersByRole.Select(x => x.Count).ToList());
             ViewBag.CustomerPostsCount = await _context.CustomerPosts.CountAsync();
             ViewBag.WorkerPostsCount = await _context.WorkerPosts.CountAsync();
-            var jobStatuses = await _context.JobProgresses.GroupBy(j => j.Status).Select(g => new{ Status = g.Key, Count = g.Count()}).ToListAsync();
-            ViewBag.JobStatusLabels = JsonSerializer.Serialize(jobStatuses.Select(x => x.Status).ToList());
-            ViewBag.JobStatusCounts = JsonSerializer.Serialize(jobStatuses.Select(x => x.Count).ToList());
             var payments = await _context.Payments.Where(p => p.PaymentDate >= DateTime.Now.AddMonths(-6)).GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month }).Select(g => new{ g.Key.Month, Total = g.Sum(x => x.Amount)}).OrderBy(g => g.Month).ToListAsync();
             ViewBag.PaymentMonths =JsonSerializer.Serialize(payments.Select(p => CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(p.Month)).ToList());
             ViewBag.PaymentTotals = JsonSerializer.Serialize(payments.Select(p => p.Total).ToList());
