@@ -2330,3 +2330,496 @@ html.dark-theme .chat-bubble-them {
         align-items: center;
     }
 }
+
+/* ==========================================================
+   BODY BACKGROUND: BLURRED MOVING TOOLS (ADDED ONLY)
+   - Uses a fixed background layer behind all content
+   - Keeps all existing functionality unchanged
+========================================================== */
+
+/* Ensure we can stack the background behind everything safely */
+body {
+    position: relative;
+    isolation: isolate; /* creates a stacking context so z-index works reliably */
+}
+
+/* The added background layer div */
+.homeix-body-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1; /* behind all page content */
+    pointer-events: none;
+    overflow: hidden;
+}
+
+    /* Layer 1: repeating tools pattern (blurred + drifting) */
+    .homeix-body-bg::before {
+        content: "";
+        position: absolute;
+        inset: -40px; /* slightly bigger so movement doesn't show edges */
+        background-image: url('/images/home/tools-pattern.png');
+        background-repeat: repeat;
+        background-size: 520px auto;
+        opacity: 0.08;
+        filter: blur(10px);
+        transform: translateZ(0);
+        animation: homeixToolsDrift 38s linear infinite;
+    }
+
+    /* Layer 2: big corner icons (blurred + floating)
+   (Matches the “big tools in corners” look you showed) */
+    .homeix-body-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        /* 3 big icons in corners (edit paths/sizes as you like) */
+        background-image: url('/images/home/tools/wrench.png'), url('/images/home/tools/hammer.png'), url('/images/home/tools/drill.png');
+        background-repeat: no-repeat, no-repeat, no-repeat;
+        /* positions: left, right-top, right-bottom-ish */
+        background-position: 3% 55%, 92% 18%, 92% 72%;
+        background-size: 220px auto, 260px auto, 240px auto;
+        opacity: 0.10;
+        filter: blur(12px);
+        transform: translateZ(0);
+        animation: homeixToolsFloat 14s ease-in-out infinite;
+    }
+
+/* Dark theme: slightly different intensity (optional) */
+html.dark-theme .homeix-body-bg::before {
+    opacity: 0.06;
+    filter: blur(11px);
+}
+
+html.dark-theme .homeix-body-bg::after {
+    opacity: 0.08;
+    filter: blur(13px);
+}
+
+/* Motion keyframes */
+@keyframes homeixToolsDrift {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    50% {
+        background-position: -260px 30px;
+    }
+
+    100% {
+        background-position: -520px 0px;
+    }
+}
+
+@keyframes homeixToolsFloat {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(10px, -8px, 0) scale(1.02);
+    }
+}
+
+/* Respect reduced-motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .homeix-body-bg::before,
+    .homeix-body-bg::after {
+        animation: none !important;
+    }
+}
+
+/* ==========================================================
+   BODY BG: BIG BLURRED TOOLS (like screenshot) + in-place motion
+   ADDED ONLY — paste at VERY END of site.css
+========================================================== */
+
+body {
+    position: relative;
+    isolation: isolate; /* ensures z-index stacking is stable */
+}
+
+/* Background container behind all content */
+.homeix-tools-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+    /* Blue background like your screenshot */
+    .homeix-tools-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 25% 15%, #103a7a 0%, #071b3f 35%, #050f24 100%);
+    }
+
+    /* Tool base style */
+    .homeix-tools-bg .tool {
+        position: absolute;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        /* “white blurry silhouette” look */
+        opacity: 0.22;
+        filter: blur(14px) brightness(1.6) contrast(1.05);
+        transform: translate3d(0,0,0);
+        will-change: transform;
+        /* helps the white glow blend */
+        mix-blend-mode: screen;
+    }
+
+    /* TOP-LEFT (wrench) */
+    .homeix-tools-bg .tool-wrench {
+        left: -120px;
+        top: 110px;
+        width: 360px;
+        height: 360px;
+        background-image: url("/images/bg-tools/wrench.png");
+        animation: toolFloatA 10s ease-in-out infinite;
+    }
+
+    /* TOP-RIGHT (hammer) */
+    .homeix-tools-bg .tool-hammer {
+        right: -150px;
+        top: -80px;
+        width: 460px;
+        height: 460px;
+        background-image: url("/images/bg-tools/hammer.png");
+        animation: toolFloatB 12s ease-in-out infinite;
+    }
+
+    /* BOTTOM-CENTER (drill) */
+    .homeix-tools-bg .tool-drill {
+        left: 50%;
+        bottom: -160px;
+        transform: translate3d(-50%, 0, 0);
+        width: 520px;
+        height: 520px;
+        background-image: url("/images/bg-tools/drill.png");
+        animation: toolFloatC 11s ease-in-out infinite;
+    }
+
+/* In-place motion: small up/down + side/side */
+@keyframes toolFloatA {
+    0%, 100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    50% {
+        transform: translate3d(16px, -14px, 0);
+    }
+}
+
+@keyframes toolFloatB {
+    0%, 100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    50% {
+        transform: translate3d(-18px, 14px, 0);
+    }
+}
+
+/* Note: drill already uses translateX(-50%) for centering */
+@keyframes toolFloatC {
+    0%, 100% {
+        transform: translate3d(-50%, 0px, 0);
+    }
+
+    50% {
+        transform: translate3d(calc(-50% - 14px), -16px, 0);
+    }
+}
+
+/* Optional: slightly softer in light theme */
+html:not(.dark-theme) .homeix-tools-bg .tool {
+    opacity: 0.14;
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .homeix-tools-bg .tool {
+        animation: none !important;
+    }
+}
+
+/* ==========================================================
+   HOMEIX BODY BG (EXAMPLE LOOK): big blurred tools + float motion
+   ADDED ONLY — paste at VERY END of site.css
+========================================================== */
+
+/* Make sure our fixed background sits BEHIND content but ABOVE html background */
+.homeix-body-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0; /* IMPORTANT: not negative */
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Ensure page content stays above the background */
+body > header,
+body > main,
+body > footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* Blue background like your example */
+.homeix-body-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 15%, #0f3a7a 0%, #071b3f 38%, #050f24 100%);
+    opacity: 1;
+}
+
+/* Tool base style */
+.homeix-body-bg .homeix-tool {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    /* White blurred silhouette */
+    opacity: 0.28;
+    filter: blur(16px) brightness(0) invert(1);
+    transform: translate3d(0,0,0);
+    will-change: transform;
+}
+
+/* TOP-LEFT wrench */
+.homeix-body-bg .tool-wrench {
+    left: -140px;
+    top: 140px;
+    width: 380px;
+    height: 380px;
+    background-image: url("/images/bg-tools/wrench.png");
+    animation: homeixToolFloatA 10s ease-in-out infinite;
+}
+
+/* TOP-RIGHT hammer */
+.homeix-body-bg .tool-hammer {
+    right: -170px;
+    top: -110px;
+    width: 500px;
+    height: 500px;
+    background-image: url("/images/bg-tools/hammer.png");
+    animation: homeixToolFloatB 12s ease-in-out infinite;
+}
+
+/* BOTTOM-CENTER drill */
+.homeix-body-bg .tool-drill {
+    left: 50%;
+    bottom: -210px;
+    width: 560px;
+    height: 560px;
+    background-image: url("/images/bg-tools/drill.png");
+    transform: translate3d(-50%, 0, 0);
+    animation: homeixToolFloatC 11s ease-in-out infinite;
+}
+
+/* In-place motion */
+@keyframes homeixToolFloatA {
+    0%, 100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    50% {
+        transform: translate3d(18px, -14px, 0);
+    }
+}
+
+@keyframes homeixToolFloatB {
+    0%, 100% {
+        transform: translate3d(0px, 0px, 0);
+    }
+
+    50% {
+        transform: translate3d(-20px, 16px, 0);
+    }
+}
+
+/* Keep centering translateX(-50%) while moving */
+@keyframes homeixToolFloatC {
+    0%, 100% {
+        transform: translate3d(-50%, 0px, 0);
+    }
+
+    50% {
+        transform: translate3d(calc(-50% - 16px), -18px, 0);
+    }
+}
+
+/* Optional: in light theme make it slightly softer */
+html:not(.dark-theme) .homeix-body-bg .homeix-tool {
+    opacity: 0.16;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .homeix-body-bg .homeix-tool {
+        animation: none !important;
+    }
+}
+
+/* ==========================================================
+   NAVBAR MUST ALWAYS BE ON TOP (ADDED ONLY)
+   Put at VERY END of site.css
+========================================================== */
+
+:root {
+    --homeix-navbar-z: 2147483647; /* max-ish z-index to beat everything */
+}
+
+/* The navbar itself */
+#mainNavbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--homeix-navbar-z) !important;
+}
+
+    /* Dropdown menus from the navbar must also be above everything */
+    #mainNavbar .dropdown-menu {
+        z-index: var(--homeix-navbar-z) !important;
+    }
+
+/* Make sure Bootstrap overlays can never cover the navbar */
+.offcanvas,
+.offcanvas-backdrop,
+.modal,
+.modal-backdrop,
+.toast-container {
+    z-index: var(--homeix-overlay-z) !important;
+}
+
+/* ==========================================================
+   FINAL OVERRIDES (ADDED ONLY) — put at VERY END of site.css
+   1) Navbar always on top (fix stacking-context trapping)
+   2) Light mode: white background + light-yellow tools
+========================================================== */
+
+:root {
+    --homeix-navbar-z: 2147483000;
+}
+
+/* 1) NAVBAR MUST BE ABOVE EVERYTHING */
+body > header {
+    position: relative !important;
+    z-index: var(--homeix-navbar-z) !important; /* key fix: header stacking context is now top */
+}
+
+#mainNavbar {
+    position: fixed !important;
+    z-index: var(--homeix-navbar-z) !important;
+}
+
+    /* Navbar dropdowns also on top */
+    #mainNavbar .dropdown-menu {
+        z-index: var(--homeix-navbar-z) !important;
+    }
+
+/* Make sure common Bootstrap overlays can never cover the navbar */
+.modal,
+.modal-backdrop,
+.offcanvas,
+.offcanvas-backdrop,
+.toast-container,
+.popover,
+.tooltip {
+    z-index: var(--homeix-overlay-z) !important;
+}
+
+/* Keep normal page content above bg but below navbar */
+body > main,
+body > footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* Make sure background stays behind content */
+.homeix-body-bg {
+    z-index: 0;
+}
+
+/* 2) LIGHT MODE LOOK: white background + light yellow tools */
+html:not(.dark-theme) .homeix-body-bg::before {
+    background: #ffffff !important; /* white like you asked */
+}
+
+/* Tint the tool silhouettes to light yellow in light mode */
+html:not(.dark-theme) .homeix-body-bg .homeix-tool {
+    opacity: 0.18;
+    /* Turn white silhouette into soft yellow tint */
+    filter: blur(16px) brightness(0) invert(1) sepia(1) saturate(2500%) hue-rotate(8deg); /* warm yellow */
+    /* optional: slightly softer look on white */
+    mix-blend-mode: multiply;
+}
+
+/* ==========================================================
+   FINAL FIX (NO calc()): Navbar always top + Light mode bg white
+   + tools light-yellow
+   ADDED ONLY — put at VERY END of site.css
+========================================================== */
+
+:root {
+    /* Use very high values but still reasonable */
+    --homeix-navbar-z: 9999999;
+    --homeix-overlay-z: 9999900; /* must be LESS than navbar */
+}
+
+/* Make sure the header stacking context itself is above everything */
+body > header {
+    position: relative !important;
+    z-index: var(--homeix-navbar-z) !important;
+}
+
+/* Navbar always on top */
+#mainNavbar {
+    position: fixed !important;
+    z-index: var(--homeix-navbar-z) !important;
+}
+
+    /* Navbar dropdowns also on top */
+    #mainNavbar .dropdown-menu {
+        z-index: var(--homeix-navbar-z) !important;
+    }
+
+/* All Bootstrap overlays must stay UNDER the navbar */
+.modal,
+.modal-backdrop,
+.offcanvas,
+.offcanvas-backdrop,
+.toast-container,
+.popover,
+.tooltip {
+    z-index: var(--homeix-overlay-z) !important;
+}
+
+/* Keep content above background but under navbar */
+body > main,
+body > footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* Background layer behind content */
+.homeix-body-bg {
+    z-index: 0 !important;
+}
+
+/* LIGHT MODE: background becomes white */
+html:not(.dark-theme) .homeix-body-bg::before {
+    background: #ffffff !important;
+}
+
+/* LIGHT MODE: tools become light yellow */
+html:not(.dark-theme) .homeix-body-bg .homeix-tool {
+    opacity: 0.20 !important;
+    /* convert to yellow tint */
+    filter: blur(16px) brightness(0) invert(1) sepia(1) saturate(2200%) hue-rotate(10deg) !important;
+    mix-blend-mode: multiply;
+}
