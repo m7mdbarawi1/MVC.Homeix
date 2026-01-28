@@ -12,7 +12,6 @@ namespace Homeix.Data
         public virtual DbSet<CustomerPost> CustomerPosts { get; set; }
         public virtual DbSet<FavoritePost> FavoritePosts { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
-        public virtual DbSet<Offer> Offers { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
         public virtual DbSet<PostCategory> PostCategories { get; set; }
@@ -56,12 +55,6 @@ namespace Homeix.Data
                 entity.HasKey(e => e.MessageId);
                 entity.HasOne(e => e.Conversation).WithMany(c => c.Messages).HasForeignKey(e => e.ConversationId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(e => e.SenderUser).WithMany(u => u.Messages).HasForeignKey(e => e.SenderUserId).OnDelete(DeleteBehavior.ClientSetNull);
-            });
-            modelBuilder.Entity<Offer>(entity =>
-            {
-                entity.HasKey(e => e.OfferId);
-                entity.HasOne(e => e.CustomerPost).WithMany(c => c.Offers).HasForeignKey(e => e.CustomerPostId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(e => e.User).WithMany(u => u.Offers).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.ClientSetNull);
             });
             modelBuilder.Entity<Payment>(entity =>
             {
