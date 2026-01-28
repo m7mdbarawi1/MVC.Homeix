@@ -17,11 +17,19 @@
         </a>
     </div>
 
-    @if (Model != null && Model.Any())
+    @* ADDED ONLY: filter to show only active subscriptions *@
+    @{
+        var activeSubscriptions = (Model ?? Enumerable.Empty<Homeix.Models.Subscription>())
+        .Where(s => s != null && s.Status == "Active")
+        .OrderByDescending(s => s.EndDate)
+        .ToList();
+    }
+
+    @if (activeSubscriptions.Any())
     {
         <div class="row justify-content-center g-4">
 
-            @foreach (var sub in Model.OrderByDescending(s => s.EndDate))
+            @foreach (var sub in activeSubscriptions)
             {
                 <div class="col-md-6 col-lg-5">
                     <div class="card shadow-sm h-100">
@@ -55,6 +63,7 @@
                                     View Details
                                 </a>
 
+                                @* This stays exactly the same behavior (only shows for Active) *@
                                 @if (sub.Status == "Active")
                                 {
                                     <a asp-controller="SubscriptionPlans"
