@@ -53,6 +53,5 @@ namespace Homeix.Models
         public virtual User? User { get; set; }
         public virtual PostCategory? PostCategory { get; set; }
 
-        public virtual ICollection<Offer> Offers { get; set; } = new HashSet<Offer>();
     }
 }

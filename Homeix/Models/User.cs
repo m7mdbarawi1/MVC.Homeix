@@ -51,9 +51,6 @@ public partial class User
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 
     [InverseProperty("User")]
-    public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
-
-    [InverseProperty("User")]
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     [InverseProperty("RatedUser")]
