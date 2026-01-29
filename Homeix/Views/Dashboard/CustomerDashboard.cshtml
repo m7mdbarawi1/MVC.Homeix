@@ -14,11 +14,24 @@
 
 <div class="container page-wrapper mt-4">
 
-    <!-- ================= HEADER ================= -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="page-title">@Localizer["BrowseServices"]</h1>
-        <span id="resultCount" class="fw-bold text-secondary"></span>
+    <!-- ================= PAGE HEADER ================= -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+
+        <h1 class="page-title mb-0">
+            @Localizer["BrowseServices"]
+        </h1>
+
+        <a asp-controller="CustomerPosts"
+           asp-action="Create"
+           class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle"></i>
+            <span>@Localizer["CreateNewPost"]</span>
+        </a>
+
     </div>
+
+    <span id="resultCount"
+          class="fw-semibold text-secondary d-block mb-3"></span>
 
     <!-- ================= FILTERS ================= -->
     <div class="card mb-4 shadow-sm">
@@ -45,12 +58,16 @@
                 </div>
 
                 <div class="col">
-                    <input id="minPrice" type="number" class="form-control"
+                    <input id="minPrice"
+                           type="number"
+                           class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col">
-                    <input id="maxPrice" type="number" class="form-control"
+                    <input id="maxPrice"
+                           type="number"
+                           class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
@@ -68,7 +85,7 @@
                 <div class="col d-grid">
                     <button id="favoriteToggle"
                             class="btn btn-outline-danger text-nowrap">
-                        ❤️ My Favorites
+                        ❤️ @Localizer["MyFavorites"]
                     </button>
                 </div>
 
@@ -98,9 +115,9 @@
 
             var isFavorite = favoriteIds.Contains(post.WorkerPostId);
 
-            <div class="col-md-3 mb-4 post-card-wrapper">
+            <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
 
-                <div class="card h-100 shadow-sm post-card"
+                <div class="card h-100 shadow-sm post-card position-relative"
                      data-title="@post.Title.ToLowerInvariant()"
                      data-category="@post.PostCategory?.CategoryName"
                      data-price="@post.PriceRangeMin"
@@ -108,15 +125,20 @@
                      data-favorite="@isFavorite.ToString().ToLowerInvariant()">
 
                     <!-- ❤️ FAVORITE BUTTON -->
-                    <div class="position-absolute top-0 end-0 p-2">
+                    <div class="position-absolute top-0 end-0 p-2 z-1">
                         @if (isFavorite)
                         {
                             <form asp-controller="FavoriteWorkerPosts"
                                   asp-action="Remove"
                                   method="post">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="postId" value="@post.WorkerPostId" />
-                                <button class="btn btn-sm btn-danger rounded-circle">❤️</button>
+                                <input type="hidden"
+                                       name="postId"
+                                       value="@post.WorkerPostId" />
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger rounded-circle">
+                                    ❤️
+                                </button>
                             </form>
                         }
                         else
@@ -125,8 +147,13 @@
                                   asp-action="Add"
                                   method="post">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="postId" value="@post.WorkerPostId" />
-                                <button class="btn btn-sm btn-outline-danger rounded-circle">🤍</button>
+                                <input type="hidden"
+                                       name="postId"
+                                       value="@post.WorkerPostId" />
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger rounded-circle">
+                                    🤍
+                                </button>
                             </form>
                         }
                     </div>
@@ -136,22 +163,33 @@
                        asp-action="Details"
                        asp-route-id="@post.WorkerPostId"
                        asp-route-returnUrl="@returnUrl"
-                       class="text-decoration-none text-dark">
+                       class="text-decoration-none text-reset">
 
-                        <img src="@imageUrl" class="card-img-top" />
+                        <img src="@imageUrl"
+                             class="card-img-top"
+                             style="height:180px; object-fit:cover;" />
 
                         <div class="card-body d-flex flex-column">
 
-                            <h5 class="fw-bold">@post.Title</h5>
+                            <h5 class="fw-bold mb-1">
+                                @post.Title
+                            </h5>
 
-                            <p class="text-muted small text-truncate">
+                            <p class="text-muted small text-truncate mb-2">
                                 @post.Description
                             </p>
 
-                            <p><strong>@Localizer["Worker"]:</strong> @post.User?.FullName</p>
-                            <p><strong>@Localizer["Category"]:</strong> @post.PostCategory?.CategoryName</p>
+                            <p class="mb-1 small">
+                                <strong>@Localizer["Worker"]:</strong>
+                                @post.User?.FullName
+                            </p>
 
-                            <p class="fw-bold text-primary">
+                            <p class="mb-1 small">
+                                <strong>@Localizer["Category"]:</strong>
+                                @post.PostCategory?.CategoryName
+                            </p>
+
+                            <p class="fw-bold text-primary mb-1">
                                 💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
                             </p>
 
@@ -159,7 +197,7 @@
                                 ⭐ @avgRating.ToString("0.0") / 5 (@ratings.Count())
                             </div>
 
-                            <span class="badge bg-success mt-auto">
+                            <span class="badge bg-success mt-auto align-self-start">
                                 @Localizer["Available"]
                             </span>
 
@@ -209,7 +247,8 @@
                     if (show) visible++;
                 });
 
-                resultCount.textContent = visible + " services found";
+                resultCount.textContent =
+                    visible + " " + "@Localizer["ServicesFound"]";
             }
 
             favoriteBtn.addEventListener("click", () => {
@@ -218,9 +257,9 @@
                 favoriteBtn.classList.toggle("btn-danger", showFavoritesOnly);
                 favoriteBtn.classList.toggle("btn-outline-danger", !showFavoritesOnly);
 
-                favoriteBtn.textContent = showFavoritesOnly
-                    ? "❤️ Showing Favorites"
-                    : "❤️ My Favorites";
+                favoriteBtn.innerHTML = showFavoritesOnly
+                    ? "❤️ " + "@Localizer["ShowingFavorites"]"
+                    : "❤️ " + "@Localizer["MyFavorites"]";
 
                 filter();
             });

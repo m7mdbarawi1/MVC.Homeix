@@ -1,23 +1,14 @@
-
-/* ==========================================================
-   HOMEIX MASTER THEME — COMPREHENSIVE VERSION
-   Light + Dark Mode | Bootstrap 5 Extension
-========================================================== */
-/* =========================
-   COLOR VARIABLES (UNCHANGED)
-========================= */
 :root {
     --primary: #0a0f2b;
     --primary-light: #131b3f;
     --blue: #1a237e;
     --gold: #ffd700;
     --gold-dark: #e6c300;
-    /* Light */
     --light-bg: #f5f7fa;
-    --light-text: #0a0f2b;
+    --light-text: #1f2937;
+    --light-heading: #0f172a;
     --light-card: #ffffff;
     --light-border: #d7d7d7;
-    /* Dark */
     --dark-bg: #0b0f1e;
     --dark-text: #e6e6e6;
     --dark-card: #1a2035;
@@ -26,11 +17,11 @@
     --radius-md: 12px;
     --radius-lg: 16px;
     --transition: 0.3s ease;
+    --homeix-navbar-z: 9999999;
+    --homeix-overlay-z: 9999900;
+    --homeix-nav-height: 70px;
 }
 
-/* =========================
-   ROOT & BODY
-========================= */
 html {
     background: var(--light-bg);
     color: var(--light-text);
@@ -42,20 +33,37 @@ html {
         color: var(--dark-text);
     }
 
+    html:not(.dark-theme),
+    html:not(.dark-theme) body {
+        color: var(--light-text) !important;
+    }
+
+        html:not(.dark-theme) .page-title,
+        html:not(.dark-theme) h1,
+        html:not(.dark-theme) h2,
+        html:not(.dark-theme) h3,
+        html:not(.dark-theme) h4,
+        html:not(.dark-theme) h5 {
+            color: var(--light-heading) !important;
+        }
+
 body {
     background: transparent !important;
     color: inherit !important;
     padding-top: 70px;
+    position: relative;
+    isolation: isolate;
+    transition: opacity 220ms ease;
 }
 
-/* RTL SAFE */
+    body.lang-switching {
+        opacity: 0;
+    }
+
 html[dir="rtl"] {
     direction: rtl;
 }
 
-/* =========================
-   HEADINGS & TITLES
-========================= */
 .page-title,
 h1, h2, h3, h4, h5 {
     font-weight: 700;
@@ -68,12 +76,18 @@ html.dark-theme h2,
 html.dark-theme h3,
 html.dark-theme h4,
 html.dark-theme h5 {
-    color: var(--gold);
+    color: var(--gold) !important;
 }
 
-/* =========================
-   NAVBAR
-========================= */
+.text-white .page-title:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h1:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h2:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h3:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h4:not(.hero-title):not(.features-title):not(.cta-title),
+.text-white h5:not(.hero-title):not(.features-title):not(.cta-title) {
+    color: inherit !important;
+}
+
 .bg-main {
     background: linear-gradient(135deg, var(--primary-light), var(--blue)) !important;
 }
@@ -82,10 +96,27 @@ html.dark-theme .bg-main {
     background: linear-gradient(135deg, #000814, #001233) !important;
 }
 
+body > header {
+    position: relative !important;
+    z-index: var(--homeix-navbar-z) !important;
+}
+
+#mainNavbar {
+    position: fixed !important;
+    z-index: var(--homeix-navbar-z) !important;
+}
+
+    #mainNavbar.homeix-float-nav {
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
 .navbar .nav-link {
     color: #fff !important;
     font-weight: 500;
     font-size: 0.9rem;
+    padding-top: .35rem;
+    padding-bottom: .35rem;
 }
 
     .navbar .nav-link:hover,
@@ -93,13 +124,112 @@ html.dark-theme .bg-main {
         color: var(--gold) !important;
     }
 
-/* =========================
-   DROPDOWNS
-========================= */
+.homeix-nav-shell {
+    width: min(1550px, calc(100% - 1rem));
+    margin: 0 auto;
+    border-radius: 999px;
+    overflow: visible !important;
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+    .homeix-nav-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url('/images/home/tools-pattern.png');
+        background-repeat: repeat;
+        background-size: 560px auto;
+        opacity: 0.05;
+        pointer-events: none;
+        animation: navToolsWave 80s linear infinite;
+        z-index: 0;
+        border-radius: inherit;
+    }
+
+    .homeix-nav-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
+        pointer-events: none;
+        z-index: 0;
+        border-radius: inherit;
+    }
+
+    .homeix-nav-shell > * {
+        position: relative;
+        z-index: 1;
+    }
+
+.homeix-logo-round {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,0.22);
+}
+
+#mainNavbar .btn.btn-sm {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.lang-icon-btn {
+    padding: .25rem .55rem;
+    line-height: 1;
+}
+
+.lang-icon {
+    position: relative;
+    width: 30px;
+    height: 22px;
+    display: inline-block;
+}
+
+.lang-tile {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 13px;
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    backdrop-filter: blur(6px);
+    line-height: 1;
+}
+
+.tile-a {
+    top: 0;
+    left: 0;
+}
+
+.tile-ar {
+    bottom: 0;
+    right: 0;
+}
+
+html.dark-theme .lang-tile {
+    background: rgba(0,0,0,0.28);
+    border-color: rgba(255,255,255,0.18);
+}
+
 .dropdown-menu {
     border-radius: var(--radius-sm);
     border: none;
     box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    z-index: var(--homeix-navbar-z) !important;
 }
 
 .dropdown-item {
@@ -120,9 +250,6 @@ html.dark-theme .dropdown-item {
         color: #fff;
     }
 
-/* =========================
-   CARDS (ALL PAGES)
-========================= */
 .card {
     background: var(--light-card);
     color: var(--light-text);
@@ -151,9 +278,6 @@ html.dark-theme .card-header {
     background: rgba(255,255,255,0.05);
 }
 
-/* =========================
-   FORMS (Create/Edit/Login/Register/Profile)
-========================= */
 .form-label {
     font-weight: 600;
 }
@@ -180,7 +304,6 @@ textarea:focus {
     box-shadow: 0 0 0 0.2rem rgba(255,215,0,0.25);
 }
 
-/* Validation */
 .text-danger {
     font-size: 0.85rem;
 }
@@ -189,9 +312,6 @@ textarea:focus {
     font-size: 0.8rem;
 }
 
-/* =========================
-   ALERTS
-========================= */
 .alert {
     border-radius: var(--radius-sm);
     font-size: 0.9rem;
@@ -207,9 +327,6 @@ html.dark-theme .alert-danger {
     color: #fee2e2;
 }
 
-/* =========================
-   TABLES (Index Pages)
-========================= */
 .table {
     background: var(--light-card);
     border-radius: var(--radius-lg);
@@ -244,9 +361,6 @@ html.dark-theme .table td {
     color: var(--dark-text);
 }
 
-/* =========================
-   BADGES
-========================= */
 .badge {
     font-size: 0.85rem;
     font-weight: 600;
@@ -258,9 +372,6 @@ html.dark-theme .table td {
         color: #000 !important;
     }
 
-/* =========================
-   BUTTONS
-========================= */
 .btn {
     border-radius: var(--radius-sm);
     font-weight: 500;
@@ -271,7 +382,6 @@ html.dark-theme .table td {
         transform: translateY(-2px);
     }
 
-/* Primary */
 .btn-primary {
     background: var(--primary);
     border-color: var(--primary);
@@ -281,7 +391,6 @@ html.dark-theme .table td {
         background: var(--primary-light);
     }
 
-/* Secondary */
 .btn-secondary {
     background: var(--blue);
     border-color: var(--blue);
@@ -291,7 +400,6 @@ html.dark-theme .table td {
         background: var(--primary-light);
     }
 
-/* Accent */
 .btn-accent {
     background: var(--gold);
     border-color: var(--gold);
@@ -303,7 +411,6 @@ html.dark-theme .table td {
         background: var(--gold-dark);
     }
 
-/* Danger */
 .btn-danger {
     background: #8b1a2d;
     border-color: #8b1a2d;
@@ -313,15 +420,11 @@ html.dark-theme .table td {
         background: #6e1423;
     }
 
-/* Outline light */
 .btn-outline-light:hover {
     color: var(--gold) !important;
     border-color: var(--gold) !important;
 }
 
-/* =========================
-   DETAILS / DELETE
-========================= */
 dl dt {
     font-weight: 700;
 }
@@ -334,9 +437,6 @@ dl dd {
     border-width: 2px !important;
 }
 
-/* =========================
-   HERO / FEATURES / CTA
-========================= */
 .hero-section {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     padding: 100px 0;
@@ -362,9 +462,6 @@ dl dd {
     color: #fff;
 }
 
-/* =========================
-   DASHBOARDS (Admin/User)
-========================= */
 .admin-card,
 .dashboard-card {
     background: var(--light-card);
@@ -396,9 +493,6 @@ html.dark-theme .dashboard-card {
     box-shadow: 0 18px 45px rgba(0,0,0,0.25);
 }
 
-/* =========================
-   FOOTER
-========================= */
 .footer {
     background: linear-gradient(135deg, var(--primary-light), var(--blue));
     color: #fff;
@@ -412,9 +506,6 @@ html.dark-theme .footer {
     color: var(--dark-text);
 }
 
-/* =========================
-   CHATBOT
-========================= */
 #chatbot-toggle {
     width: 55px;
     height: 55px;
@@ -451,67 +542,124 @@ html.dark-theme #chatbot-box {
         object-fit: cover;
     }
 
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-    .page-title {
-        font-size: 1.4rem;
-        text-align: center;
-    }
-
-    .btn {
-        width: 100%;
-    }
+.modal,
+.modal-backdrop,
+.offcanvas,
+.offcanvas-backdrop,
+.toast-container,
+.popover,
+.tooltip {
+    z-index: var(--homeix-overlay-z) !important;
 }
 
-@media (max-width: 576px) {
-    .card {
-        margin-bottom: 1rem;
-    }
+body > main,
+body > footer {
+    position: relative;
+    z-index: 1;
 }
 
-/* ==========================================================
-   ? LANGUAGE DROPDOWN — MOBILE RESPONSIVE FIX (ADDED ONLY)
-   (Use with: <div class="dropdown lang-dropdown"> ... and
-    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive">)
-========================================================== */
-@media (max-width: 576px) {
-
-    .lang-dropdown {
-        width: 100%;
-    }
-
-        .lang-dropdown .dropdown-toggle {
-            width: 100%;
-            text-align: center;
-        }
-
-    .dropdown-menu-responsive {
-        width: 100% !important;
-        max-width: 100%;
-        text-align: center;
-    }
-
-        .dropdown-menu-responsive .dropdown-item {
-            text-align: center;
-            padding: 0.6rem 1rem;
-        }
+.homeix-body-bg {
+    z-index: 0 !important;
 }
 
-/* ==========================================================
-   HOMEIX SAFE ENHANCEMENTS (ADDED ONLY — nothing removed)
-   Fixes requested:
-   - Removes Bootstrap white panels/boxes in dark mode (accordion, list-group, bg-light, text-bg-light)
-   - Keeps same color scheme
-   - Makes carousel arrows/icons more visible globally
-   - Prevents accidental image stretching (safe default)
-   - Removes hover “jumping” on mobile/touch screens
-========================================================== */
+html:not(.dark-theme) .homeix-body-bg::before {
+    background: #ffffff !important;
+}
 
-/* -------------------------
-   1) Dark-mode: remove Bootstrap “white blocks”
--------------------------- */
+html:not(.dark-theme) .homeix-body-bg .homeix-tool {
+    opacity: 0.20 !important;
+    filter: blur(16px) brightness(0) invert(1) sepia(1) saturate(2200%) hue-rotate(10deg) !important;
+    mix-blend-mode: multiply;
+}
+
+.homeix-body-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+    .homeix-body-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 15%, #0f3a7a 0%, #071b3f 38%, #050f24 100%);
+        opacity: 1;
+    }
+
+    .homeix-body-bg .homeix-tool {
+        position: absolute;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        opacity: 0.28;
+        filter: blur(16px) brightness(0) invert(1);
+        transform: translate3d(0,0,0);
+        will-change: transform;
+    }
+
+    .homeix-body-bg .tool-wrench {
+        left: -140px;
+        top: 140px;
+        width: 380px;
+        height: 380px;
+        background-image: url("/images/bg-tools/wrench.png");
+        animation: homeixToolFloatA 10s ease-in-out infinite;
+    }
+
+    .homeix-body-bg .tool-hammer {
+        right: -170px;
+        top: -110px;
+        width: 500px;
+        height: 500px;
+        background-image: url("/images/bg-tools/hammer.png");
+        animation: homeixToolFloatB 12s ease-in-out infinite;
+    }
+
+    .homeix-body-bg .tool-drill {
+        left: 50%;
+        bottom: -210px;
+        width: 560px;
+        height: 560px;
+        background-image: url("/images/bg-tools/drill.png");
+        transform: translate3d(-50%, 0, 0);
+        animation: homeixToolFloatC 11s ease-in-out infinite;
+    }
+
+html:not(.dark-theme) .text-muted {
+    color: rgba(31, 41, 55, 0.72) !important;
+}
+
+html.dark-theme .text-dark,
+html.dark-theme a.text-dark,
+html.dark-theme .link-dark,
+html.dark-theme .text-black,
+html.dark-theme .link-body-emphasis,
+html.dark-theme .text-body {
+    color: var(--dark-text) !important;
+}
+
+html.dark-theme .text-secondary,
+html.dark-theme .text-body-secondary,
+html.dark-theme .text-body-tertiary {
+    color: rgba(230, 230, 230, 0.78) !important;
+}
+
+html.dark-theme .bg-dark {
+    color: var(--dark-text) !important;
+}
+
+html.dark-theme .card a.text-dark,
+html.dark-theme .card a.link-dark {
+    color: var(--dark-text) !important;
+}
+
+html.dark-theme .card small,
+html.dark-theme .card .small {
+    color: rgba(230, 230, 230, 0.78) !important;
+}
+
 html.dark-theme .bg-light,
 html.dark-theme .bg-white,
 html.dark-theme .bg-body,
@@ -521,14 +669,12 @@ html.dark-theme .bg-body-secondary {
     color: var(--dark-text) !important;
 }
 
-/* Bootstrap light badges look like white boxes in dark mode */
 html.dark-theme .text-bg-light {
     background-color: rgba(255,255,255,0.08) !important;
     color: var(--dark-text) !important;
     border-color: var(--dark-border) !important;
 }
 
-/* Borders */
 html.dark-theme .border,
 html.dark-theme .border-top,
 html.dark-theme .border-bottom,
@@ -537,19 +683,14 @@ html.dark-theme .border-end {
     border-color: var(--dark-border) !important;
 }
 
-/* Muted text */
 html.dark-theme .text-muted {
     color: rgba(230,230,230,0.72) !important;
 }
 
-/* HR visibility */
 html.dark-theme hr {
     border-color: rgba(255,255,255,0.12) !important;
 }
 
-/* -------------------------
-   2) Accordion in dark mode
--------------------------- */
 html.dark-theme .accordion-item {
     background-color: var(--dark-card) !important;
     border-color: var(--dark-border) !important;
@@ -575,9 +716,6 @@ html.dark-theme .accordion-body {
     box-shadow: 0 0 0 0.2rem rgba(255,215,0,0.25) !important;
 }
 
-/* -------------------------
-   3) List-group in dark mode
--------------------------- */
 html.dark-theme .list-group {
     background-color: transparent !important;
 }
@@ -588,14 +726,10 @@ html.dark-theme .list-group-item {
     border-color: var(--dark-border) !important;
 }
 
-/* In general, list group inside cards looks better transparent */
 .card .list-group-item {
     background-color: transparent;
 }
 
-/* -------------------------
-   4) Carousel arrows/icons visibility (global)
--------------------------- */
 .carousel-control-prev,
 .carousel-control-next {
     opacity: 1;
@@ -606,10 +740,6 @@ html.dark-theme .list-group-item {
     filter: drop-shadow(0 2px 10px rgba(0,0,0,0.70));
 }
 
-/* -------------------------
-   5) Prevent accidental image stretching (safe)
-   - Does NOT override your .post-card img height rule because it is more specific.
--------------------------- */
 img {
     max-width: 100%;
 }
@@ -620,50 +750,22 @@ img {
     height: auto;
 }
 
-/* -------------------------
-   6) Mobile/touch: remove hover jumping
--------------------------- */
-@media (hover: none) {
-    .card:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    .post-card:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    .btn:hover {
-        transform: none;
-    }
-}
-/* ==========================================================
-   MODAL (BOOTSTRAP) VISIBILITY FIX — Added only
-   Fixes unreadable text inside modals (especially text-muted)
-   Keeps your theme colors for light/dark modes
-========================================================== */
-
-/* Make modal follow your theme (instead of always white) */
 .modal-content {
     background: var(--light-card) !important;
     color: var(--light-text) !important;
     border: 1px solid var(--light-border) !important;
 }
 
-/* Borders inside modal */
 .modal-header,
 .modal-footer {
     border-color: var(--light-border) !important;
 }
 
-/* Muted text inside modal should still be readable */
 .modal-content .text-muted,
 .modal-content small.text-muted {
-    color: rgba(10, 15, 43, 0.65) !important; /* readable on light cards */
+    color: rgba(10, 15, 43, 0.65) !important;
 }
 
-/* Dark theme: modal becomes dark-card so muted text stays visible */
 html.dark-theme .modal-content {
     background: var(--dark-card) !important;
     color: var(--dark-text) !important;
@@ -677,27 +779,24 @@ html.dark-theme .modal-footer {
 
 html.dark-theme .modal-content .text-muted,
 html.dark-theme .modal-content small.text-muted {
-    color: rgba(230, 230, 230, 0.78) !important; /* readable on dark cards */
+    color: rgba(230, 230, 230, 0.78) !important;
 }
 
-/* Close (X) button visibility in dark mode */
 html.dark-theme .modal-header .btn-close {
     filter: invert(1) grayscale(100%) !important;
     opacity: 0.85;
 }
 
-/* =========================
-   HOME PAGE ENHANCEMENTS
-========================= */
 .home-hero {
     position: relative;
     overflow: hidden;
     min-height: calc(100vh - 70px);
     display: flex;
     align-items: center;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+    color: #fff !important;
 }
 
-    /* subtle grid overlay */
     .home-hero::before {
         content: "";
         position: absolute;
@@ -708,7 +807,26 @@ html.dark-theme .modal-header .btn-close {
         pointer-events: none;
     }
 
-/* floating blobs */
+    .home-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.55;
+        background-image: radial-gradient(circle at 20% 20%, rgba(255,215,0,0.22), transparent 55%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.22), transparent 60%), radial-gradient(circle at 55% 45%, rgba(255,255,255,0.08), transparent 55%);
+        background-size: 140% 140%, 160% 160%, 180% 180%;
+        animation: heroLightsMove 12s ease-in-out infinite;
+    }
+
+html.dark-theme .home-hero {
+    background: linear-gradient(135deg, #000814, #001233) !important;
+}
+
+.home-hero .text-muted,
+.home-hero .text-white-50 {
+    color: rgba(255,255,255,0.72) !important;
+}
+
 .home-blob {
     position: absolute;
     width: 420px;
@@ -734,17 +852,6 @@ html.dark-theme .modal-header .btn-close {
     animation-delay: 1.2s;
 }
 
-@keyframes homeFloat {
-    0%, 100% {
-        transform: translateY(0px) scale(1);
-    }
-
-    50% {
-        transform: translateY(18px) scale(1.03);
-    }
-}
-
-/* reveal animation (scroll) */
 .reveal {
     opacity: 0;
     transform: translateY(18px);
@@ -756,7 +863,6 @@ html.dark-theme .modal-header .btn-close {
         transform: none;
     }
 
-/* badge */
 .hero-badge {
     display: inline-flex;
     align-items: center;
@@ -780,7 +886,6 @@ html.dark-theme .modal-header .btn-close {
     min-width: 200px;
 }
 
-/* stats card */
 .stat-card {
     border: 1px solid rgba(255,255,255,0.16);
     background: rgba(255,255,255,0.08);
@@ -824,7 +929,6 @@ html.dark-theme .stat-card {
     color: #000;
 }
 
-/* You were using features-bg in the view; define it */
 .features-bg {
     background: var(--light-bg);
 }
@@ -833,106 +937,10 @@ html.dark-theme .features-bg {
     background: var(--dark-bg);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .home-blob {
-        animation: none !important;
-    }
-
-    .reveal {
-        transition: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-    }
-}
-
-/* ==========================================================
-   FIX: Light mode heading/body color on gray backgrounds
-   + Respect Bootstrap .text-white sections (Hero, etc.)
-   (ADDED ONLY)
-========================================================== */
-
-/* 1) Light mode: soften text colors (better on gray bg) */
-html:not(.dark-theme) {
-    --light-text: #1f2937; /* slate for body text */
-    --light-heading: #0f172a; /* deep slate for headings */
-}
-
-    html:not(.dark-theme),
-    html:not(.dark-theme) body {
-        color: var(--light-text) !important;
-    }
-
-        html:not(.dark-theme) .page-title,
-        html:not(.dark-theme) h1,
-        html:not(.dark-theme) h2,
-        html:not(.dark-theme) h3,
-        html:not(.dark-theme) h4,
-        html:not(.dark-theme) h5 {
-            color: var(--light-heading) !important;
-        }
-
-/* 2) If a section uses Bootstrap text-white, headings should not become #0A0F2B */
-.text-white .page-title:not(.hero-title):not(.features-title):not(.cta-title),
-.text-white h1:not(.hero-title):not(.features-title):not(.cta-title),
-.text-white h2:not(.hero-title):not(.features-title):not(.cta-title),
-.text-white h3:not(.hero-title):not(.features-title):not(.cta-title),
-.text-white h4:not(.hero-title):not(.features-title):not(.cta-title),
-.text-white h5:not(.hero-title):not(.features-title):not(.cta-title) {
-    color: inherit !important; /* keeps them white in .text-white areas */
-}
-
-/* ==========================================================
-   DARK MODE TEXT VISIBILITY FIX (ADDED ONLY)
-   Fixes Bootstrap utilities like .text-dark (#212529) used in
-   dashboards/cards (customer/worker) and in WorkerPosts links.
-========================================================== */
-
-/* Any element forced to Bootstrap "dark text" becomes readable in dark theme */
-html.dark-theme .text-dark,
-html.dark-theme a.text-dark,
-html.dark-theme .link-dark,
-html.dark-theme .text-black,
-html.dark-theme .link-body-emphasis,
-html.dark-theme .text-body {
-    color: var(--dark-text) !important;
-}
-
-/* Secondary text in dark mode should not be too dim */
-html.dark-theme .text-secondary,
-html.dark-theme .text-body-secondary,
-html.dark-theme .text-body-tertiary {
-    color: rgba(230, 230, 230, 0.78) !important;
-}
-
-/* If you used text-bg-dark or bg-dark blocks, keep text readable */
-html.dark-theme .bg-dark {
-    color: var(--dark-text) !important;
-}
-
-/* Common case: links wrapping entire cards with text-dark */
-html.dark-theme .card a.text-dark,
-html.dark-theme .card a.link-dark {
-    color: var(--dark-text) !important;
-}
-
-/* Optional: if any small/lead text looks too dark inside dark cards */
-html.dark-theme .card small,
-html.dark-theme .card .small {
-    color: rgba(230, 230, 230, 0.78) !important;
-}
-
-
-/* ==========================================================
-   HOME: Popular services flip cards + choose-path section
-   (ADDED ONLY)
-========================================================== */
-
-/* Choose-path section: ensures text stays readable over image */
 .choose-path-section {
     background: linear-gradient(135deg, rgba(10,15,43,0.85), rgba(26,35,126,0.55));
 }
 
-/* Flip cards */
 .service-flip {
     perspective: 1000px;
     cursor: pointer;
@@ -943,15 +951,14 @@ html.dark-theme .card .small {
         transform-style: preserve-3d;
         transition: transform 700ms ease;
         min-height: 190px;
+        height: 200px;
     }
 
-    /* Hover flip on desktop + click flip on mobile (via .is-flipped) */
     .service-flip:hover .flip-inner,
     .service-flip.is-flipped .flip-inner {
         transform: rotateY(180deg);
     }
 
-    /* Two faces */
     .service-flip .flip-face {
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
@@ -974,7 +981,6 @@ html.dark-theme .card .small {
             display: block;
         }
 
-    /* Overlay on the back image */
     .service-flip .flip-back-overlay {
         position: absolute;
         inset: 0;
@@ -986,27 +992,144 @@ html.dark-theme .card .small {
         color: #fff;
         text-align: center;
         padding: 1rem;
+        gap: .25rem;
     }
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    .service-flip .flip-inner {
-        transition: none !important;
-    }
+.popular-marquee {
+    overflow: hidden;
+    position: relative;
+    padding-bottom: .25rem;
 }
 
-/* ==========================================================
-   HOME HERO: moving lights animation (ADDED ONLY)
-========================================================== */
-.home-hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.55;
-    background-image: radial-gradient(circle at 20% 20%, rgba(255,215,0,0.22), transparent 55%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.22), transparent 60%), radial-gradient(circle at 55% 45%, rgba(255,255,255,0.08), transparent 55%);
-    background-size: 140% 140%, 160% 160%, 180% 180%;
-    animation: heroLightsMove 12s ease-in-out infinite;
+.popular-track {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    width: max-content;
+    animation: popularMarquee 28s linear infinite;
+    will-change: transform;
+}
+
+.popular-item {
+    flex: 0 0 auto;
+    width: 240px;
+}
+
+.popular-marquee:hover .popular-track {
+    animation-play-state: paused;
+}
+
+.chat-shell {
+    height: calc(100dvh - 70px);
+    display: flex;
+    overflow: hidden;
+}
+
+.chat-users {
+    width: 320px;
+    background: var(--light-card);
+    color: var(--light-text);
+}
+
+html.dark-theme .chat-users {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+.chat-main {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.chat-header,
+.chat-footer {
+    position: sticky;
+    z-index: 5;
+}
+
+.chat-header {
+    top: 0;
+}
+
+.chat-footer {
+    bottom: 0;
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+
+    .chat-header .btn,
+    .chat-footer .btn {
+        width: auto !important;
+    }
+
+.chat-bubble {
+    max-width: min(560px, 78%);
+    border-radius: 14px;
+    padding: .6rem .8rem;
+}
+
+.chat-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.chat-time {
+    font-size: .75rem;
+    opacity: .7;
+    margin-top: .25rem;
+}
+
+.chat-textarea {
+    resize: none;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+.online-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: gray;
+    flex: 0 0 auto;
+}
+
+    .online-dot.online {
+        background: #28a745;
+    }
+
+.chat-bubble-me {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+}
+
+.chat-bubble-them {
+    background: #fff !important;
+    color: var(--light-text) !important;
+    border: 1px solid var(--light-border) !important;
+}
+
+html.dark-theme .chat-bubble-me {
+    background: var(--blue) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+html.dark-theme .chat-bubble-them {
+    background: var(--dark-card) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+@keyframes homeFloat {
+    0%, 100% {
+        transform: translateY(0px) scale(1);
+    }
+
+    50% {
+        transform: translateY(18px) scale(1.03);
+    }
 }
 
 @keyframes heroLightsMove {
@@ -1023,529 +1146,6 @@ html.dark-theme .card .small {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .home-hero::after {
-        animation: none !important;
-    }
-}
-
-/* ==========================================================
-   POPULAR SERVICES: one-row layout polish (ADDED ONLY)
-========================================================== */
-.popular-services-row {
-    scroll-snap-type: x mandatory;
-}
-
-    .popular-services-row > .service-flip {
-        scroll-snap-align: start;
-    }
-
-/* ==========================================================
-   FLIP CARDS: ensure consistent height (ADDED ONLY)
-========================================================== */
-.service-flip .flip-inner {
-    height: 200px;
-}
-
-.service-flip .flip-back-overlay {
-    gap: .25rem;
-}
-
-/* ==========================================================
-   POPULAR SERVICES: auto-moving marquee row (ADDED ONLY)
-   - Removes scrollbar/sliders
-   - Automatically moves to reveal all services
-========================================================== */
-
-.popular-marquee {
-    overflow: hidden; /* removes scrollbar */
-    position: relative;
-    padding-bottom: .25rem;
-}
-
-/* The moving track (two identical sets inside) */
-.popular-track {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 1rem;
-    width: max-content;
-    animation: popularMarquee 28s linear infinite;
-    will-change: transform;
-}
-
-/* Fixed card width so the loop is smooth */
-.popular-item {
-    flex: 0 0 auto;
-    width: 240px;
-}
-
-    /* Keep your flip height consistent */
-    .popular-item .flip-inner {
-        height: 200px;
-    }
-
-/* Pause animation on hover (desktop) */
-.popular-marquee:hover .popular-track {
-    animation-play-state: paused;
-}
-
-/* Smooth loop: we translate exactly half of the duplicated track */
-@keyframes popularMarquee {
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(-50%);
-    }
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    .popular-track {
-        animation: none !important;
-    }
-}
-
-/* ==========================================================
-   FLOATING NAVBAR + SUBTLE TOOLS PATTERN WAVE (ADDED ONLY)
-========================================================== */
-
-/* Smooth language switch animation */
-body {
-    transition: opacity 220ms ease;
-}
-
-    body.lang-switching {
-        opacity: 0;
-    }
-
-/* Floating navbar spacing */
-#mainNavbar.homeix-float-nav {
-    background: transparent !important;
-    padding: 14px 0;
-}
-
-/* The pill shell */
-.homeix-nav-shell {
-    position: relative;
-    width: min(1200px, calc(100% - 1.5rem));
-    margin: 0 auto;
-    border-radius: 999px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
-    backdrop-filter: blur(10px);
-}
-
-    /* Tools pattern overlay */
-    .homeix-nav-shell::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: url('/images/home/tools-pattern.png');
-        background-repeat: repeat;
-        background-size: 520px auto;
-        opacity: 0.07;
-        pointer-events: none;
-        transform: translateZ(0);
-        animation: navToolsWave 18s linear infinite;
-    }
-
-    /* Subtle highlight */
-    .homeix-nav-shell::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
-        pointer-events: none;
-    }
-
-@keyframes navToolsWave {
-    0% {
-        background-position: 0px 0px;
-    }
-
-    50% {
-        background-position: -240px 14px;
-    }
-
-    100% {
-        background-position: -520px 0px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .homeix-nav-shell::before {
-        animation: none !important;
-    }
-
-    body {
-        transition: none !important;
-    }
-}
-
-.homeix-nav-inner {
-    position: relative;
-    z-index: 1;
-    padding: .55rem .85rem;
-}
-
-/* Round logo */
-.homeix-logo-round {
-    width: 42px;
-    height: 42px;
-    object-fit: cover;
-    border-radius: 999px;
-    border: 2px solid rgba(255,255,255,0.25);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-}
-
-@media (max-width: 576px) {
-    .homeix-nav-shell {
-        width: calc(100% - 1rem);
-        border-radius: 18px;
-    }
-}
-/* ==========================================================
-   FLOATING NAVBAR + SUBTLE TOOLS PATTERN WAVE (ADDED ONLY)
-========================================================== */
-
-/* Smooth language switch animation */
-body {
-    transition: opacity 220ms ease;
-}
-
-    body.lang-switching {
-        opacity: 0;
-    }
-
-/* Floating navbar spacing */
-#mainNavbar.homeix-float-nav {
-    background: transparent !important;
-    padding: 14px 0;
-}
-
-/* Make navbar longer (wider pill) */
-.homeix-nav-shell {
-    position: relative;
-    width: min(1500px, calc(100% - 0.75rem)); /* longer than before */
-    margin: 0 auto;
-    border-radius: 999px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
-    backdrop-filter: blur(10px);
-}
-
-    /* Tools pattern overlay (slower wave) */
-    .homeix-nav-shell::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: url('/images/home/tools-pattern.png');
-        background-repeat: repeat;
-        background-size: 520px auto;
-        opacity: 0.06; /* subtle */
-        pointer-events: none;
-        transform: translateZ(0);
-        animation: navToolsWave 38s linear infinite; /* slower than before */
-    }
-
-    /* Subtle highlight */
-    .homeix-nav-shell::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
-        pointer-events: none;
-    }
-
-@keyframes navToolsWave {
-    0% {
-        background-position: 0px 0px;
-    }
-
-    50% {
-        background-position: -240px 14px;
-    }
-
-    100% {
-        background-position: -520px 0px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .homeix-nav-shell::before {
-        animation: none !important;
-    }
-
-    body {
-        transition: none !important;
-    }
-}
-
-.homeix-nav-inner {
-    position: relative;
-    z-index: 1;
-    padding: .55rem .85rem;
-}
-
-/* Round logo */
-.homeix-logo-round {
-    width: 42px;
-    height: 42px;
-    object-fit: cover;
-    border-radius: 999px;
-    border: 2px solid rgba(255,255,255,0.25);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-}
-
-@media (max-width: 576px) {
-    .homeix-nav-shell {
-        width: calc(100% - 1rem);
-        border-radius: 18px;
-    }
-}
-
-/* ==========================================================
-   NAVBAR FLOATING PILL (THIN) + SUBTLE TOOLS WAVE (SLOW)
-   ADDED ONLY (place at end of site.css)
-========================================================== */
-
-/* Smooth fade for language switch */
-body {
-    transition: opacity 220ms ease;
-}
-
-    body.lang-switching {
-        opacity: 0;
-    }
-
-/* Float spacing */
-#mainNavbar.homeix-float-nav {
-    background: transparent !important;
-    padding: 10px 0; /* thinner */
-}
-
-/* The pill shell is the container-fluid in layout */
-.homeix-nav-shell {
-    width: min(1550px, calc(100% - 1rem)); /* longer */
-    margin: 0 auto;
-    border-radius: 999px;
-    overflow: hidden;
-    padding-top: .25rem; /* thinner */
-    padding-bottom: .25rem; /* thinner */
-
-    border: 1px solid rgba(255,255,255,0.14);
-    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
-    backdrop-filter: blur(10px);
-    position: relative;
-}
-
-    /* Subtle tools pattern overlay */
-    .homeix-nav-shell::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: url('/images/home/tools-pattern.png');
-        background-repeat: repeat;
-        background-size: 560px auto;
-        opacity: 0.05; /* very subtle */
-        pointer-events: none;
-        animation: navToolsWave 70s linear infinite; /* slower */
-    }
-
-    /* Soft highlight */
-    .homeix-nav-shell::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
-        pointer-events: none;
-    }
-
-    /* Keep navbar content above overlays */
-    .homeix-nav-shell > * {
-        position: relative;
-        z-index: 1;
-    }
-
-/* Thinner link paddings so it looks modern */
-#mainNavbar .nav-link {
-    padding-top: .35rem;
-    padding-bottom: .35rem;
-}
-
-/* Round logo */
-.homeix-logo-round {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 999px;
-    border: 2px solid rgba(255,255,255,0.22);
-}
-
-/* Wave animation */
-@keyframes navToolsWave {
-    0% {
-        background-position: 0px 0px;
-    }
-
-    50% {
-        background-position: -300px 10px;
-    }
-
-    100% {
-        background-position: -600px 0px;
-    }
-}
-
-/* Mobile: keep pill comfortable */
-@media (max-width: 576px) {
-    .homeix-nav-shell {
-        width: calc(100% - 1rem);
-        border-radius: 18px;
-    }
-}
-
-/* ==========================================================
-   LANGUAGE ICON BUTTON (A / ?) — ADDED ONLY
-========================================================== */
-.lang-icon-btn {
-    padding: .25rem .45rem;
-    line-height: 1;
-}
-
-.lang-icon {
-    position: relative;
-    width: 34px;
-    height: 28px;
-    display: inline-block;
-}
-
-.lang-tile {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-    font-size: 14px;
-    /* subtle "modern" tiles on your nav */
-    background: rgba(0,0,0,0.22);
-    border: 1px solid rgba(255,255,255,0.22);
-    color: #fff;
-    backdrop-filter: blur(6px);
-}
-
-.tile-a {
-    top: 0;
-    left: 0;
-}
-
-.tile-ar {
-    bottom: 0;
-    right: 0;
-}
-
-/* Dark theme: slightly clearer tiles */
-html.dark-theme .lang-tile {
-    background: rgba(0,0,0,0.28);
-    border-color: rgba(255,255,255,0.18);
-}
-
-/* ==========================================================
-   NAVBAR FINAL FIXES (ADDED ONLY)
-   - dropdown visible (no clipping)
-   - pinned fixed-top
-   - slower subtle tools animation
-========================================================== */
-
-/* Smooth fade for language switch */
-body {
-    transition: opacity 220ms ease;
-}
-
-    body.lang-switching {
-        opacity: 0;
-    }
-
-/* Keep navbar pinned and thin */
-#mainNavbar.homeix-float-nav {
-    padding: 0 !important;
-}
-
-/* Pill container: MUST NOT clip dropdown menus */
-.homeix-nav-shell {
-    position: relative;
-    width: min(1550px, calc(100% - 1rem));
-    margin: 0 auto;
-    border-radius: 999px;
-    overflow: visible !important; /* IMPORTANT: allow dropdowns */
-
-    padding-top: .25rem;
-    padding-bottom: .25rem;
-    border: 1px solid rgba(255,255,255,0.14);
-    box-shadow: 0 18px 55px rgba(0,0,0,0.35);
-    backdrop-filter: blur(10px);
-}
-
-    /* Pattern overlay (subtle + slow wave) */
-    .homeix-nav-shell::before,
-    .homeix-nav-shell::after {
-        border-radius: inherit; /* keep rounded look */
-    }
-
-    .homeix-nav-shell::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: url('/images/home/tools-pattern.png');
-        background-repeat: repeat;
-        background-size: 560px auto;
-        opacity: 0.05;
-        pointer-events: none;
-        animation: navToolsWave 80s linear infinite; /* slower */
-        z-index: 0;
-    }
-
-    .homeix-nav-shell::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient( 90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02), rgba(0,0,0,0.10) );
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    /* Ensure navbar content sits above overlays */
-    .homeix-nav-shell > * {
-        position: relative;
-        z-index: 1;
-    }
-
-/* Dropdown must appear above everything */
-.navbar .dropdown-menu {
-    z-index: 3000 !important;
-}
-
-/* Make links slightly tighter for thinner navbar */
-#mainNavbar .nav-link {
-    padding-top: .35rem;
-    padding-bottom: .35rem;
-}
-
-/* Round logo */
-.homeix-logo-round {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 999px;
-    border: 2px solid rgba(255,255,255,0.22);
-}
-
 @keyframes navToolsWave {
     0% {
         background-position: 0px 0px;
@@ -1560,1067 +1160,16 @@ body {
     }
 }
 
-/* ==========================================================
-   LANGUAGE ICON BUTTON (A / ?) — ADDED ONLY
-========================================================== */
-.lang-icon-btn {
-    padding: .25rem .45rem;
-    line-height: 1;
-}
-
-.lang-icon {
-    position: relative;
-    width: 34px;
-    height: 28px;
-    display: inline-block;
-}
-
-.lang-tile {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-    font-size: 14px;
-    background: rgba(0,0,0,0.22);
-    border: 1px solid rgba(255,255,255,0.22);
-    color: #fff;
-    backdrop-filter: blur(6px);
-}
-
-.tile-a {
-    top: 0;
-    left: 0;
-}
-
-.tile-ar {
-    bottom: 0;
-    right: 0;
-}
-
-html.dark-theme .lang-tile {
-    background: rgba(0,0,0,0.28);
-    border-color: rgba(255,255,255,0.18);
-}
-
-/* ==========================================================
-   HOME PAGE: LIGHT MODE CLARITY FIX (ADDED ONLY)
-   - Ensures hero has a real dark background in light mode
-   - Improves readability of muted text on light gray backgrounds
-========================================================== */
-
-/* 1) HERO MUST HAVE A DARK BACKGROUND (otherwise white text is unreadable) */
-.home-hero {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
-    color: #fff !important;
-}
-
-/* Optional: slightly different hero in dark mode (still consistent) */
-html.dark-theme .home-hero {
-    background: linear-gradient(135deg, #000814, #001233) !important;
-}
-
-/* Ensure any muted text inside hero stays readable */
-.home-hero .text-muted,
-.home-hero .text-white-50 {
-    color: rgba(255,255,255,0.72) !important;
-}
-
-/* 2) LIGHT MODE: make muted text darker (Bootstrap muted is too faint on gray) */
-html:not(.dark-theme) .text-muted {
-    color: rgba(31, 41, 55, 0.72) !important; /* slate, readable */
-}
-
-/* 3) LIGHT MODE: make tertiary sections slightly clearer (optional but helps) */
-html:not(.dark-theme) .bg-body-tertiary {
-    background-color: #eef2f7 !important;
-}
-
-/* 4) Light mode: cards on gray backgrounds need a subtle border */
-html:not(.dark-theme) .card.border-0 {
-    border: 1px solid rgba(15, 23, 42, 0.08) !important;
-}
-
-/* 5) Popular marquee: keep contrast clean in light mode */
-html:not(.dark-theme) .popular-marquee {
-    background: transparent;
-}
-
-/* ==========================================================
-   CHAT PAGE (Bootstrap-first) — ADDED ONLY
-========================================================== */
-
-.chat-shell {
-    height: calc(100dvh - 70px); /* body has padding-top:70px in your theme */
-    display: flex;
-    overflow: hidden;
-}
-
-.chat-users {
-    width: 320px;
-    background: var(--light-card);
-    color: var(--light-text);
-}
-
-html.dark-theme .chat-users {
-    background: var(--dark-card);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
-}
-
-/* Desktop: make offcanvas behave like a fixed sidebar */
-@media (min-width: 768px) {
-    .chat-users {
-        position: static !important;
-        transform: none !important;
-        visibility: visible !important;
-        border-right: 1px solid var(--light-border);
+@keyframes popularMarquee {
+    from {
+        transform: translateX(0);
     }
 
-    html.dark-theme .chat-users {
-        border-right-color: var(--dark-border);
-    }
-
-    .chat-users .offcanvas-header {
-        display: none;
-    }
-
-    .chat-users .offcanvas-body {
-        height: 100%;
-        overflow: auto;
+    to {
+        transform: translateX(-50%);
     }
 }
 
-.chat-main {
-    min-width: 0;
-    flex: 1 1 auto;
-    overflow: hidden;
-}
-
-.chat-header,
-.chat-footer {
-    position: sticky;
-    z-index: 5;
-}
-
-.chat-header {
-    top: 0;
-}
-
-.chat-footer {
-    bottom: 0;
-}
-
-.chat-bubble {
-    max-width: min(560px, 78%);
-    border-radius: 14px;
-    padding: .6rem .8rem;
-}
-
-.chat-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.chat-time {
-    font-size: .75rem;
-    opacity: .7;
-    margin-top: .25rem;
-}
-
-.chat-textarea {
-    resize: none;
-    max-height: 140px;
-    overflow-y: auto;
-}
-
-.online-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: gray;
-    flex: 0 0 auto;
-}
-
-    .online-dot.online {
-        background: #28a745;
-    }
-/* ==========================================================
-   CHAT PAGE (Bootstrap-first) — ADDED ONLY
-========================================================== */
-
-.chat-shell {
-    height: calc(100dvh - 70px); /* because your body has padding-top:70px */
-    display: flex;
-    overflow: hidden;
-}
-
-/* Users sidebar/offcanvas */
-.chat-users {
-    width: 320px;
-    background: var(--light-card);
-    color: var(--light-text);
-}
-
-html.dark-theme .chat-users {
-    background: var(--dark-card);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
-}
-
-/* Desktop: make offcanvas behave like a sidebar */
-@media (min-width: 768px) {
-    .chat-users {
-        position: static !important;
-        transform: none !important;
-        visibility: visible !important;
-        border-right: 1px solid var(--light-border);
-    }
-
-    html.dark-theme .chat-users {
-        border-right-color: var(--dark-border);
-    }
-
-    .chat-users .offcanvas-header {
-        display: none;
-    }
-
-    .chat-users .offcanvas-body {
-        height: 100%;
-        overflow: auto;
-    }
-}
-
-.chat-main {
-    min-width: 0;
-    flex: 1 1 auto;
-    overflow: hidden;
-}
-
-.chat-header,
-.chat-footer {
-    position: sticky;
-    z-index: 5;
-}
-
-.chat-header {
-    top: 0;
-}
-
-.chat-footer {
-    bottom: 0;
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
-}
-
-    /* Fix global mobile .btn{width:100%} for chat UI */
-    .chat-header .btn,
-    .chat-footer .btn {
-        width: auto !important;
-    }
-
-.chat-bubble {
-    max-width: min(560px, 78%);
-    border-radius: 14px;
-    padding: .6rem .8rem;
-}
-
-.chat-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.chat-time {
-    font-size: .75rem;
-    opacity: .7;
-    margin-top: .25rem;
-}
-
-.chat-textarea {
-    resize: none;
-    max-height: 140px;
-    overflow-y: auto;
-}
-
-.online-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: gray;
-    flex: 0 0 auto;
-}
-
-    .online-dot.online {
-        background: #28a745;
-    }
-/* ==========================================================
-   CHAT: prevent users list (offcanvas) from covering navbar
-   (ADDED ONLY)
-========================================================== */
-
-:root {
-    --homeix-nav-height: 70px; /* must match your body padding-top */
-}
-
-/* Offcanvas panel should start under the fixed navbar */
-.chat-users.offcanvas,
-.chat-users.offcanvas-start,
-.chat-users.offcanvas-end,
-.chat-users.offcanvas-top,
-.chat-users.offcanvas-bottom {
-    top: var(--homeix-nav-height) !important;
-    height: calc(100dvh - var(--homeix-nav-height)) !important;
-}
-
-/* Backdrop also should not cover the navbar */
-.offcanvas-backdrop.show {
-    top: var(--homeix-nav-height) !important;
-    height: calc(100dvh - var(--homeix-nav-height)) !important;
-}
-
-/* ==========================================================
-   CHAT + NAVBAR: Desktop fix (users list should not cover navbar)
-   ADDED ONLY — put at very end of site.css
-========================================================== */
-
-:root {
-    --homeix-nav-height: 70px; /* keep same as body padding-top */
-}
-
-/* 1) Always keep navbar above any chat panels/offcanvas */
-#mainNavbar {
-    position: fixed !important;
-    z-index: 5000 !important; /* higher than Bootstrap offcanvas (1045) */
-}
-
-/* 2) Desktop: force chatUsers to be a NORMAL sidebar (not fixed offcanvas) */
-@media (min-width: 768px) {
-    #chatUsers.chat-users.offcanvas {
-        position: static !important;
-        top: auto !important;
-        left: auto !important;
-        right: auto !important;
-        bottom: auto !important;
-        height: 100% !important;
-        transform: none !important;
-        visibility: visible !important;
-        z-index: auto !important; /* important so it can't sit above navbar */
-    }
-
-    /* backdrop should never appear on desktop */
-    .offcanvas-backdrop {
-        display: none !important;
-    }
-}
-
-/* ==========================================================
-   CHAT: bubble colors (fix light mode visibility)
-   ADDED ONLY — put at end of site.css
-========================================================== */
-
-.chat-bubble-me {
-    background: var(--primary) !important;
-    color: #fff !important;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-.chat-bubble-them {
-    background: #fff !important;
-    color: var(--light-text) !important;
-    border: 1px solid var(--light-border) !important;
-}
-
-/* Dark theme */
-html.dark-theme .chat-bubble-me {
-    background: var(--blue) !important;
-    color: #fff !important;
-    border-color: rgba(255,255,255,0.08) !important;
-}
-
-html.dark-theme .chat-bubble-them {
-    background: var(--dark-card) !important;
-    color: var(--dark-text) !important;
-    border-color: var(--dark-border) !important;
-}
-
-/* ==========================================================
-   CHAT PAGE (Bootstrap-first) — ADDED ONLY
-   Put at the very end of site.css
-========================================================== */
-
-:root {
-    --homeix-nav-height: 70px; /* must match your body padding-top */
-}
-
-/* Keep navbar always on top */
-#mainNavbar {
-    position: fixed !important;
-    z-index: 5000 !important;
-}
-
-/* Main chat layout height (so it doesn't go under navbar) */
-.chat-shell {
-    height: calc(100dvh - var(--homeix-nav-height));
-    display: flex;
-    overflow: hidden;
-}
-
-/* Users sidebar/offcanvas */
-.chat-users {
-    width: 320px;
-    background: var(--light-card);
-    color: var(--light-text);
-}
-
-html.dark-theme .chat-users {
-    background: var(--dark-card);
-    color: var(--dark-text);
-    border-color: var(--dark-border);
-}
-
-/* Desktop: make offcanvas behave like a normal sidebar */
-@media (min-width: 768px) {
-    #chatUsers.chat-users.offcanvas {
-        position: static !important;
-        transform: none !important;
-        visibility: visible !important;
-        height: 100% !important;
-        z-index: auto !important;
-        border-right: 1px solid var(--light-border);
-    }
-
-    html.dark-theme #chatUsers.chat-users.offcanvas {
-        border-right-color: var(--dark-border);
-    }
-
-    #chatUsers .offcanvas-header {
-        display: none;
-    }
-
-    #chatUsers .offcanvas-body {
-        height: 100%;
-        overflow: auto;
-    }
-
-    .offcanvas-backdrop {
-        display: none !important;
-    }
-}
-
-.chat-main {
-    min-width: 0;
-    flex: 1 1 auto;
-    overflow: hidden;
-}
-
-/* Sticky header/footer inside the chat panel */
-.chat-header,
-.chat-footer {
-    position: sticky;
-    z-index: 5;
-}
-
-.chat-header {
-    top: 0;
-}
-
-.chat-footer {
-    bottom: 0;
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
-}
-
-    /* Fix your global mobile rule: @media (max-width:768px){ .btn{ width:100% } }
-   It breaks chat header/footer buttons */
-    .chat-header .btn,
-    .chat-footer .btn {
-        width: auto !important;
-    }
-
-/* Bubbles */
-.chat-bubble {
-    max-width: min(560px, 78%);
-    border-radius: 14px;
-    padding: .6rem .8rem;
-}
-
-.chat-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.chat-time {
-    font-size: .75rem;
-    opacity: .7;
-    margin-top: .25rem;
-}
-
-/* Light mode bubble colors (fix visibility) */
-.chat-bubble-me {
-    background: var(--primary) !important;
-    color: #fff !important;
-    border: 1px solid rgba(0,0,0,0.06) !important;
-}
-
-.chat-bubble-them {
-    background: #fff !important;
-    color: var(--light-text) !important;
-    border: 1px solid var(--light-border) !important;
-}
-
-/* Dark mode bubble colors */
-html.dark-theme .chat-bubble-me {
-    background: var(--blue) !important;
-    color: #fff !important;
-    border-color: rgba(255,255,255,0.08) !important;
-}
-
-html.dark-theme .chat-bubble-them {
-    background: var(--dark-card) !important;
-    color: var(--dark-text) !important;
-    border-color: var(--dark-border) !important;
-}
-
-/* Textarea */
-.chat-textarea {
-    resize: none;
-    max-height: 140px;
-    overflow-y: auto;
-}
-
-/* Online dot */
-.online-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: gray;
-    flex: 0 0 auto;
-}
-
-    .online-dot.online {
-        background: #28a745;
-    }
-/* ==========================================================
-   NAVBAR (MOBILE): Collapse + dropdown polish
-   ADDED ONLY — put at the very end of site.css
-========================================================== */
-
-@media (max-width: 991.98px) {
-
-    /* Give the opened collapse a clean panel look */
-    #mainNavbar .navbar-collapse.homeix-collapse-panel {
-        margin-top: .55rem;
-        padding: .75rem;
-        border-radius: 18px;
-        background: rgba(10, 15, 43, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        box-shadow: 0 18px 55px rgba(0,0,0,0.35);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    html.dark-theme #mainNavbar .navbar-collapse.homeix-collapse-panel {
-        background: rgba(0, 8, 20, 0.92);
-        border-color: rgba(255,255,255,0.10);
-    }
-
-    /* Space between links */
-    #mainNavbar .navbar-nav {
-        gap: .25rem;
-        margin-top: .25rem;
-    }
-
-        /* Bigger tap targets */
-        #mainNavbar .navbar-nav .nav-link {
-            padding: .55rem .75rem;
-            border-radius: 12px;
-        }
-
-            #mainNavbar .navbar-nav .nav-link:hover {
-                background: rgba(255, 255, 255, 0.08);
-            }
-
-    /* KEY FIX: dropdown menus inside collapsed navbar should NOT float */
-    #mainNavbar .navbar-collapse .dropdown-menu {
-        position: static !important;
-        float: none !important;
-        transform: none !important;
-        width: 100%;
-        margin-top: .35rem;
-        margin-bottom: .25rem;
-        border-radius: 14px;
-        box-shadow: none;
-    }
-
-        /* Keep your dark dropdown style, but make it readable inside collapse */
-        #mainNavbar .navbar-collapse .dropdown-menu.dropdown-menu-dark {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-
-    html.dark-theme #mainNavbar .navbar-collapse .dropdown-menu.dropdown-menu-dark {
-        background: rgba(0,0,0,0.35);
-        border-color: rgba(255,255,255,0.10);
-    }
-
-    #mainNavbar .navbar-collapse .dropdown-item {
-        padding: .6rem .9rem;
-        border-radius: 10px;
-    }
-
-    /* Right-side buttons: stack nicely on mobile */
-    #mainNavbar .navbar-collapse .d-flex.align-items-center.gap-2.flex-wrap {
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: .5rem !important;
-        margin-top: .5rem;
-    }
-
-    #mainNavbar .navbar-collapse .btn,
-    #mainNavbar .navbar-collapse .dropdown,
-    #mainNavbar .navbar-collapse .dropdown > .btn {
-        width: 100% !important;
-    }
-}
-
-/* ==========================================================
-   NAVBAR: Fix mobile background image glitches + button sizing
-   ADDED ONLY — put at VERY END of site.css
-========================================================== */
-
-/* 1) Desktop: make all small navbar buttons the same height */
-#mainNavbar .btn.btn-sm {
-    min-height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-/* Specifically normalize the language icon button (it was slightly taller) */
-#mainNavbar .lang-icon-btn {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-    padding-left: 0.55rem;
-    padding-right: 0.55rem;
-}
-
-/* Reduce/normalize the icon box so it doesn't force extra height */
-#mainNavbar .lang-icon {
-    width: 32px;
-    height: 22px;
-    display: inline-block;
-}
-
-#mainNavbar .lang-tile {
-    width: 20px;
-    height: 20px;
-    border-radius: 9px;
-    font-size: 13px;
-    line-height: 1;
-}
-
-/* 2) Mobile: background image/pattern fix
-   - On mobile we can safely clip the pill again (dropdown menus are static there)
-   - Disable backdrop-filter on mobile to avoid white/blank rendering bugs
-*/
-@media (max-width: 991.98px) {
-
-    /* Clip the pill background correctly on mobile (prevents weird white areas) */
-    .homeix-nav-shell {
-        overflow: hidden !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-
-    /* Collapse panel: keep it transparent-ish so the pill background image stays consistent */
-    #mainNavbar .navbar-collapse.homeix-collapse-panel {
-        background: rgba(0, 0, 0, 0.10);
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-}
-/* ==========================================================
-   NAVBAR: Mobile expanded menu not cropped + lang button size
-   ADDED ONLY — put at VERY END of site.css
-========================================================== */
-
-/* Normalize navbar button heights so lang button matches others */
-#mainNavbar .btn.btn-sm {
-    min-height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-#mainNavbar .lang-icon-btn {
-    padding: .25rem .55rem; /* match other btn-sm feel */
-}
-
-#mainNavbar .lang-icon {
-    width: 30px;
-    height: 22px;
-    display: inline-block;
-}
-
-#mainNavbar .lang-tile {
-    width: 20px;
-    height: 20px;
-    border-radius: 9px;
-    font-size: 13px;
-}
-
-/* MOBILE FIX: reduce the huge "pill" radius that crops expanded content */
-@media (max-width: 991.98px) {
-
-    /* tighter corners so the expanded content reaches corners (no giant clipping) */
-    #mainNavbar .homeix-nav-shell {
-        border-radius: 22px !important; /* was 999px / very rounded */
-        overflow: hidden !important; /* safe on mobile (dropdown is static) */
-    }
-
-        /* keep overlays matching the new radius */
-        #mainNavbar .homeix-nav-shell::before,
-        #mainNavbar .homeix-nav-shell::after {
-            border-radius: 22px !important;
-        }
-
-    /* make the opened collapse panel match shell radius */
-    #mainNavbar .navbar-collapse.homeix-collapse-panel {
-        border-radius: 16px;
-    }
-
-        /* prevent mobile menu from being cut by viewport; scroll inside if needed */
-        #mainNavbar .navbar-collapse.homeix-collapse-panel.show {
-            max-height: calc(100dvh - 120px);
-            overflow-y: auto;
-            overscroll-behavior: contain;
-        }
-}
-
-/* ==========================================================
-   WorkerPost Details: action buttons sizing on mobile
-   ADDED ONLY — put at VERY END of site.css
-========================================================== */
-@media (max-width: 768px) {
-    .workerpost-details-footer .btn {
-        width: auto !important; /* override global .btn {width:100%} */
-    }
-
-    .workerpost-details-footer {
-        gap: .5rem;
-        flex-wrap: nowrap; /* keep them on one line like your screenshot */
-        align-items: center;
-    }
-}
-
-/* ==========================================================
-   CustomerPost Details: action buttons sizing on mobile
-   ADDED ONLY — put at VERY END of site.css
-========================================================== */
-@media (max-width: 768px) {
-    .customerpost-details-footer .btn {
-        width: auto !important; /* override global .btn { width:100% } */
-    }
-
-    .customerpost-details-footer {
-        gap: .5rem;
-        flex-wrap: nowrap;
-        align-items: center;
-    }
-}
-
-/* ==========================================================
-   BODY BACKGROUND: BLURRED MOVING TOOLS (ADDED ONLY)
-   - Uses a fixed background layer behind all content
-   - Keeps all existing functionality unchanged
-========================================================== */
-
-/* Ensure we can stack the background behind everything safely */
-body {
-    position: relative;
-    isolation: isolate; /* creates a stacking context so z-index works reliably */
-}
-
-/* The added background layer div */
-.homeix-body-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1; /* behind all page content */
-    pointer-events: none;
-    overflow: hidden;
-}
-
-    /* Layer 1: repeating tools pattern (blurred + drifting) */
-    .homeix-body-bg::before {
-        content: "";
-        position: absolute;
-        inset: -40px; /* slightly bigger so movement doesn't show edges */
-        background-image: url('/images/home/tools-pattern.png');
-        background-repeat: repeat;
-        background-size: 520px auto;
-        opacity: 0.08;
-        filter: blur(10px);
-        transform: translateZ(0);
-        animation: homeixToolsDrift 38s linear infinite;
-    }
-
-    /* Layer 2: big corner icons (blurred + floating)
-   (Matches the “big tools in corners” look you showed) */
-    .homeix-body-bg::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        /* 3 big icons in corners (edit paths/sizes as you like) */
-        background-image: url('/images/home/tools/wrench.png'), url('/images/home/tools/hammer.png'), url('/images/home/tools/drill.png');
-        background-repeat: no-repeat, no-repeat, no-repeat;
-        /* positions: left, right-top, right-bottom-ish */
-        background-position: 3% 55%, 92% 18%, 92% 72%;
-        background-size: 220px auto, 260px auto, 240px auto;
-        opacity: 0.10;
-        filter: blur(12px);
-        transform: translateZ(0);
-        animation: homeixToolsFloat 14s ease-in-out infinite;
-    }
-
-/* Dark theme: slightly different intensity (optional) */
-html.dark-theme .homeix-body-bg::before {
-    opacity: 0.06;
-    filter: blur(11px);
-}
-
-html.dark-theme .homeix-body-bg::after {
-    opacity: 0.08;
-    filter: blur(13px);
-}
-
-/* Motion keyframes */
-@keyframes homeixToolsDrift {
-    0% {
-        background-position: 0px 0px;
-    }
-
-    50% {
-        background-position: -260px 30px;
-    }
-
-    100% {
-        background-position: -520px 0px;
-    }
-}
-
-@keyframes homeixToolsFloat {
-    0%, 100% {
-        transform: translate3d(0, 0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate3d(10px, -8px, 0) scale(1.02);
-    }
-}
-
-/* Respect reduced-motion accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .homeix-body-bg::before,
-    .homeix-body-bg::after {
-        animation: none !important;
-    }
-}
-
-/* ==========================================================
-   BODY BG: BIG BLURRED TOOLS (like screenshot) + in-place motion
-   ADDED ONLY — paste at VERY END of site.css
-========================================================== */
-
-body {
-    position: relative;
-    isolation: isolate; /* ensures z-index stacking is stable */
-}
-
-/* Background container behind all content */
-.homeix-tools-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-    /* Blue background like your screenshot */
-    .homeix-tools-bg::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 25% 15%, #103a7a 0%, #071b3f 35%, #050f24 100%);
-    }
-
-    /* Tool base style */
-    .homeix-tools-bg .tool {
-        position: absolute;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        /* “white blurry silhouette” look */
-        opacity: 0.22;
-        filter: blur(14px) brightness(1.6) contrast(1.05);
-        transform: translate3d(0,0,0);
-        will-change: transform;
-        /* helps the white glow blend */
-        mix-blend-mode: screen;
-    }
-
-    /* TOP-LEFT (wrench) */
-    .homeix-tools-bg .tool-wrench {
-        left: -120px;
-        top: 110px;
-        width: 360px;
-        height: 360px;
-        background-image: url("/images/bg-tools/wrench.png");
-        animation: toolFloatA 10s ease-in-out infinite;
-    }
-
-    /* TOP-RIGHT (hammer) */
-    .homeix-tools-bg .tool-hammer {
-        right: -150px;
-        top: -80px;
-        width: 460px;
-        height: 460px;
-        background-image: url("/images/bg-tools/hammer.png");
-        animation: toolFloatB 12s ease-in-out infinite;
-    }
-
-    /* BOTTOM-CENTER (drill) */
-    .homeix-tools-bg .tool-drill {
-        left: 50%;
-        bottom: -160px;
-        transform: translate3d(-50%, 0, 0);
-        width: 520px;
-        height: 520px;
-        background-image: url("/images/bg-tools/drill.png");
-        animation: toolFloatC 11s ease-in-out infinite;
-    }
-
-/* In-place motion: small up/down + side/side */
-@keyframes toolFloatA {
-    0%, 100% {
-        transform: translate3d(0px, 0px, 0);
-    }
-
-    50% {
-        transform: translate3d(16px, -14px, 0);
-    }
-}
-
-@keyframes toolFloatB {
-    0%, 100% {
-        transform: translate3d(0px, 0px, 0);
-    }
-
-    50% {
-        transform: translate3d(-18px, 14px, 0);
-    }
-}
-
-/* Note: drill already uses translateX(-50%) for centering */
-@keyframes toolFloatC {
-    0%, 100% {
-        transform: translate3d(-50%, 0px, 0);
-    }
-
-    50% {
-        transform: translate3d(calc(-50% - 14px), -16px, 0);
-    }
-}
-
-/* Optional: slightly softer in light theme */
-html:not(.dark-theme) .homeix-tools-bg .tool {
-    opacity: 0.14;
-}
-
-/* Accessibility: respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    .homeix-tools-bg .tool {
-        animation: none !important;
-    }
-}
-
-/* ==========================================================
-   HOMEIX BODY BG (EXAMPLE LOOK): big blurred tools + float motion
-   ADDED ONLY — paste at VERY END of site.css
-========================================================== */
-
-/* Make sure our fixed background sits BEHIND content but ABOVE html background */
-.homeix-body-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0; /* IMPORTANT: not negative */
-    pointer-events: none;
-    overflow: hidden;
-}
-
-/* Ensure page content stays above the background */
-body > header,
-body > main,
-body > footer {
-    position: relative;
-    z-index: 1;
-}
-
-/* Blue background like your example */
-.homeix-body-bg::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 30% 15%, #0f3a7a 0%, #071b3f 38%, #050f24 100%);
-    opacity: 1;
-}
-
-/* Tool base style */
-.homeix-body-bg .homeix-tool {
-    position: absolute;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    /* White blurred silhouette */
-    opacity: 0.28;
-    filter: blur(16px) brightness(0) invert(1);
-    transform: translate3d(0,0,0);
-    will-change: transform;
-}
-
-/* TOP-LEFT wrench */
-.homeix-body-bg .tool-wrench {
-    left: -140px;
-    top: 140px;
-    width: 380px;
-    height: 380px;
-    background-image: url("/images/bg-tools/wrench.png");
-    animation: homeixToolFloatA 10s ease-in-out infinite;
-}
-
-/* TOP-RIGHT hammer */
-.homeix-body-bg .tool-hammer {
-    right: -170px;
-    top: -110px;
-    width: 500px;
-    height: 500px;
-    background-image: url("/images/bg-tools/hammer.png");
-    animation: homeixToolFloatB 12s ease-in-out infinite;
-}
-
-/* BOTTOM-CENTER drill */
-.homeix-body-bg .tool-drill {
-    left: 50%;
-    bottom: -210px;
-    width: 560px;
-    height: 560px;
-    background-image: url("/images/bg-tools/drill.png");
-    transform: translate3d(-50%, 0, 0);
-    animation: homeixToolFloatC 11s ease-in-out infinite;
-}
-
-/* In-place motion */
 @keyframes homeixToolFloatA {
     0%, 100% {
         transform: translate3d(0px, 0px, 0);
@@ -2641,7 +1190,6 @@ body > footer {
     }
 }
 
-/* Keep centering translateX(-50%) while moving */
 @keyframes homeixToolFloatC {
     0%, 100% {
         transform: translate3d(-50%, 0px, 0);
@@ -2652,174 +1200,181 @@ body > footer {
     }
 }
 
-/* Optional: in light theme make it slightly softer */
-html:not(.dark-theme) .homeix-body-bg .homeix-tool {
-    opacity: 0.16;
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .hero-actions .btn,
+    .workerpost-details-footer .btn,
+    .customerpost-details-footer .btn {
+        width: auto !important;
+    }
 }
 
-/* Accessibility */
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .homeix-nav-shell {
+        width: calc(100% - 1rem);
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .homeix-nav-shell {
+        border-radius: 22px !important;
+        overflow: hidden !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+        .homeix-nav-shell::before,
+        .homeix-nav-shell::after {
+            border-radius: 22px !important;
+        }
+
+    #mainNavbar .navbar-collapse.homeix-collapse-panel {
+        margin-top: .55rem;
+        padding: .75rem;
+        border-radius: 16px;
+        background: rgba(10, 15, 43, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    html.dark-theme #mainNavbar .navbar-collapse.homeix-collapse-panel {
+        background: rgba(0, 8, 20, 0.92);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    #mainNavbar .navbar-collapse.homeix-collapse-panel.show {
+        max-height: calc(100dvh - 120px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    #mainNavbar .navbar-nav {
+        gap: .25rem;
+        margin-top: .25rem;
+    }
+
+        #mainNavbar .navbar-nav .nav-link {
+            padding: .55rem .75rem;
+            border-radius: 12px;
+        }
+
+            #mainNavbar .navbar-nav .nav-link:hover {
+                background: rgba(255, 255, 255, 0.08);
+            }
+
+    #mainNavbar .navbar-collapse .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        transform: none !important;
+        width: 100%;
+        margin-top: .35rem;
+        margin-bottom: .25rem;
+        border-radius: 14px;
+        box-shadow: none;
+    }
+
+        #mainNavbar .navbar-collapse .dropdown-menu.dropdown-menu-dark {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+    html.dark-theme #mainNavbar .navbar-collapse .dropdown-menu.dropdown-menu-dark {
+        background: rgba(0,0,0,0.35);
+        border-color: rgba(255,255,255,0.10);
+    }
+
+    #mainNavbar .navbar-collapse .dropdown-item {
+        padding: .6rem .9rem;
+        border-radius: 10px;
+    }
+
+    #mainNavbar .navbar-collapse .d-flex.align-items-center.gap-2.flex-wrap {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: .5rem !important;
+        margin-top: .5rem;
+    }
+
+    #mainNavbar .navbar-collapse .btn,
+    #mainNavbar .navbar-collapse .dropdown,
+    #mainNavbar .navbar-collapse .dropdown > .btn {
+        width: 100% !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .chat-users {
+        position: static !important;
+        transform: none !important;
+        visibility: visible !important;
+        border-right: 1px solid var(--light-border);
+    }
+
+    html.dark-theme .chat-users {
+        border-right-color: var(--dark-border);
+    }
+
+    .chat-users .offcanvas-header {
+        display: none;
+    }
+
+    .chat-users .offcanvas-body {
+        height: 100%;
+        overflow: auto;
+    }
+
+    .offcanvas-backdrop {
+        display: none !important;
+    }
+}
+
+@media (hover: none) {
+    .card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .post-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
+    .home-blob,
+    .home-hero::after,
+    .homeix-nav-shell::before,
+    .popular-track,
     .homeix-body-bg .homeix-tool {
         animation: none !important;
     }
-}
 
-/* ==========================================================
-   NAVBAR MUST ALWAYS BE ON TOP (ADDED ONLY)
-   Put at VERY END of site.css
-========================================================== */
-
-:root {
-    --homeix-navbar-z: 2147483647; /* max-ish z-index to beat everything */
-}
-
-/* The navbar itself */
-#mainNavbar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: var(--homeix-navbar-z) !important;
-}
-
-    /* Dropdown menus from the navbar must also be above everything */
-    #mainNavbar .dropdown-menu {
-        z-index: var(--homeix-navbar-z) !important;
+    .reveal {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
     }
 
-/* Make sure Bootstrap overlays can never cover the navbar */
-.offcanvas,
-.offcanvas-backdrop,
-.modal,
-.modal-backdrop,
-.toast-container {
-    z-index: var(--homeix-overlay-z) !important;
-}
-
-/* ==========================================================
-   FINAL OVERRIDES (ADDED ONLY) — put at VERY END of site.css
-   1) Navbar always on top (fix stacking-context trapping)
-   2) Light mode: white background + light-yellow tools
-========================================================== */
-
-:root {
-    --homeix-navbar-z: 2147483000;
-}
-
-/* 1) NAVBAR MUST BE ABOVE EVERYTHING */
-body > header {
-    position: relative !important;
-    z-index: var(--homeix-navbar-z) !important; /* key fix: header stacking context is now top */
-}
-
-#mainNavbar {
-    position: fixed !important;
-    z-index: var(--homeix-navbar-z) !important;
-}
-
-    /* Navbar dropdowns also on top */
-    #mainNavbar .dropdown-menu {
-        z-index: var(--homeix-navbar-z) !important;
+    body {
+        transition: none !important;
     }
 
-/* Make sure common Bootstrap overlays can never cover the navbar */
-.modal,
-.modal-backdrop,
-.offcanvas,
-.offcanvas-backdrop,
-.toast-container,
-.popover,
-.tooltip {
-    z-index: var(--homeix-overlay-z) !important;
-}
-
-/* Keep normal page content above bg but below navbar */
-body > main,
-body > footer {
-    position: relative;
-    z-index: 1;
-}
-
-/* Make sure background stays behind content */
-.homeix-body-bg {
-    z-index: 0;
-}
-
-/* 2) LIGHT MODE LOOK: white background + light yellow tools */
-html:not(.dark-theme) .homeix-body-bg::before {
-    background: #ffffff !important; /* white like you asked */
-}
-
-/* Tint the tool silhouettes to light yellow in light mode */
-html:not(.dark-theme) .homeix-body-bg .homeix-tool {
-    opacity: 0.18;
-    /* Turn white silhouette into soft yellow tint */
-    filter: blur(16px) brightness(0) invert(1) sepia(1) saturate(2500%) hue-rotate(8deg); /* warm yellow */
-    /* optional: slightly softer look on white */
-    mix-blend-mode: multiply;
-}
-
-/* ==========================================================
-   FINAL FIX (NO calc()): Navbar always top + Light mode bg white
-   + tools light-yellow
-   ADDED ONLY — put at VERY END of site.css
-========================================================== */
-
-:root {
-    /* Use very high values but still reasonable */
-    --homeix-navbar-z: 9999999;
-    --homeix-overlay-z: 9999900; /* must be LESS than navbar */
-}
-
-/* Make sure the header stacking context itself is above everything */
-body > header {
-    position: relative !important;
-    z-index: var(--homeix-navbar-z) !important;
-}
-
-/* Navbar always on top */
-#mainNavbar {
-    position: fixed !important;
-    z-index: var(--homeix-navbar-z) !important;
-}
-
-    /* Navbar dropdowns also on top */
-    #mainNavbar .dropdown-menu {
-        z-index: var(--homeix-navbar-z) !important;
+    .service-flip .flip-inner {
+        transition: none !important;
     }
-
-/* All Bootstrap overlays must stay UNDER the navbar */
-.modal,
-.modal-backdrop,
-.offcanvas,
-.offcanvas-backdrop,
-.toast-container,
-.popover,
-.tooltip {
-    z-index: var(--homeix-overlay-z) !important;
-}
-
-/* Keep content above background but under navbar */
-body > main,
-body > footer {
-    position: relative;
-    z-index: 1;
-}
-
-/* Background layer behind content */
-.homeix-body-bg {
-    z-index: 0 !important;
-}
-
-/* LIGHT MODE: background becomes white */
-html:not(.dark-theme) .homeix-body-bg::before {
-    background: #ffffff !important;
-}
-
-/* LIGHT MODE: tools become light yellow */
-html:not(.dark-theme) .homeix-body-bg .homeix-tool {
-    opacity: 0.20 !important;
-    /* convert to yellow tint */
-    filter: blur(16px) brightness(0) invert(1) sepia(1) saturate(2200%) hue-rotate(10deg) !important;
-    mix-blend-mode: multiply;
 }
