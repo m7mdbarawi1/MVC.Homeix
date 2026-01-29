@@ -141,7 +141,7 @@ namespace Homeix.Controllers
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
 
-            int otherUserId = conversation.User1Id == currentUserId ? conversation.User2Id : conversation.User1Id;
+            int? otherUserId = conversation.User1Id == currentUserId ? conversation.User2Id : conversation.User1Id;
 
             await _hubContext.Clients.Groups($"user-{currentUserId}", $"user-{otherUserId}").SendAsync("ReceiveMessage", new{
                     senderId = currentUserId,

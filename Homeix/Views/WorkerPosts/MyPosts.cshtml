@@ -6,7 +6,11 @@
 @{
     ViewData["Title"] = "My Worker Posts";
 
-    // NEW: returnUrl (current page + querystring) so Details can go back here
+    // ✅ Media passed from controller
+    var mediaLookup =
+        ViewBag.PostMedia as Dictionary<int, List<WorkerPostMedia>>
+        ?? new Dictionary<int, List<WorkerPostMedia>>();
+
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
@@ -22,6 +26,7 @@
         </a>
     </div>
 
+    <!-- ================= FILTERS ================= -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
@@ -57,6 +62,7 @@
         </div>
     </div>
 
+    <!-- ================= POSTS LIST ================= -->
     <div id="postsList">
 
         @if (!Model.Any())
@@ -68,28 +74,30 @@
 
         @foreach (var post in Model)
         {
-            var media = post.PostMedia?
-            .Where(m => m.PostType == "WorkerPost")
-            .OrderByDescending(m => m.UploadedAt)
-            .FirstOrDefault();
+            var media =
+            mediaLookup.TryGetValue(post.WorkerPostId, out var list)
+            ? list.OrderByDescending(m => m.UploadedAt).FirstOrDefault()
+            : null;
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
             ? media.MediaPath.Replace("\\", "/")
             : "/images/no-image.png";
 
             <div class="card shadow-sm mb-3 post-row"
-                 data-title="@post.Title.ToLower()"
+                 data-title="@post.Title.ToLowerInvariant()"
                  data-category="@post.PostCategory?.CategoryName"
                  data-status="@(post.IsActive ? "active" : "inactive")">
 
                 <div class="row g-0 align-items-center">
 
+                    <!-- IMAGE -->
                     <div class="col-md-3">
                         <img src="@imageUrl"
                              class="img-fluid rounded-start"
                              style="height:180px; width:100%; object-fit:cover" />
                     </div>
 
+                    <!-- CONTENT -->
                     <div class="col-md-6">
                         <div class="card-body">
 
@@ -115,6 +123,7 @@
                         </div>
                     </div>
 
+                    <!-- ACTIONS -->
                     <div class="col-md-3">
                         <div class="d-flex flex-column gap-2 p-3">
 
@@ -170,9 +179,9 @@
                 });
             }
 
-            search.oninput =
-                category.onchange =
-                status.onchange = filter;
+            search.addEventListener("input", filter);
+            category.addEventListener("change", filter);
+            status.addEventListener("change", filter);
 
             filter();
         });

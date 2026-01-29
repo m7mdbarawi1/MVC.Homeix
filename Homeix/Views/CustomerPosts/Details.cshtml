@@ -3,24 +3,27 @@
 @using System.Linq
 
 @functions {
-    // Safely try to read UserName/Username without breaking compilation if it doesn't exist.
-    string? GetUserNameSafe(User? u)
+    // Safely read username if it exists
+    string GetUserNameSafe(User? u)
     {
-        if (u == null) return null;
+        if (u == null) return "—";
 
         var prop = u.GetType().GetProperty("UserName")
                    ?? u.GetType().GetProperty("Username");
 
-        return prop?.GetValue(u)?.ToString();
+        return prop?.GetValue(u)?.ToString()
+               ?? u.FullName
+               ?? "—";
     }
 }
 
 @{
     ViewData["Title"] = "Customer Post Details";
 
+    // ✅ FIXED: use CustomerPostMedia
     var mediaList =
-        ViewBag.PostMedia as List<PostMedium>
-        ?? new List<PostMedium>();
+        ViewBag.PostMedia as List<CustomerPostMedia>
+        ?? new List<CustomerPostMedia>();
 
     mediaList = mediaList
         .Where(m => !string.IsNullOrWhiteSpace(m.MediaPath))
@@ -28,26 +31,25 @@
         .ToList();
 
     var fallbackImageUrl = "/images/no-image.png";
-    var creatorUserName = GetUserNameSafe(Model.User) ?? Model.User?.FullName ?? "—";
+    var creatorUserName = GetUserNameSafe(Model.User);
 
-    bool hasMedia = mediaList.Any();
+    bool hasMedia = mediaList.Count > 0;
 
-    // NEW: determine a safe returnUrl (local only) then fallback to WorkerDashboard
     var rawReturnUrl = Context.Request.Query["returnUrl"].ToString();
-    var safeReturnUrl = (!string.IsNullOrWhiteSpace(rawReturnUrl) && Url.IsLocalUrl(rawReturnUrl))
-        ? rawReturnUrl
-        : Url.Action("WorkerDashboard", "Dashboard");
+    var safeReturnUrl =
+        !string.IsNullOrWhiteSpace(rawReturnUrl) && Url.IsLocalUrl(rawReturnUrl)
+            ? rawReturnUrl
+            : Url.Action("WorkerDashboard", "Dashboard");
 }
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-3">
         <div class="col-12">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h2 class="mb-0 fw-bold">@Model.Title</h2>
 
-                <!-- Badges (Category badge changed: no more white box) -->
                 <div class="d-flex flex-wrap gap-2">
                     <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
                         @(Model.IsActive ? "Active" : "Inactive")
@@ -58,11 +60,10 @@
                         <span class="badge bg-info text-dark">@Model.Status</span>
                     }
 
-                    @* Category displayed as colored badge (not white) *@
                     @if (!string.IsNullOrWhiteSpace(Model.PostCategory?.CategoryName))
                     {
                         <span class="badge bg-primary">
-                            <i class="bi bi-tags"></i> @Model.PostCategory!.CategoryName
+                            <i class="bi bi-tags"></i> @Model.PostCategory.CategoryName
                         </span>
                     }
                 </div>
@@ -78,66 +79,38 @@
 
     <div class="row g-3">
 
-        <!-- LEFT: Images -->
+        <!-- ================= LEFT: IMAGES ================= -->
         <div class="col-12 col-lg-7">
             <div class="card shadow-sm">
 
                 @if (hasMedia && mediaList.Count > 1)
                 {
                     <div id="customerPostCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <!-- use bg-secondary bg-opacity-10 instead of bg-light to avoid harsh white -->
                         <div class="carousel-inner bg-secondary bg-opacity-10">
                             @for (int i = 0; i < mediaList.Count; i++)
                             {
                                 var url = mediaList[i].MediaPath.Replace("\\", "/");
 
                                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                                    <!-- FULL IMAGE (no crop) -->
                                     <img src="@url"
                                          class="d-block w-100"
                                          alt="Post image @(i + 1)"
-                                         style="max-height:520px; object-fit:contain; background:transparent;" />
+                                         style="max-height:520px; object-fit:contain;" />
                                 </div>
                             }
                         </div>
 
-                        <!-- More visible arrows -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#customerPostCarousel" data-bs-slide="prev">
-                            <span class="bg-dark bg-opacity-75 rounded-circle p-2 d-inline-flex align-items-center justify-content-center">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            </span>
-                            <span class="visually-hidden">Previous</span>
+                        <button class="carousel-control-prev" type="button"
+                                data-bs-target="#customerPostCarousel"
+                                data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
                         </button>
 
-                        <button class="carousel-control-next" type="button" data-bs-target="#customerPostCarousel" data-bs-slide="next">
-                            <span class="bg-dark bg-opacity-75 rounded-circle p-2 d-inline-flex align-items-center justify-content-center">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            </span>
-                            <span class="visually-hidden">Next</span>
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#customerPostCarousel"
+                                data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
                         </button>
-                    </div>
-
-                    <!-- Thumbnails (remove “white box” look by using bg-transparent + border-0) -->
-                    <div class="card-body border-top">
-                        <div class="row row-cols-6 g-2">
-                            @for (int i = 0; i < mediaList.Count; i++)
-                            {
-                                var tUrl = mediaList[i].MediaPath.Replace("\\", "/");
-
-                                <div class="col">
-                                    <button type="button"
-                                            class="btn p-0 w-100 bg-transparent border-0"
-                                            data-bs-target="#customerPostCarousel"
-                                            data-bs-slide-to="@i"
-                                            aria-label="Image @(i + 1)">
-                                        <img src="@tUrl"
-                                             class="img-fluid rounded"
-                                             alt="Thumbnail @(i + 1)"
-                                             style="height:60px; width:100%; object-fit:cover;" />
-                                    </button>
-                                </div>
-                            }
-                        </div>
                     </div>
                 }
                 else
@@ -149,20 +122,18 @@
                     <div class="bg-secondary bg-opacity-10">
                         <img src="@imageUrl"
                              class="d-block w-100"
-                             alt="Post image"
-                             style="max-height:520px; object-fit:contain; background:transparent;" />
+                             style="max-height:520px; object-fit:contain;" />
                     </div>
                 }
 
             </div>
         </div>
 
-        <!-- RIGHT: Info -->
+        <!-- ================= RIGHT: INFO ================= -->
         <div class="col-12 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <!-- PRICE -->
                     <div class="mb-2">
                         <div class="text-muted small">Price</div>
                         <div class="fs-3 fw-bold text-success">
@@ -174,7 +145,6 @@
 
                     <hr />
 
-                    <!-- Posted by -->
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
                              style="width:44px; height:44px;">
@@ -187,79 +157,17 @@
                         </div>
                     </div>
 
-                    <!-- Quick facts (remove list-group white background using bg-transparent) -->
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
-                            <span class="text-muted">Category</span>
-                            <span class="fw-semibold">@Model.PostCategory?.CategoryName</span>
-                        </div>
-                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
-                            <span class="text-muted">Location</span>
-                            <span class="fw-semibold">@Model.Location</span>
-                        </div>
-                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
-                            <span class="text-muted">Status</span>
-                            <span class="fw-semibold">@Model.Status</span>
-                        </div>
-                        <div class="list-group-item bg-transparent px-0 d-flex justify-content-between">
-                            <span class="text-muted">Created</span>
-                            <span class="fw-semibold">@Model.CreatedAt.ToString("yyyy-MM-dd")</span>
-                        </div>
-                    </div>
-
                     <hr />
 
-                    <!-- Description -->
-                    <div class="mb-2 fw-bold">Description</div>
+                    <div class="fw-bold mb-1">Description</div>
                     <div class="text-muted" style="white-space:pre-line;">
                         @Model.Description
                     </div>
-
-                    <!-- More details as a BUTTON (not white accordion header) -->
-                    <div class="mt-3">
-                        <button class="btn btn-primary w-100"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#moreDetailsCustomer"
-                                aria-expanded="false"
-                                aria-controls="moreDetailsCustomer">
-                            <i class="bi bi-list-ul"></i> More details
-                        </button>
-
-                        <div class="collapse mt-3" id="moreDetailsCustomer">
-                            <div class="card card-body">
-                                <dl class="row mb-0">
-                                    <dt class="col-sm-4 fw-bold">Customer</dt>
-                                    <dd class="col-sm-8">@Model.User?.FullName</dd>
-
-                                    <dt class="col-sm-4 fw-bold">Username</dt>
-                                    <dd class="col-sm-8">@creatorUserName</dd>
-
-                                    <dt class="col-sm-4 fw-bold">Location</dt>
-                                    <dd class="col-sm-8">@Model.Location</dd>
-
-                                    <dt class="col-sm-4 fw-bold">Status</dt>
-                                    <dd class="col-sm-8">@Model.Status</dd>
-
-                                    <dt class="col-sm-4 fw-bold">Created On</dt>
-                                    <dd class="col-sm-8">@Model.CreatedAt.ToString("yyyy-MM-dd")</dd>
-
-                                    <dt class="col-sm-4 fw-bold">Description</dt>
-                                    <dd class="col-sm-8">@Model.Description</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- Footer buttons -->
-                <!-- UPDATED ONLY: added customerpost-details-footer class + back button id + btn-sm -->
-                <div class="card-footer d-flex justify-content-between customerpost-details-footer">
+                <div class="card-footer d-flex justify-content-between">
                     <a id="cpBackBtn"
-                       asp-controller="Dashboard"
-                       asp-action="WorkerDashboard"
-                       data-return-url="@safeReturnUrl"
+                       href="@safeReturnUrl"
                        class="btn btn-secondary btn-sm">
                         <i class="bi bi-arrow-left-circle"></i> Back
                     </a>
@@ -275,8 +183,6 @@
 
                         <a asp-controller="Chat"
                            asp-action="Index"
-                           asp-route-postType="CustomerPost"
-                           asp-route-postId="@Model.CustomerPostId"
                            asp-route-userId="@Model.UserId"
                            class="btn btn-primary">
                             <i class="bi bi-chat-dots"></i> Chat
@@ -286,44 +192,21 @@
 
             </div>
         </div>
-
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Back button: go back to the previous page (filters preserved), fallback to current href
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", function () {
             const btn = document.getElementById("cpBackBtn");
             if (!btn) return;
 
-            btn.addEventListener("click", (e) => {
-                const dataReturnUrl = btn.getAttribute("data-return-url");
-                const fallback = btn.getAttribute("href") || "/";
-
-                // NEW: prefer explicit returnUrl over browser history (deterministic)
-                if (dataReturnUrl && dataReturnUrl.trim() !== "") {
+            btn.addEventListener("click", function (e) {
+                const href = btn.getAttribute("href");
+                if (href) {
                     e.preventDefault();
-                    window.location.href = dataReturnUrl;
-                    return;
+                    window.location.href = href;
                 }
-
-                // If there is history, try to go back; if nothing happens, fallback.
-                if (window.history.length > 1) {
-                    e.preventDefault();
-                    const current = window.location.href;
-
-                    window.history.back();
-
-                    setTimeout(() => {
-                        if (window.location.href === current) {
-                            window.location.href = fallback;
-                        }
-                    }, 250);
-
-                    return;
-                }
-                // else: normal navigation to fallback href
             });
         });
     </script>

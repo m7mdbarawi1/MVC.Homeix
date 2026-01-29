@@ -1,7 +1,18 @@
 ﻿@model Homeix.Models.WorkerPost
+@using Homeix.Models
 
 @{
     ViewData["Title"] = "Edit Worker Post";
+
+    // ✅ Media from ViewBag (correct pattern)
+    var mediaLookup =
+        ViewBag.PostMedia as Dictionary<int, List<WorkerPostMedia>>
+        ?? new Dictionary<int, List<WorkerPostMedia>>();
+
+    var mediaList =
+        mediaLookup.TryGetValue(Model.WorkerPostId, out var list)
+            ? list
+            : new List<WorkerPostMedia>();
 }
 
 <div class="container-fluid mt-4">
@@ -28,9 +39,7 @@
                                 <label asp-for="UserId" class="form-label"></label>
                                 <select asp-for="UserId"
                                         class="form-control"
-                                        asp-items="ViewBag.UserId">
-                                </select>
-                                <span asp-validation-for="UserId" class="text-danger"></span>
+                                        asp-items="ViewBag.UserId"></select>
                             </div>
                         }
                         else
@@ -42,40 +51,41 @@
                             <label asp-for="PostCategoryId" class="form-label"></label>
                             <select asp-for="PostCategoryId"
                                     class="form-control"
-                                    asp-items="ViewBag.PostCategoryId">
-                            </select>
-                            <span asp-validation-for="PostCategoryId" class="text-danger"></span>
+                                    asp-items="ViewBag.PostCategoryId"></select>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label"></label>
                             <input asp-for="Title" class="form-control" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label"></label>
-                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="3"></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Location" class="form-label"></label>
                             <input asp-for="Location" class="form-control" />
-                            <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMin" class="form-label"></label>
-                                <input asp-for="PriceRangeMin" type="number" step="0.01" class="form-control" />
-                                <span asp-validation-for="PriceRangeMin" class="text-danger"></span>
+                                <input asp-for="PriceRangeMin"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control" />
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMax" class="form-label"></label>
-                                <input asp-for="PriceRangeMax" type="number" step="0.01" class="form-control" />
-                                <span asp-validation-for="PriceRangeMax" class="text-danger"></span>
+                                <input asp-for="PriceRangeMax"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control" />
                             </div>
                         </div>
 
@@ -83,8 +93,9 @@
                         {
                             <div class="mb-3">
                                 <label asp-for="CreatedAt" class="form-label"></label>
-                                <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
-                                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                                <input asp-for="CreatedAt"
+                                       type="datetime-local"
+                                       class="form-control" />
                             </div>
                         }
                         else
@@ -94,32 +105,30 @@
 
                         <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="IsActive" />
-                            <label class="form-check-label" asp-for="IsActive">
-                                @Html.DisplayNameFor(model => model.IsActive)
-                            </label>
+                            <label class="form-check-label" asp-for="IsActive"></label>
                         </div>
 
+                        <!-- ✅ CURRENT IMAGES -->
                         <div class="mb-4">
                             <h5 class="mb-2">Current Images</h5>
 
-                            @if (Model.PostMedia != null && Model.PostMedia.Any())
+                            @if (mediaList.Count > 0)
                             {
                                 <div class="row g-3">
-                                    @foreach (var media in Model.PostMedia)
+                                    @foreach (var media in mediaList)
                                     {
                                         <div class="col-6 col-md-4">
                                             <div class="border rounded p-2 h-100">
-                                                <img src="@media.MediaPath"
+                                                <img src="@media.MediaPath.Replace("\\", "/")"
                                                      class="img-fluid rounded border"
-                                                     style="max-height:160px; object-fit:cover; width:100%;" />
+                                                     style="max-height:160px; object-fit:cover;" />
 
                                                 <div class="form-check mt-2">
                                                     <input class="form-check-input"
                                                            type="checkbox"
                                                            name="deleteMediaIds"
-                                                           value="@media.MediaId"
-                                                           id="del_@media.MediaId" />
-                                                    <label class="form-check-label" for="del_@media.MediaId">
+                                                           value="@media.MediaId" />
+                                                    <label class="form-check-label">
                                                         Delete
                                                     </label>
                                                 </div>
@@ -134,6 +143,7 @@
                             }
                         </div>
 
+                        <!-- ✅ ADD NEW MEDIA -->
                         <div class="mb-4">
                             <label class="form-label">Add New Images</label>
 
@@ -141,7 +151,7 @@
                                  class="border border-2 border-dashed rounded p-4 text-center"
                                  style="cursor:pointer;">
                                 <p class="text-muted mb-2">
-                                    Drag & drop here or click to select (multiple allowed)
+                                    Drag & drop here or click to select
                                 </p>
 
                                 <input type="file"
@@ -173,9 +183,7 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 
     <script>
         const dropZone = document.getElementById("dropZone");
@@ -204,9 +212,9 @@
 
         function showPreview(files) {
             preview.innerHTML = "";
-            if (!files || files.length === 0) return;
+            if (!files) return;
 
-            [...files].forEach(file => {
+            Array.from(files).forEach(file => {
                 if (!file.type.startsWith("image")) return;
 
                 const col = document.createElement("div");

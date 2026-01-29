@@ -6,10 +6,7 @@
 @{
     ViewData["Title"] = Localizer["BrowseServices"];
 
-    // Favorites passed from controller
     var favoriteIds = ViewBag.FavoritePostIds as List<int> ?? new List<int>();
-
-    // NEW: returnUrl (current page + querystring) so Details can go back here
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
@@ -26,8 +23,6 @@
     <!-- ================= FILTERS ================= -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
-
-            <!-- UPDATED ONLY: responsive row-cols so everything fits on one row on desktop -->
             <div class="row g-2 align-items-end row-cols-1 row-cols-md-2 row-cols-lg-6">
 
                 <div class="col">
@@ -50,16 +45,12 @@
                 </div>
 
                 <div class="col">
-                    <input id="minPrice"
-                           type="number"
-                           class="form-control"
+                    <input id="minPrice" type="number" class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col">
-                    <input id="maxPrice"
-                           type="number"
-                           class="form-control"
+                    <input id="maxPrice" type="number" class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
@@ -74,7 +65,6 @@
                     </select>
                 </div>
 
-                <!-- ❤️ FAVORITES TOGGLE -->
                 <div class="col d-grid">
                     <button id="favoriteToggle"
                             class="btn btn-outline-danger text-nowrap">
@@ -91,7 +81,7 @@
 
         @foreach (var post in Model)
         {
-            var media = post.PostMedia?
+            var media = post.Media?
             .OrderByDescending(m => m.UploadedAt)
             .FirstOrDefault();
 
@@ -111,38 +101,32 @@
             <div class="col-md-3 mb-4 post-card-wrapper">
 
                 <div class="card h-100 shadow-sm post-card"
-                     data-title="@post.Title.ToLower()"
+                     data-title="@post.Title.ToLowerInvariant()"
                      data-category="@post.PostCategory?.CategoryName"
                      data-price="@post.PriceRangeMin"
                      data-rating="@avgRating"
-                     data-favorite="@isFavorite.ToString().ToLower()">
+                     data-favorite="@isFavorite.ToString().ToLowerInvariant()">
 
                     <!-- ❤️ FAVORITE BUTTON -->
                     <div class="position-absolute top-0 end-0 p-2">
                         @if (isFavorite)
                         {
-                            <form asp-controller="FavoritePosts"
-                                  asp-action="RemoveWorkerPost"
+                            <form asp-controller="FavoriteWorkerPosts"
+                                  asp-action="Remove"
                                   method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="postId" value="@post.WorkerPostId" />
-                                <button class="btn btn-sm btn-danger rounded-circle"
-                                        title="Remove from favorites">
-                                    ❤️
-                                </button>
+                                <button class="btn btn-sm btn-danger rounded-circle">❤️</button>
                             </form>
                         }
                         else
                         {
-                            <form asp-controller="FavoritePosts"
-                                  asp-action="AddWorkerPost"
+                            <form asp-controller="FavoriteWorkerPosts"
+                                  asp-action="Add"
                                   method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="postId" value="@post.WorkerPostId" />
-                                <button class="btn btn-sm btn-outline-danger rounded-circle"
-                                        title="Add to favorites">
-                                    🤍
-                                </button>
+                                <button class="btn btn-sm btn-outline-danger rounded-circle">🤍</button>
                             </form>
                         }
                     </div>
@@ -164,23 +148,15 @@
                                 @post.Description
                             </p>
 
-                            <p>
-                                <strong>@Localizer["Worker"]:</strong>
-                                @post.User?.FullName
-                            </p>
-
-                            <p>
-                                <strong>@Localizer["Category"]:</strong>
-                                @post.PostCategory?.CategoryName
-                            </p>
+                            <p><strong>@Localizer["Worker"]:</strong> @post.User?.FullName</p>
+                            <p><strong>@Localizer["Category"]:</strong> @post.PostCategory?.CategoryName</p>
 
                             <p class="fw-bold text-primary">
                                 💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
                             </p>
 
                             <div class="small text-muted mb-2">
-                                ⭐ @avgRating.ToString("0.0") / 5
-                                (@ratings.Count())
+                                ⭐ @avgRating.ToString("0.0") / 5 (@ratings.Count())
                             </div>
 
                             <span class="badge bg-success mt-auto">
@@ -236,7 +212,7 @@
                 resultCount.textContent = visible + " services found";
             }
 
-            favoriteBtn.addEventListener("click", function () {
+            favoriteBtn.addEventListener("click", () => {
                 showFavoritesOnly = !showFavoritesOnly;
 
                 favoriteBtn.classList.toggle("btn-danger", showFavoritesOnly);
@@ -249,11 +225,11 @@
                 filter();
             });
 
-            search.oninput =
-            category.onchange =
-            minPrice.oninput =
-            maxPrice.oninput =
-            rating.onchange = filter;
+            search.addEventListener("input", filter);
+            category.addEventListener("change", filter);
+            minPrice.addEventListener("input", filter);
+            maxPrice.addEventListener("input", filter);
+            rating.addEventListener("change", filter);
 
             filter();
         });

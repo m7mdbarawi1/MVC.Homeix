@@ -32,46 +32,68 @@ public partial class User
     [StringLength(255)]
     public string? ProfilePicture { get; set; }
 
+    // =========================
+    // NAVIGATION PROPERTIES
+    // =========================
+
     [InverseProperty("CreatedByUser")]
-    public virtual ICollection<Advertisement> Advertisements { get; set; } = new List<Advertisement>();
+    public virtual ICollection<Advertisement> Advertisements { get; set; }
+        = new List<Advertisement>();
 
     [InverseProperty("User1")]
-    public virtual ICollection<Conversation> ConversationUser1s { get; set; } = new List<Conversation>();
+    public virtual ICollection<Conversation> ConversationUser1s { get; set; }
+        = new List<Conversation>();
 
     [InverseProperty("User2")]
-    public virtual ICollection<Conversation> ConversationUser2s { get; set; } = new List<Conversation>();
+    public virtual ICollection<Conversation> ConversationUser2s { get; set; }
+        = new List<Conversation>();
 
     [InverseProperty("User")]
-    public virtual ICollection<CustomerPost> CustomerPosts { get; set; } = new List<CustomerPost>();
+    public virtual ICollection<CustomerPost> CustomerPosts { get; set; }
+        = new List<CustomerPost>();
+
+    // ✅ NEW FAVORITES (REPLACEMENT)
+    [InverseProperty("User")]
+    public virtual ICollection<FavoriteWorkerPost> FavoriteWorkerPosts { get; set; }
+        = new List<FavoriteWorkerPost>();
 
     [InverseProperty("User")]
-    public virtual ICollection<FavoritePost> FavoritePosts { get; set; } = new List<FavoritePost>();
+    public virtual ICollection<FavoriteCustomerPost> FavoriteCustomerPosts { get; set; }
+        = new List<FavoriteCustomerPost>();
 
     [InverseProperty("SenderUser")]
-    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+    public virtual ICollection<Message> Messages { get; set; }
+        = new List<Message>();
 
     [InverseProperty("User")]
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    public virtual ICollection<Payment> Payments { get; set; }
+        = new List<Payment>();
 
     [InverseProperty("RatedUser")]
-    public virtual ICollection<Rating> RatingRatedUsers { get; set; } = new List<Rating>();
+    public virtual ICollection<Rating> RatingRatedUsers { get; set; }
+        = new List<Rating>();
 
     [InverseProperty("RaterUser")]
-    public virtual ICollection<Rating> RatingRaterUsers { get; set; } = new List<Rating>();
+    public virtual ICollection<Rating> RatingRaterUsers { get; set; }
+        = new List<Rating>();
 
     [ForeignKey("RoleId")]
     [InverseProperty("Users")]
-    public virtual UserRole? Role { get; set; } = null!;
+    public virtual UserRole? Role { get; set; }
 
     [InverseProperty("User")]
-    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    public virtual ICollection<Subscription> Subscriptions { get; set; }
+        = new List<Subscription>();
 
     [InverseProperty("ReviewedByUser")]
-    public virtual ICollection<WorkerApproval> WorkerApprovalReviewedByUsers { get; set; } = new List<WorkerApproval>();
+    public virtual ICollection<WorkerApproval> WorkerApprovalReviewedByUsers { get; set; }
+        = new List<WorkerApproval>();
 
     [InverseProperty("User")]
-    public virtual ICollection<WorkerApproval> WorkerApprovalUsers { get; set; } = new List<WorkerApproval>();
+    public virtual ICollection<WorkerApproval> WorkerApprovalUsers { get; set; }
+        = new List<WorkerApproval>();
 
     [InverseProperty("User")]
-    public virtual ICollection<WorkerPost> WorkerPosts { get; set; } = new List<WorkerPost>();
+    public virtual ICollection<WorkerPost> WorkerPosts { get; set; }
+        = new List<WorkerPost>();
 }

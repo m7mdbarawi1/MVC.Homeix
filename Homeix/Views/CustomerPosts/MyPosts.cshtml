@@ -1,15 +1,13 @@
 ﻿@model IEnumerable<Homeix.Models.CustomerPost>
-
 @using Homeix.Models
 
 @{
     ViewData["Title"] = "My Customer Posts";
 
     var mediaLookup =
-        ViewBag.PostMedia as Dictionary<int, List<PostMedium>>
-        ?? new Dictionary<int, List<PostMedium>>();
+        ViewBag.PostMedia as Dictionary<int, List<CustomerPostMedia>>
+        ?? new Dictionary<int, List<CustomerPostMedia>>();
 
-    // NEW: returnUrl (current page + querystring) so Details can go back here
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
@@ -74,10 +72,9 @@
 
         @foreach (var post in Model)
         {
-            var media = mediaLookup.ContainsKey(post.CustomerPostId)
-            ? mediaLookup[post.CustomerPostId]
-            .OrderByDescending(m => m.UploadedAt)
-            .FirstOrDefault()
+            var media =
+            mediaLookup.TryGetValue(post.CustomerPostId, out var list)
+            ? list.OrderByDescending(m => m.UploadedAt).FirstOrDefault()
             : null;
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
@@ -85,9 +82,9 @@
             : "/images/no-image.png";
 
             <div class="card shadow-sm mb-3 post-row"
-                 data-title="@post.Title.ToLower()"
+                 data-title="@post.Title.ToLowerInvariant()"
                  data-category="@post.PostCategory?.CategoryName"
-                 data-status="@post.Status.ToLower()">
+                 data-status="@post.Status.ToLowerInvariant()">
 
                 <div class="row g-0 align-items-center">
 
@@ -180,9 +177,9 @@
                 });
             }
 
-            search.oninput =
-            category.onchange =
-            status.onchange = filter;
+            search.addEventListener("input", filter);
+            category.addEventListener("change", filter);
+            status.addEventListener("change", filter);
 
             filter();
         });
