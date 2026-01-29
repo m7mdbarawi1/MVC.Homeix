@@ -192,11 +192,6 @@ namespace Homeix.Data
                       .WithMany(u => u.WorkerApprovalUsers)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.SetNull);
-
-                entity.HasOne(e => e.ReviewedByUser)
-                      .WithMany(u => u.WorkerApprovalReviewedByUsers)
-                      .HasForeignKey(e => e.ReviewedByUserId)
-                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<WorkerPost>(entity =>

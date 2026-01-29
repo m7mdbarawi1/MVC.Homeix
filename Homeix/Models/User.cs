@@ -85,10 +85,6 @@ public partial class User
     public virtual ICollection<Subscription> Subscriptions { get; set; }
         = new List<Subscription>();
 
-    [InverseProperty("ReviewedByUser")]
-    public virtual ICollection<WorkerApproval> WorkerApprovalReviewedByUsers { get; set; }
-        = new List<WorkerApproval>();
-
     [InverseProperty("User")]
     public virtual ICollection<WorkerApproval> WorkerApprovalUsers { get; set; }
         = new List<WorkerApproval>();

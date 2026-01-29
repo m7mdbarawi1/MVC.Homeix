@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerApproval>
 
 @{
-    ViewData["Title"] = "Worker Approvals";
+    ViewData["Title"] = "My Requests";
 }
 
 <div class="container-fluid mt-4">
@@ -14,9 +14,10 @@
             </h1>
 
             <div class="d-flex gap-2">
-                <a asp-action="DownloadReport" class="btn btn-secondary d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-download"></i>
-                    Download Report
+                <!-- SAME CREATE ACTION -->
+                <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-plus-circle"></i>
+                    Create New
                 </a>
             </div>
         </div>
@@ -30,7 +31,7 @@
                     <input type="text"
                            id="searchInput"
                            class="form-control"
-                           placeholder="Search worker approvals..." />
+                           placeholder="Search my requests..." />
                 </div>
             </div>
         </div>
@@ -75,6 +76,13 @@
                                             <!-- ACTIONS -->
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
+                                                    <a asp-action="Edit"
+                                                       asp-route-id="@item.ApprovalId"
+                                                       class="btn btn-secondary btn-sm"
+                                                       title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.ApprovalId"
                                                        class="btn btn-accent btn-sm"
@@ -97,7 +105,7 @@
                                 {
                                     <tr>
                                         <td colspan="3" class="text-center text-muted py-4">
-                                            No worker approvals found
+                                            You haven’t submitted any requests yet.
                                         </td>
                                     </tr>
                                 }
