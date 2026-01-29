@@ -20,142 +20,167 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         private readonly ILogger<WorkerPostsController> _logger;
-        public WorkerPostsController(HOMEIXDbContext context, ILogger<WorkerPostsController> logger)
+
+        public WorkerPostsController(
+            HOMEIXDbContext context,
+            ILogger<WorkerPostsController> logger)
         {
             _context = context;
             _logger = logger;
         }
+
+        // =========================
+        // INDEX (ADMIN)
+        // =========================
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
-            var posts = await _context.WorkerPosts.Include(w => w.PostCategory).Include(w => w.User).ThenInclude(u => u.RatingRatedUsers).Where(w => w.IsActive).OrderByDescending(w => w.CreatedAt).ToListAsync();
+            var posts = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .Include(w => w.User)
+                    .ThenInclude(u => u.RatingRatedUsers)
+                .Where(w => w.IsActive)
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+
             return View(posts);
         }
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> DownloadReport()
-        {
-            var posts = await _context.WorkerPosts.Include(w => w.PostCategory).Include(w => w.User).ThenInclude(u => u.RatingRatedUsers).OrderByDescending(w => w.CreatedAt).ToListAsync();
-            var sb = new StringBuilder();
-            sb.AppendLine("PostId,Title,Category,Worker,Location,MinPrice,MaxPrice,AvgRating,TotalRatings,IsActive,CreatedAt");
-            foreach (var post in posts)
-            {
-                var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
-                var avgRating = ratings.Any() ? ratings.Average(r => r.RatingValue) : 0;
-                sb.AppendLine($"{post.WorkerPostId}," + $"\"{post.Title}\"," + $"\"{post.PostCategory?.CategoryName}\"," + $"\"{post.User?.FullName}\"," + $"\"{post.Location}\"," + $"{post.PriceRangeMin}," + $"{post.PriceRangeMax}," + $"{avgRating:0.0}," + $"{ratings.Count()}," + $"{post.IsActive}," + $"{post.CreatedAt:yyyy-MM-dd}");
-            }
-            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-            return File(bytes, "text/csv", "WorkerPostsReport.csv");
-        }
+
+        // =========================
+        // DETAILS
+        // =========================
         public async Task<IActionResult> Details(int id)
         {
-            var post = await _context.WorkerPosts.Include(w => w.PostCategory).Include(w => w.PostMedia).Include(w => w.User).ThenInclude(u => u.RatingRatedUsers).FirstOrDefaultAsync(w => w.WorkerPostId == id);
+            var post = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .Include(w => w.Media)
+                .Include(w => w.User)
+                    .ThenInclude(u => u.RatingRatedUsers)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
             if (post == null) return NotFound();
-            post.PostMedia = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && m.PostId == id).OrderByDescending(m => m.UploadedAt).ToListAsync();
             return View(post);
         }
-        [Authorize(Roles = "worker, admin")]
+
+        // =========================
+        // CREATE (GET)
+        // =========================
+        [Authorize(Roles = "worker,admin")]
         public async Task<IActionResult> Create()
         {
-            int userId = GetUserId();
-            if (User.IsInRole("worker"))
-            {
-                var subscription = await GetCurrentSubscriptionAsync(userId);
-                if (subscription == null)
-                {
-                    TempData["Error"] = "You must have an active subscription to create posts.";
-                    return RedirectToAction("Index", "SubscriptionPlans");
-                }
-            }
             LoadCategories();
             return View();
         }
+
+        // =========================
+        // CREATE (POST)
+        // =========================
         [HttpPost]
-        [Authorize(Roles = "worker, admin")]
+        [Authorize(Roles = "worker,admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(WorkerPost workerPost, List<IFormFile>? mediaFiles)
+        public async Task<IActionResult> Create(
+            WorkerPost workerPost,
+            List<IFormFile>? mediaFiles)
         {
             int userId = GetUserId();
-            await DebugSubscriptions(userId);
-            if (User.IsInRole("worker"))
-            {
-                var subscription = await GetCurrentSubscriptionAsync(userId);
-                if (subscription == null || subscription.StartDate > DateTime.Today || subscription.EndDate < DateTime.Today)
-                {
-                    ModelState.AddModelError("", "Your subscription is not currently valid.");
-                    LoadCategories(workerPost);
-                    return View(workerPost);
-                }
-                var windowStart = DateTime.Now.AddDays(-30);
-                int postsThisMonth = await _context.WorkerPosts.CountAsync(w =>w.UserId == userId && w.CreatedAt >= windowStart);
-                if (subscription.Plan?.MaxPostsPerMonth.HasValue == true && postsThisMonth >= subscription.Plan.MaxPostsPerMonth.Value)
-                {
-                    TempData["Error"] = $"You have reached your limit of {subscription.Plan.MaxPostsPerMonth} posts.";
-                    return RedirectToAction("Index", "SubscriptionPlans");
-                }
-            }
+
             if (!ModelState.IsValid)
             {
                 LoadCategories(workerPost);
                 return View(workerPost);
             }
+
             workerPost.UserId = userId;
             workerPost.CreatedAt = DateTime.Now;
             workerPost.IsActive = true;
+
             _context.WorkerPosts.Add(workerPost);
             await _context.SaveChangesAsync();
-            var postedFiles = Request.Form.Files.Where(f => f.Name == "mediaFiles" && f.Length > 0).ToList();
-            if (postedFiles.Count == 0 && mediaFiles != null) postedFiles = mediaFiles.Where(f => f != null && f.Length > 0).ToList();
-            if (postedFiles.Count > 0)
+
+            if (mediaFiles != null && mediaFiles.Any())
             {
-                foreach (var file in postedFiles)
+                foreach (var file in mediaFiles.Where(f => f.Length > 0))
                 {
-                    var savedPath = await SaveWorkerPostMediaAsync(file);
-                    _context.PostMedia.Add(new PostMedium { PostType = "WorkerPost", PostId = workerPost.WorkerPostId, MediaPath = savedPath, UploadedAt = DateTime.Now });
+                    var path = await SaveWorkerPostMediaAsync(file);
+
+                    _context.WorkerPostMedia.Add(new WorkerPostMedia
+                    {
+                        WorkerPostId = workerPost.WorkerPostId,
+                        MediaPath = path,
+                        UploadedAt = DateTime.Now
+                    });
                 }
+
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(MyPosts));
         }
+
+        // =========================
+        // MY POSTS
+        // =========================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> MyPosts()
         {
             int userId = GetUserId();
-            var posts = await _context.WorkerPosts.Where(w => w.UserId == userId).Include(w => w.PostCategory).OrderByDescending(w => w.CreatedAt).ToListAsync();
-            var postIds = posts.Select(p => p.WorkerPostId).ToList();
-            var allMedia = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && postIds.Contains(m.PostId)).OrderByDescending(m => m.UploadedAt).ToListAsync();
-            foreach (var p in posts) { p.PostMedia = allMedia.Where(m => m.PostId == p.WorkerPostId && m.PostType == "WorkerPost").OrderByDescending(m => m.UploadedAt).ToList();}
+
+            var posts = await _context.WorkerPosts
+                .Where(w => w.UserId == userId)
+                .Include(w => w.PostCategory)
+                .Include(w => w.Media)
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+
             return View(posts);
         }
-        [Authorize(Roles = "worker, admin")]
-        public async Task<IActionResult> Edit(int? id)
+
+        // =========================
+        // EDIT (GET)
+        // =========================
+        [Authorize(Roles = "worker,admin")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null) return NotFound();
-            var post = await _context.WorkerPosts.Include(w => w.PostCategory).FirstOrDefaultAsync(w => w.WorkerPostId == id);
+            var post = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .Include(w => w.Media)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
             if (post == null) return NotFound();
-            if (post.UserId != GetUserId() && !User.IsInRole("admin")) return Forbid();
-            post.PostMedia = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && m.PostId == post.WorkerPostId).OrderByDescending(m => m.UploadedAt).ToListAsync();
+            if (post.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
             LoadCategories(post);
-            if (User.IsInRole("admin")) {ViewData["UserId"] = new SelectList(_context.Users.AsNoTracking().OrderBy(u => u.FullName), "UserId", "FullName", post.UserId);}
             return View(post);
         }
+
+        // =========================
+        // EDIT (POST)
+        // =========================
         [HttpPost]
-        [Authorize(Roles = "worker, admin")]
+        [Authorize(Roles = "worker,admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,WorkerPost workerPost,List<IFormFile>? newMediaFiles, int[]? deleteMediaIds)
+        public async Task<IActionResult> Edit(
+            int id,
+            WorkerPost workerPost,
+            List<IFormFile>? newMediaFiles,
+            int[]? deleteMediaIds)
         {
-            if (id != workerPost.WorkerPostId) return NotFound();
-            var existing = await _context.WorkerPosts.FirstOrDefaultAsync(w => w.WorkerPostId == id);
+            var existing = await _context.WorkerPosts
+                .Include(w => w.Media)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
             if (existing == null) return NotFound();
-            if (existing.UserId != GetUserId() && !User.IsInRole("admin")) return Forbid();
-            if (!User.IsInRole("admin")) workerPost.UserId = existing.UserId;
+            if (existing.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
             if (!ModelState.IsValid)
             {
-                workerPost.PostMedia = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && m.PostId == id).OrderByDescending(m => m.UploadedAt).ToListAsync();
                 LoadCategories(workerPost);
-                if (User.IsInRole("admin"))
-                {ViewData["UserId"] = new SelectList(_context.Users.AsNoTracking().OrderBy(u => u.FullName), "UserId", "FullName", workerPost.UserId);}
                 return View(workerPost);
             }
+
+            // Update fields
             existing.Title = workerPost.Title;
             existing.Description = workerPost.Description;
             existing.Location = workerPost.Location;
@@ -163,94 +188,142 @@ namespace Homeix.Controllers
             existing.PriceRangeMax = workerPost.PriceRangeMax;
             existing.PostCategoryId = workerPost.PostCategoryId;
             existing.IsActive = workerPost.IsActive;
-            if (User.IsInRole("admin"))
-            {
-                existing.UserId = workerPost.UserId;
-                existing.CreatedAt = workerPost.CreatedAt;
-            }
+
+            // Delete selected media
             if (deleteMediaIds != null && deleteMediaIds.Length > 0)
             {
-                var mediaToDelete = await _context.PostMedia.Where(m => deleteMediaIds.Contains(m.MediaId) && m.PostType == "WorkerPost" && m.PostId == id).ToListAsync();
-                foreach (var media in mediaToDelete)
+                var toDelete = existing.Media
+                    .Where(m => deleteMediaIds.Contains(m.MediaId))
+                    .ToList();
+
+                foreach (var media in toDelete)
                 {
                     DeletePhysicalFile(media.MediaPath);
-                    _context.PostMedia.Remove(media);
+                    _context.WorkerPostMedia.Remove(media);
                 }
             }
-            if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
+
+            // Add new media
+            if (newMediaFiles != null)
             {
-                foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
+                foreach (var file in newMediaFiles.Where(f => f.Length > 0))
                 {
-                    var savedPath = await SaveWorkerPostMediaAsync(file);
-                    _context.PostMedia.Add(new PostMedium {PostType = "WorkerPost", PostId = id, MediaPath = savedPath, UploadedAt = DateTime.Now});
+                    var path = await SaveWorkerPostMediaAsync(file);
+
+                    _context.WorkerPostMedia.Add(new WorkerPostMedia
+                    {
+                        WorkerPostId = id,
+                        MediaPath = path,
+                        UploadedAt = DateTime.Now
+                    });
                 }
             }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(MyPosts));
         }
-        [Authorize(Roles = "worker, admin")]
-        public async Task<IActionResult> Delete(int? id)
+
+        // =========================
+        // DELETE (GET)
+        // =========================
+        [Authorize(Roles = "worker,admin")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null) return NotFound();
-            var post = await _context.WorkerPosts.Include(w => w.PostCategory).FirstOrDefaultAsync(w => w.WorkerPostId == id);
+            var post = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
             if (post == null) return NotFound();
-            if (post.UserId != GetUserId() && !User.IsInRole("admin")) return Forbid();
+            if (post.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
             return View(post);
         }
+
+        // =========================
+        // DELETE (POST)
+        // =========================
         [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = "worker, admin")]
+        [Authorize(Roles = "worker,admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = await _context.WorkerPosts.FindAsync(id);
+            var post = await _context.WorkerPosts
+                .Include(w => w.Media)
+                .FirstOrDefaultAsync(w => w.WorkerPostId == id);
+
             if (post == null) return NotFound();
-            if (post.UserId != GetUserId() && !User.IsInRole("admin")) return Forbid();
-            var media = await _context.PostMedia.Where(m => m.PostType == "WorkerPost" && m.PostId == id).ToListAsync();
-            foreach (var m in media)
+            if (post.UserId != GetUserId() && !User.IsInRole("admin"))
+                return Forbid();
+
+            foreach (var media in post.Media)
             {
-                DeletePhysicalFile(m.MediaPath);
-                _context.PostMedia.Remove(m);
+                DeletePhysicalFile(media.MediaPath);
             }
+
             _context.WorkerPosts.Remove(post);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(MyPosts));
         }
+
+        // =========================
+        // HELPERS
+        // =========================
         private int GetUserId()
         {
             var claim = User.FindFirst("UserId");
             if (claim == null) throw new UnauthorizedAccessException();
             return int.Parse(claim.Value);
         }
+
         private void LoadCategories(WorkerPost? post = null)
         {
-            ViewData["PostCategoryId"] = new SelectList(_context.PostCategories.AsNoTracking().OrderBy(c => c.CategoryName), "PostCategoryId", "CategoryName", post?.PostCategoryId);
+            ViewData["PostCategoryId"] = new SelectList(
+                _context.PostCategories.AsNoTracking(),
+                "PostCategoryId",
+                "CategoryName",
+                post?.PostCategoryId
+            );
         }
-        private async Task<Subscription?> GetCurrentSubscriptionAsync(int userId)
+
+        private static readonly string[] AllowedImageExtensions =
         {
-            return await _context.Subscriptions.Include(s => s.Plan).Where(s => s.UserId == userId && s.Status.Trim().ToLower() == "active").OrderByDescending(s => s.EndDate).FirstOrDefaultAsync();
-        }
-        private async Task DebugSubscriptions(int userId)
+            ".jpg", ".jpeg", ".png", ".gif", ".webp"
+        };
+
+        private static async Task<string> SaveWorkerPostMediaAsync(IFormFile file)
         {
-            var subs = await _context.Subscriptions.Include(s => s.Plan).Where(s => s.UserId == userId).OrderByDescending(s => s.EndDate).ToListAsync();
-            foreach (var s in subs){_logger.LogInformation("ID={Id} | Status={Status} | Start={Start} | End={End} | Plan={Plan}", s.SubscriptionId, s.Status, s.StartDate, s.EndDate, s.Plan?.PlanName);}
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!AllowedImageExtensions.Contains(ext))
+                throw new InvalidOperationException("Invalid image type.");
+
+            var uploadDir = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "uploads", "worker-posts");
+
+            Directory.CreateDirectory(uploadDir);
+
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var fullPath = Path.Combine(uploadDir, fileName);
+
+            using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return "/uploads/worker-posts/" + fileName;
         }
-        private static readonly string[] AllowedImageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
-        private async Task<string> SaveWorkerPostMediaAsync(IFormFile file)
-        {
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!AllowedImageExtensions.Contains(extension)) throw new InvalidOperationException("Only image files are allowed.");
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "post-media");
-            Directory.CreateDirectory(uploadPath);
-            var fileName = $"{Guid.NewGuid()}{extension}";
-            var fullPath = Path.Combine(uploadPath, fileName);
-            using (var stream = new FileStream(fullPath, FileMode.Create)){await file.CopyToAsync(stream);}
-            return "/uploads/post-media/" + fileName;
-        }
-        private void DeletePhysicalFile(string? relativePath)
+
+        private static void DeletePhysicalFile(string? relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) return;
-            var physicalPath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", relativePath.TrimStart('/'));
-            if (System.IO.File.Exists(physicalPath)) System.IO.File.Delete(physicalPath);
+
+            var path = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                relativePath.TrimStart('/'));
+
+            if (System.IO.File.Exists(path))
+                System.IO.File.Delete(path);
         }
     }
 }

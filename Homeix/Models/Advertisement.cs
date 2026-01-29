@@ -13,9 +13,8 @@ namespace Homeix.Models
         [Column("AdID")]
         public int AdId { get; set; }
 
-        [Required]
         [Column("CreatedByUserID")]
-        public int CreatedByUserId { get; set; }
+        public int? CreatedByUserId { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -24,7 +23,6 @@ namespace Homeix.Models
         [StringLength(255)]
         public string ImagePath { get; set; } = string.Empty;
 
-        // ⬇️ NOT stored in DB
         [NotMapped]
         public IFormFile? ImageFile { get; set; }
 

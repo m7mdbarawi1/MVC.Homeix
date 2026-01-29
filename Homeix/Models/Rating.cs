@@ -13,9 +13,8 @@ namespace Homeix.Models
         [Column("RatingID")]
         public int RatingId { get; set; }
 
-        [Required]
         [Column("RaterUserID")]
-        public int RaterUserId { get; set; }
+        public int? RaterUserId { get; set; }
 
         [Required]
         [Column("RatedUserID")]
@@ -34,6 +33,6 @@ namespace Homeix.Models
         public virtual User RatedUser { get; set; } = null!;
 
         [ValidateNever]
-        public virtual User RaterUser { get; set; } = null!;
+        public virtual User? RaterUser { get; set; }
     }
 }

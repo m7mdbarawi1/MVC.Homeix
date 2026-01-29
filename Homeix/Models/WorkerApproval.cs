@@ -14,7 +14,7 @@ public partial class WorkerApproval
     public int ApprovalId { get; set; }
 
     [Column("UserID")]
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
 
     [Column("ReviewedByUserID")]
     public int? ReviewedByUserId { get; set; }
@@ -30,11 +30,11 @@ public partial class WorkerApproval
     [Column(TypeName = "datetime")]
     public DateTime? ReviewedAt { get; set; }
 
-    [ForeignKey("ReviewedByUserId")]
+    [ForeignKey(nameof(UserId))]
+    [InverseProperty("WorkerApprovalUsers")]
+    public virtual User? User { get; set; }
+
+    [ForeignKey(nameof(ReviewedByUserId))]
     [InverseProperty("WorkerApprovalReviewedByUsers")]
     public virtual User? ReviewedByUser { get; set; }
-
-    [ForeignKey("UserId")]
-    [InverseProperty("WorkerApprovalUsers")]
-    public virtual User User { get; set; } = null!;
 }

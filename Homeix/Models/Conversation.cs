@@ -12,13 +12,11 @@ namespace Homeix.Models
         [Column("ConversationID")]
         public int ConversationId { get; set; }
 
-        [Required]
         [Column("User1ID")]
-        public int User1Id { get; set; }
+        public int? User1Id { get; set; }
 
-        [Required]
         [Column("User2ID")]
-        public int User2Id { get; set; }
+        public int? User2Id { get; set; }
 
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

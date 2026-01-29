@@ -15,7 +15,7 @@ public partial class User
     public int UserId { get; set; }
 
     [Column("RoleID")]
-    public int RoleId { get; set; }
+    public int? RoleId { get; set; }
 
     [StringLength(100)]
     public string FullName { get; set; } = null!;
@@ -61,7 +61,7 @@ public partial class User
 
     [ForeignKey("RoleId")]
     [InverseProperty("Users")]
-    public virtual UserRole Role { get; set; } = null!;
+    public virtual UserRole? Role { get; set; } = null!;
 
     [InverseProperty("User")]
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();

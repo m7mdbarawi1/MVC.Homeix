@@ -16,9 +16,8 @@ namespace Homeix.Models
         [Column("ConversationID")]
         public int ConversationId { get; set; }
 
-        [Required]
         [Column("SenderUserID")]
-        public int SenderUserId { get; set; }
+        public int? SenderUserId { get; set; }
 
         [Required]
         public string MessageText { get; set; } = string.Empty;

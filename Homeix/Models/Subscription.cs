@@ -12,9 +12,8 @@ namespace Homeix.Models
         [Column("SubscriptionID")]
         public int SubscriptionId { get; set; }
 
-        [Required]
         [Column("UserID")]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         [Required]
         [Column("PlanID")]

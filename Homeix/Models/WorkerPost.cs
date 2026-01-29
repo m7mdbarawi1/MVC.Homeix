@@ -13,13 +13,11 @@ namespace Homeix.Models
         [Column("WorkerPostID")]
         public int WorkerPostId { get; set; }
 
-        [Required]
         [Column("UserID")]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
-        [Required]
         [Column("PostCategoryID")]
-        public int PostCategoryId { get; set; }
+        public int? PostCategoryId { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -50,6 +48,6 @@ namespace Homeix.Models
         public virtual PostCategory? PostCategory { get; set; }
 
         [ValidateNever]
-        public virtual ICollection<PostMedium> PostMedia { get; set; } = new List<PostMedium>();
+        public virtual ICollection<WorkerPostMedia> Media { get; set; } = new List<WorkerPostMedia>();
     }
 }
