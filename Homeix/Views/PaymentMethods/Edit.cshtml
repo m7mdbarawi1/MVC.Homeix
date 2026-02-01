@@ -1,0 +1,71 @@
+﻿@model Homeix.Models.PaymentMethod
+
+@{
+    ViewData["Title"] = "Edit Payment Method";
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- ================= HEADER ================= -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="mb-0">Edit Payment Method</h1>
+        </div>
+    </div>
+
+    <!-- ================= FORM ================= -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <form asp-action="Edit" method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger mb-3">
+                        </div>
+
+                        <!-- ID -->
+                        <input type="hidden" asp-for="PaymentMethodId" />
+
+                        <!-- Method Name -->
+                        <div class="mb-3">
+                            <label asp-for="MethodName" class="form-label"></label>
+                            <input asp-for="MethodName"
+                                   class="form-control"
+                                   placeholder="Enter payment method name" />
+                            <span asp-validation-for="MethodName"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Save
+                            </button>
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left-circle me-1"></i>
+                                Back
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

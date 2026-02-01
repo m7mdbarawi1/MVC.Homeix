@@ -18,6 +18,7 @@ namespace Homeix.Models
 
         // 🔗 Navigation
         [ValidateNever]
-        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public virtual ICollection<Payment> Payments { get; set; }
+            = new List<Payment>();
     }
 }
