@@ -16,7 +16,6 @@
                     <i class="bi bi-plus-circle"></i> Create New
                 </a>
 
-                <!-- ✅ ADDED -->
                 <a asp-action="DownloadReport" class="btn btn-secondary">
                     <i class="bi bi-download"></i> Download Report
                 </a>
@@ -29,7 +28,10 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search payments...">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Search payments..." />
                 </div>
             </div>
         </div>
@@ -46,13 +48,13 @@
                                 <tr>
                                     <th>@Html.DisplayNameFor(model => model.Amount)</th>
                                     <th>@Html.DisplayNameFor(model => model.PaymentDate)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Status)</th>
-                                    <th>@Html.DisplayNameFor(model => model.PaymentMethod)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Subscription)</th>
-                                    <th>@Html.DisplayNameFor(model => model.User)</th>
+                                    <th>Payment Method</th>
+                                    <th>Subscription</th>
+                                    <th>User</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody id="paymentsTable">
                                 @if (Model != null && Model.Any())
                                 {
@@ -60,21 +62,16 @@
                                     {
                                         <tr>
                                             <td>@item.Amount</td>
-                                            <td>@item.PaymentDate</td>
-                                            <td>
-                                                <span class="badge bg-info">
-                                                    @item.Status
-                                                </span>
-                                            </td>
-                                            <td>@item.PaymentMethod?.PaymentMethodId</td>
+                                            <td>@item.PaymentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@item.PaymentMethod?.MethodName</td>
                                             <td>@item.Subscription?.SubscriptionId</td>
                                             <td>@item.User?.UserId</td>
                                             <td class="text-center">
-                                                <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                    <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-accent btn-sm">
-                                                        <i class="bi bi-info-circle"></i> Details
-                                                    </a>
-                                                </div>
+                                                <a asp-action="Details"
+                                                   asp-route-id="@item.PaymentId"
+                                                   class="btn btn-outline-info btn-sm">
+                                                    <i class="bi bi-info-circle"></i> Details
+                                                </a>
                                             </td>
                                         </tr>
                                     }
@@ -82,7 +79,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">
+                                        <td colspan="6" class="text-center text-muted">
                                             No payments found
                                         </td>
                                     </tr>
@@ -106,8 +103,9 @@
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(term) ? "" : "none";
+                    row.style.display = row.textContent.toLowerCase().includes(term)
+                        ? ""
+                        : "none";
                 });
             });
         });

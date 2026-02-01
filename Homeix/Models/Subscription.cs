@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -33,12 +34,18 @@ namespace Homeix.Models
         [StringLength(50)]
         public string Status { get; set; } = "Active";
 
-        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        // 🔗 Navigation
 
-        [ForeignKey(nameof(PlanId))]
-        public virtual SubscriptionPlan? Plan { get; set; }
-
+        [ValidateNever]
         [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }
+
+        [ValidateNever]
+        [ForeignKey(nameof(PlanId))]
+        public virtual SubscriptionPlan Plan { get; set; } = null!;
+
+        [ValidateNever]
+        public virtual ICollection<Payment> Payments { get; set; }
+            = new List<Payment>();
     }
 }

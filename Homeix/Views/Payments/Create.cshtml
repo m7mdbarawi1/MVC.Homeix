@@ -6,14 +6,14 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Create Payment</h1>
+            <h1 class="fw-bold">Create Payment</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
+    <!-- FORM CARD -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm">
@@ -21,9 +21,11 @@
 
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- User -->
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger mb-3"></div>
+
+                        <!-- USER -->
                         <div class="mb-3">
                             <label asp-for="UserId" class="form-label"></label>
                             <select asp-for="UserId"
@@ -33,7 +35,7 @@
                             <span asp-validation-for="UserId" class="text-danger"></span>
                         </div>
 
-                        <!-- Subscription -->
+                        <!-- SUBSCRIPTION -->
                         <div class="mb-3">
                             <label asp-for="SubscriptionId" class="form-label"></label>
                             <select asp-for="SubscriptionId"
@@ -43,7 +45,7 @@
                             <span asp-validation-for="SubscriptionId" class="text-danger"></span>
                         </div>
 
-                        <!-- Payment Method -->
+                        <!-- PAYMENT METHOD -->
                         <div class="mb-3">
                             <label asp-for="PaymentMethodId" class="form-label"></label>
                             <select asp-for="PaymentMethodId"
@@ -53,17 +55,18 @@
                             <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
                         </div>
 
-                        <!-- Amount -->
+                        <!-- AMOUNT -->
                         <div class="mb-3">
                             <label asp-for="Amount" class="form-label"></label>
                             <input asp-for="Amount"
                                    type="number"
                                    step="0.01"
+                                   min="0"
                                    class="form-control" />
                             <span asp-validation-for="Amount" class="text-danger"></span>
                         </div>
 
-                        <!-- Payment Date -->
+                        <!-- PAYMENT DATE -->
                         <div class="mb-3">
                             <label asp-for="PaymentDate" class="form-label"></label>
                             <input asp-for="PaymentDate"
@@ -72,18 +75,10 @@
                             <span asp-validation-for="PaymentDate" class="text-danger"></span>
                         </div>
 
-                        <!-- Status -->
-                        <div class="mb-3">
-                            <label asp-for="Status" class="form-label"></label>
-                            <input asp-for="Status"
-                                   class="form-control" />
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-end gap-2 mt-3">
+                        <!-- ACTIONS -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Create
+                                <i class="bi bi-check-circle"></i> Create Payment
                             </button>
 
                             <a asp-action="Index" class="btn btn-secondary">
@@ -100,7 +95,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

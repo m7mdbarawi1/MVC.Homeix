@@ -2,13 +2,11 @@
 @inject Homeix.Data.HOMEIXDbContext _context
 
 @{
-    var currentCulture = "en";
-    var dir = "ltr";
-    string? roleName = User.FindFirst(ClaimTypes.Role)?.Value?.ToLower();
+    string? roleName = User.FindFirst(ClaimTypes.Role)?.Value?.ToLower() ?? "";
 }
 
 <!DOCTYPE html>
-<html lang="@currentCulture" dir="@dir" class="light-theme">
+<html lang="en" dir="ltr" class="light-theme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,27 +27,25 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- NEW (ADDED ONLY): blurred moving tools background layer -->
+    <!-- Background FX -->
     <div class="homeix-body-bg" aria-hidden="true">
         <span class="homeix-tool tool-wrench"></span>
         <span class="homeix-tool tool-hammer"></span>
         <span class="homeix-tool tool-drill"></span>
     </div>
 
-    <!-- ==========================================
-         NAVBAR (pinned top, thin, single row on desktop)
-    =========================================== -->
+    <!-- ================= NAVBAR ================= -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top homeix-float-nav" id="mainNavbar">
             <div class="container-fluid homeix-nav-shell bg-main shadow-sm">
 
-                <!-- LOGO -->
                 <a class="navbar-brand d-flex align-items-center"
                    asp-controller="Account" asp-action="HomeRedirect">
-                    <img src="~/homeixlogo.jpg" class="homeix-logo-round me-2" alt="Homeix" />
+                    <img src="~/homeixlogo.jpg"
+                         class="homeix-logo-round me-2"
+                         alt="Homeix" />
                 </a>
 
-                <!-- MOBILE TOGGLER -->
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
@@ -60,8 +56,6 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- COLLAPSE -->
-                <!-- ADDED ONLY: homeix-collapse-panel class (for mobile styling) -->
                 <div class="collapse navbar-collapse homeix-collapse-panel" id="navbarMain">
 
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -75,7 +69,7 @@
                             if (roleName == "admin")
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Posts</a>
+                                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Posts</a>
                                     <ul class="dropdown-menu dropdown-menu-dark">
                                         <li><a class="dropdown-item" asp-controller="CustomerPosts" asp-action="Index">Customer Posts</a></li>
                                         <li><a class="dropdown-item" asp-controller="WorkerPosts" asp-action="Index">Worker Posts</a></li>
@@ -84,7 +78,7 @@
                                 </li>
 
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Payments</a>
+                                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Payments</a>
                                     <ul class="dropdown-menu dropdown-menu-dark">
                                         <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">Payments</a></li>
                                         <li><a class="dropdown-item" asp-controller="PaymentMethods" asp-action="Index">Payment Methods</a></li>
@@ -94,14 +88,16 @@
                                 </li>
 
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Users</a>
+                                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Users</a>
                                     <ul class="dropdown-menu dropdown-menu-dark">
                                         <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
                                         <li><a class="dropdown-item" asp-controller="UserRoles" asp-action="Index">Roles</a></li>
                                     </ul>
                                 </li>
 
-                                <li class="nav-item"><a class="nav-link" asp-controller="WorkerApprovals" asp-action="Index">Worker Applications</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="WorkerApprovals" asp-action="Index">Worker Applications</a>
+                                </li>
                             }
                             else if (roleName == "customer")
                             {
@@ -111,39 +107,33 @@
                             else if (roleName == "worker")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a></li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Subscriptions" asp-action="Index">Subscription</a>
-                                </li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Subscriptions" asp-action="Index">Subscription</a></li>
                             }
                         }
 
                     </ul>
 
-                    <!-- RIGHT SIDE BUTTONS -->
+                    <!-- RIGHT -->
                     <div class="d-flex align-items-center gap-2 flex-wrap">
 
-                        <!-- ✅ LANGUAGE ICON BUTTON (A / ع) -->
                         <button id="langToggle"
-                                type="button"
                                 class="btn btn-outline-light btn-sm lang-icon-btn"
-                                aria-label="Switch language"
-                                title="Switch language">
-                            <span class="lang-icon" aria-hidden="true">
+                                type="button">
+                            <span class="lang-icon">
                                 <span class="lang-tile tile-a">A</span>
                                 <span class="lang-tile tile-ar">ع</span>
                             </span>
                         </button>
 
-                        <!-- THEME TOGGLE -->
-                        <button id="themeToggle" class="btn btn-outline-light btn-sm" type="button">
+                        <button id="themeToggle" class="btn btn-outline-light btn-sm">
                             <span id="themeIcon">🌙</span>
                         </button>
 
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             <div class="dropdown">
-                                <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="btn btn-outline-light btn-sm dropdown-toggle"
+                                   data-bs-toggle="dropdown">
                                     @User.Identity!.Name <small>(@roleName)</small>
                                 </a>
 
@@ -171,39 +161,37 @@
         </nav>
     </header>
 
-    <!-- PAGE CONTENT -->
+    <!-- CONTENT -->
     <main class="container-fluid flex-grow-1 py-4">
         @RenderBody()
     </main>
 
-    <!-- FOOTER (same content, smaller) -->
+    <!-- FOOTER -->
     <footer class="footer mt-auto">
-        <div class="container py-3">
-            <div class="row g-2 align-items-start text-start small">
+        <div class="container py-3 small">
+            <div class="row g-2">
 
-                <div class="col-12 col-md-4">
-                    <div class="fw-bold mb-1">Homeix</div>
-                    <div class="opacity-75">
-                        Verified professionals • Secure workflow • In-app chat
-                    </div>
+                <div class="col-md-4">
+                    <strong>Homeix</strong>
+                    <div class="opacity-75">Verified professionals • Secure workflow • In-app chat</div>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <div class="fw-bold mb-1">Contact</div>
-                    <div class="d-flex flex-column gap-1 opacity-75">
+                <div class="col-md-4">
+                    <strong>Contact</strong>
+                    <div class="opacity-75">
                         <div><i class="bi bi-telephone me-2"></i>+962 7 0000 0000</div>
-                        <div><i class="bi bi-geo-alt me-2"></i>Jordan, Amman — Business Park (HTU)</div>
+                        <div><i class="bi bi-geo-alt me-2"></i>Amman — HTU</div>
                         <div><i class="bi bi-envelope me-2"></i>support@homeix.com</div>
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <div class="fw-bold mb-1">Follow</div>
-                    <div class="d-flex flex-wrap gap-3 opacity-75">
-                        <a class="link-light text-decoration-none" href="#"><i class="bi bi-instagram me-1"></i>Instagram</a>
-                        <a class="link-light text-decoration-none" href="#"><i class="bi bi-facebook me-1"></i>Facebook</a>
+                <div class="col-md-4">
+                    <strong>Follow</strong>
+                    <div class="opacity-75">
+                        <a class="link-light text-decoration-none me-3" href="#"><i class="bi bi-instagram"></i> Instagram</a>
+                        <a class="link-light text-decoration-none" href="#"><i class="bi bi-facebook"></i> Facebook</a>
                     </div>
-                    <div class="mt-2 opacity-75">© 2025 - Homeix</div>
+                    <div class="opacity-75 mt-2">© 2025 Homeix</div>
                 </div>
 
             </div>
@@ -213,101 +201,76 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- UPDATED ONLY: keep body padding in sync when navbar expands/collapses on mobile -->
+    <!-- NAVBAR HEIGHT SYNC -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const nav = document.getElementById("mainNavbar");
             const collapse = document.getElementById("navbarMain");
 
-            const syncPadding = () => {
-                if (!nav) return;
-                document.body.style.paddingTop = nav.offsetHeight + "px";
-            };
+            const sync = () => document.body.style.paddingTop = nav.offsetHeight + "px";
+            sync();
 
-            syncPadding();
-            window.addEventListener("resize", syncPadding);
-
-            collapse?.addEventListener("shown.bs.collapse", syncPadding);
-            collapse?.addEventListener("hidden.bs.collapse", syncPadding);
+            window.addEventListener("resize", sync);
+            collapse?.addEventListener("shown.bs.collapse", sync);
+            collapse?.addEventListener("hidden.bs.collapse", sync);
         });
     </script>
 
-    <!-- ✅ LANGUAGE SCRIPT (toggle button + smooth fade) -->
+    <!-- LANGUAGE -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
             const btn = document.getElementById("langToggle");
 
-            const saved = localStorage.getItem("lang") || "en";
-            applyLang(saved);
-            syncButton(saved);
+            const lang = localStorage.getItem("lang") || "en";
+            apply(lang);
 
-            btn.addEventListener("click", () => {
-                const current = localStorage.getItem("lang") || "en";
-                const next = current === "en" ? "ar" : "en";
+            btn.onclick = () => {
+                const next = root.dir === "ltr" ? "ar" : "en";
+                localStorage.setItem("lang", next);
+                apply(next);
+            };
 
-                document.body.classList.add("lang-switching");
-                setTimeout(() => {
-                    localStorage.setItem("lang", next);
-                    applyLang(next);
-                    syncButton(next);
-                    setTimeout(() => document.body.classList.remove("lang-switching"), 50);
-                }, 160);
-            });
-
-            function applyLang(lang) {
-                root.lang = lang;
-                root.dir = lang === "ar" ? "rtl" : "ltr";
-            }
-
-            function syncButton(lang) {
-                btn.title = lang === "en" ? "Switch to العربية" : "Switch to English";
+            function apply(l) {
+                root.lang = l;
+                root.dir = l === "ar" ? "rtl" : "ltr";
             }
         });
     </script>
 
-    <!-- THEME TOGGLE SCRIPT -->
+    <!-- THEME -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const root = document.documentElement;
             const icon = document.getElementById("themeIcon");
-            const btn = document.getElementById("themeToggle");
+
             const saved = localStorage.getItem("theme") || "light";
+            if (saved === "dark") root.classList.add("dark-theme");
 
-            if (saved === "dark") {
-                root.classList.add("dark-theme");
-                icon.textContent = "🌙";
-            } else {
-                icon.textContent = "☀️";
-            }
+            icon.textContent = root.classList.contains("dark-theme") ? "🌙" : "☀️";
 
-            btn.addEventListener("click", () => {
-                const isDark = root.classList.toggle("dark-theme");
-                localStorage.setItem("theme", isDark ? "dark" : "light");
-                icon.textContent = isDark ? "🌙" : "☀️";
-            });
+            document.getElementById("themeToggle").onclick = () => {
+                root.classList.toggle("dark-theme");
+                localStorage.setItem("theme", root.classList.contains("dark-theme") ? "dark" : "light");
+                icon.textContent = root.classList.contains("dark-theme") ? "🌙" : "☀️";
+            };
         });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
     @{
-        var rand = new Random();
-        bool showAd = rand.Next(0, 100) < 20;
+        var showAd = new Random().Next(0, 100) < 20;
 
-        List<Homeix.Models.Advertisement> ads = new();
-
-        if (showAd)
-        {
-            ads = _context.Advertisements
-            .Where(a =>
-            a.IsActive &&
-            a.StartDate <= DateTime.Today &&
-            a.EndDate >= DateTime.Today)
-            .OrderBy(a => Guid.NewGuid())
-            .Take(1)
-            .ToList();
-        }
+        var ads = showAd
+        ? _context.Advertisements
+        .Where(a => a.IsActive &&
+        a.StartDate <= DateTime.Today &&
+        a.EndDate >= DateTime.Today)
+        .OrderBy(a => Guid.NewGuid())
+        .Take(1)
+        .ToList()
+        : new List<Homeix.Models.Advertisement>();
     }
 
     <partial name="_AdvertisementRotator" model="ads" />

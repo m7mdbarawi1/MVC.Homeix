@@ -39,38 +39,41 @@
                             @Html.DisplayNameFor(model => model.PaymentDate)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PaymentDate)
+                            @Model.PaymentDate.ToString("yyyy-MM-dd HH:mm")
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Status)
+                            Payment Method
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Status)
+                            @Model.PaymentMethod?.MethodName
+                            <span class="text-muted">
+                                (ID: @Model.PaymentMethodId)
+                            </span>
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.PaymentMethod)
+                            Subscription
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PaymentMethod.PaymentMethodId)
+                            Subscription ID: @Model.SubscriptionId
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Subscription)
+                            User
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Subscription.SubscriptionId)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.User)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.User.UserId)
+                            User ID: @Model.UserId
                         </dd>
 
                     </dl>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer text-end">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Back
+                    </a>
                 </div>
 
             </div>

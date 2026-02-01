@@ -6,66 +6,99 @@
 
 <div class="container-fluid mt-4">
 
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create User</h1>
         </div>
     </div>
 
+    <!-- ================= FORM ================= -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
 
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <!-- ROLE -->
                         <div class="mb-3">
                             <label class="form-label">Role</label>
                             <select asp-for="RoleId"
                                     class="form-select"
                                     asp-items="ViewBag.RoleId">
                             </select>
-                            <span asp-validation-for="RoleId" class="text-danger"></span>
+                            <span asp-validation-for="RoleId"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- FULL NAME -->
                         <div class="mb-3">
-                            <label asp-for="FullName" class="form-label"></label>
-                            <input asp-for="FullName" class="form-control" />
-                            <span asp-validation-for="FullName" class="text-danger"></span>
+                            <label asp-for="FullName"
+                                   class="form-label"></label>
+                            <input asp-for="FullName"
+                                   class="form-control" />
+                            <span asp-validation-for="FullName"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- EMAIL -->
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" type="email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <label asp-for="Email"
+                                   class="form-label"></label>
+                            <input asp-for="Email"
+                                   type="email"
+                                   class="form-control" />
+                            <span asp-validation-for="Email"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- PHONE -->
                         <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            <label asp-for="PhoneNumber"
+                                   class="form-label"></label>
+                            <input asp-for="PhoneNumber"
+                                   class="form-control" />
+                            <span asp-validation-for="PhoneNumber"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- PASSWORD (NOT IN MODEL) -->
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input name="password" type="password" class="form-control" minlength="8" required />
-                            <span class="text-danger"></span>
+                            <input name="password"
+                                   type="password"
+                                   class="form-control"
+                                   minlength="8"
+                                   required />
                         </div>
 
+                        <!-- PROFILE PICTURE -->
                         <div class="mb-3">
-                            <label asp-for="ProfilePicture" class="form-label"></label>
-                            <input asp-for="ProfilePicture" class="form-control" />
-                            <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                            <label asp-for="ProfilePicture"
+                                   class="form-label"></label>
+                            <input asp-for="ProfilePicture"
+                                   class="form-control" />
+                            <span asp-validation-for="ProfilePicture"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Create
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i>
+                                Create
                             </button>
 
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Cancel
+                            <a asp-action="Index"
+                               class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i>
+                                Cancel
                             </a>
                         </div>
 

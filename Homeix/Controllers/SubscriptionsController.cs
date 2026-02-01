@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Homeix.Controllers
 {
@@ -15,26 +15,35 @@ namespace Homeix.Controllers
     public class SubscriptionsController : Controller
     {
         private readonly HOMEIXDbContext _context;
-        public SubscriptionsController(HOMEIXDbContext context) { _context = context; }
 
-        // ADDED ONLY: helper to detect admin (matches your existing role naming style)
+        public SubscriptionsController(HOMEIXDbContext context)
+        {
+            _context = context;
+        }
+
+        // =========================
+        // HELPERS
+        // =========================
         private bool IsAdmin()
         {
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             return string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
         }
 
-        // ADDED ONLY: helper to get current user id from your claim ("UserId")
         private int GetCurrentUserId()
         {
-            // You currently use: User.FindFirst("UserId") in Create
-            // We'll keep the same source for consistency.
-            return int.Parse(User.FindFirst("UserId")!.Value);
+            var claim = User.FindFirst("UserId");
+            if (claim == null)
+                throw new UnauthorizedAccessException();
+
+            return int.Parse(claim.Value);
         }
 
+        // =========================
+        // INDEX
+        // =========================
         public async Task<IActionResult> Index()
         {
-            // UPDATED ONLY: Admin sees all; others see their own.
             IQueryable<Subscription> query = _context.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.User);
@@ -45,13 +54,15 @@ namespace Homeix.Controllers
                 query = query.Where(s => s.UserId == userId);
             }
 
-            var subs = await query.ToListAsync();
-            return View(subs);
+            var subscriptions = await query.ToListAsync();
+            return View(subscriptions);
         }
 
+        // =========================
+        // DOWNLOAD REPORT
+        // =========================
         public async Task<IActionResult> DownloadReport()
         {
-            // UPDATED ONLY: Admin gets all; others get their own.
             IQueryable<Subscription> query = _context.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.User);
@@ -84,11 +95,14 @@ namespace Homeix.Controllers
             return File(bytes, "text/csv", "SubscriptionsReport.csv");
         }
 
+        // =========================
+        // DETAILS
+        // =========================
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
-            // UPDATED ONLY: restrict non-admin to own subscription
             IQueryable<Subscription> query = _context.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.User);
@@ -101,52 +115,81 @@ namespace Homeix.Controllers
 
             var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
 
-            if (subscription == null) return NotFound();
+            if (subscription == null)
+                return NotFound();
+
             return View(subscription);
         }
 
+        // =========================
+        // CREATE (GET)
+        // =========================
         public IActionResult Create()
         {
-            ViewData["PlanId"] = new SelectList(_context.SubscriptionPlans.Where(p => p.IsActive), "PlanId", "PlanName");
-            ViewBag.PlanData = _context.SubscriptionPlans.Where(p => p.IsActive).Select(p => new { planId = p.PlanId, planName = p.PlanName, price = p.Price, durationDays = p.DurationDays }).ToList();
-            var model = new Subscription { StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(30), Status = "Active" };
+            ViewData["PlanId"] = new SelectList(
+                _context.SubscriptionPlans.Where(p => p.IsActive),
+                "PlanId",
+                "PlanName"
+            );
+
+            var model = new Subscription
+            {
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(30),
+                Status = "Active"
+            };
+
             return View(model);
         }
 
+        // =========================
+        // CREATE (POST)
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PlanId,StartDate,EndDate")] Subscription subscription)
+        public async Task<IActionResult> Create(
+            [Bind("PlanId,StartDate,EndDate")] Subscription subscription)
         {
             if (!ModelState.IsValid)
             {
-                ViewData["PlanId"] = new SelectList(_context.SubscriptionPlans.Where(p => p.IsActive), "PlanId", "PlanName", subscription.PlanId);
+                ViewData["PlanId"] = new SelectList(
+                    _context.SubscriptionPlans.Where(p => p.IsActive),
+                    "PlanId",
+                    "PlanName",
+                    subscription.PlanId
+                );
                 return View(subscription);
             }
 
             int userId = GetCurrentUserId();
             subscription.UserId = userId;
+            subscription.Status = "Active";
 
-            var activeSubs = await _context.Subscriptions.Where(s => s.UserId == userId && s.Status == "Active").ToListAsync();
+            // Expire existing subscriptions
+            var activeSubs = await _context.Subscriptions
+                .Where(s => s.UserId == userId && s.Status == "Active")
+                .ToListAsync();
+
             foreach (var sub in activeSubs)
             {
                 sub.Status = "Expired";
                 sub.EndDate = DateTime.Today;
             }
 
-            subscription.Status = "Active";
             _context.Subscriptions.Add(subscription);
             await _context.SaveChangesAsync();
 
-            var plan = await _context.SubscriptionPlans.FirstAsync(p => p.PlanId == subscription.PlanId);
+            // Create payment (NO Status, NO Quote)
+            var plan = await _context.SubscriptionPlans
+                .FirstAsync(p => p.PlanId == subscription.PlanId);
+
             var payment = new Payment
             {
                 UserId = userId,
                 SubscriptionId = subscription.SubscriptionId,
                 PaymentMethodId = 1,
                 Amount = plan.Price,
-                PaymentDate = DateTime.Now,
-                Status = "Completed",
-                Quote = $"Subscription purchase: {plan.PlanName} plan"
+                PaymentDate = DateTime.Now
             };
 
             _context.Payments.Add(payment);
@@ -155,12 +198,16 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // EDIT (GET)
+        // =========================
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
-            // UPDATED ONLY: restrict non-admin to own subscription
-            IQueryable<Subscription> query = _context.Subscriptions.AsQueryable();
+            IQueryable<Subscription> query = _context.Subscriptions;
+
             if (!IsAdmin())
             {
                 int userId = GetCurrentUserId();
@@ -168,19 +215,26 @@ namespace Homeix.Controllers
             }
 
             var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
-            if (subscription == null) return NotFound();
+
+            if (subscription == null)
+                return NotFound();
 
             ReloadDropdowns(subscription);
             return View(subscription);
         }
 
+        // =========================
+        // EDIT (POST)
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")] Subscription subscription)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")] Subscription subscription)
         {
-            if (id != subscription.SubscriptionId) return NotFound();
+            if (id != subscription.SubscriptionId)
+                return NotFound();
 
-            // UPDATED ONLY: prevent non-admin from editing other users' subscriptions
             if (!IsAdmin())
             {
                 int userId = GetCurrentUserId();
@@ -196,14 +250,18 @@ namespace Homeix.Controllers
 
             _context.Update(subscription);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DELETE (GET)
+        // =========================
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
-            // UPDATED ONLY: restrict non-admin to own subscription
             IQueryable<Subscription> query = _context.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.User);
@@ -215,17 +273,21 @@ namespace Homeix.Controllers
             }
 
             var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
-            if (subscription == null) return NotFound();
+
+            if (subscription == null)
+                return NotFound();
 
             return View(subscription);
         }
 
+        // =========================
+        // DELETE (POST)
+        // =========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // UPDATED ONLY: restrict non-admin to own subscription
-            IQueryable<Subscription> query = _context.Subscriptions.AsQueryable();
+            IQueryable<Subscription> query = _context.Subscriptions;
 
             if (!IsAdmin())
             {
@@ -244,10 +306,24 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DROPDOWNS
+        // =========================
         private void ReloadDropdowns(Subscription? sub = null)
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName", sub?.UserId);
-            ViewData["PlanId"] = new SelectList(_context.SubscriptionPlans, "PlanId", "PlanName", sub?.PlanId);
+            ViewData["UserId"] = new SelectList(
+                _context.Users,
+                "UserId",
+                "FullName",
+                sub?.UserId
+            );
+
+            ViewData["PlanId"] = new SelectList(
+                _context.SubscriptionPlans,
+                "PlanId",
+                "PlanName",
+                sub?.PlanId
+            );
         }
     }
 }

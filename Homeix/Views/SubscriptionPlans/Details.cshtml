@@ -6,14 +6,16 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="fw-bold">Subscription Plan Details</h1>
+            <h1 class="fw-bold page-title">
+                Subscription Plan Details
+            </h1>
         </div>
     </div>
 
-    <!-- Centered Card -->
+    <!-- ================= DETAILS CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
 
@@ -39,24 +41,35 @@
                             @Html.DisplayNameFor(model => model.Price)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Price)
+                            @Html.DisplayFor(model => model.Price) JOD
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.DurationDays)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.DurationDays)
+                            @Html.DisplayFor(model => model.DurationDays) days
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.IsActive)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.IsActive)
+                            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                                @(Model.IsActive ? "Active" : "Inactive")
+                            </span>
                         </dd>
 
                     </dl>
+                </div>
+
+                <!-- ================= ACTIONS ================= -->
+                <div class="card-footer d-flex justify-content-end">
+                    <a asp-action="Index"
+                       class="btn btn-secondary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-left-circle"></i>
+                        Back
+                    </a>
                 </div>
 
             </div>

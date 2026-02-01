@@ -39,7 +39,10 @@
                 <!-- Card Footer -->
                 <div class="card-footer d-flex justify-content-end gap-2">
                     <form asp-action="Delete" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+
                         <input type="hidden" asp-for="PostCategoryId" />
+
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-trash"></i> Delete
                         </button>

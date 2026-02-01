@@ -4,86 +4,68 @@
     ViewData["Title"] = "Delete Customer Post";
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="text-danger">Delete Customer Post</h1>
-            <p class="text-muted">Are you sure you want to delete this customer post?</p>
-        </div>
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Delete Customer Post</h1>
+        <p class="text-muted mb-0">
+            Are you sure you want to permanently delete this post?
+        </p>
     </div>
 
-    <!-- Centered Card -->
+    <!-- CONFIRM CARD -->
     <div class="row justify-content-center">
         <div class="col-md-9 col-lg-8">
-            <div class="card shadow-sm border-danger">
+            <div class="card border-danger shadow-sm">
 
-                <!-- Card Header -->
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Confirm Deletion</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Confirm Deletion
+                    </h5>
                 </div>
 
-                <!-- Card Body -->
                 <div class="card-body">
-                    <dl class="row">
+                    <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">Title</dt>
+                        <dt class="col-sm-4 fw-semibold">Title</dt>
+                        <dd class="col-sm-8">@Model.Title</dd>
+
+                        <dt class="col-sm-4 fw-semibold">Description</dt>
+                        <dd class="col-sm-8">@Model.Description</dd>
+
+                        <dt class="col-sm-4 fw-semibold">Location</dt>
+                        <dd class="col-sm-8">@Model.Location</dd>
+
+                        <dt class="col-sm-4 fw-semibold">Price Range</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Title)
+                            @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
+                                ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax} JD"
+                                : "Not specified")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Description</dt>
+                        <dt class="col-sm-4 fw-semibold">Category</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Description)
+                            @(Model.PostCategory?.CategoryName ?? "—")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Location</dt>
+                        <dt class="col-sm-4 fw-semibold">Created At</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Location)
+                            @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Price Range (Min)</dt>
+                        <dt class="col-sm-4 fw-semibold">Posted By</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PriceRangeMin)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Price Range (Max)</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PriceRangeMax)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Status</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Status)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Created At</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.CreatedAt)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Active</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.IsActive)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Category</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PostCategory.PostCategoryId)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">User</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.User.UserId)
+                            @(Model.User?.FullName ?? "—")
                         </dd>
 
                     </dl>
                 </div>
 
-                <!-- Card Footer -->
+                <!-- ACTIONS -->
                 <div class="card-footer d-flex justify-content-end gap-2">
-                    <form asp-action="Delete" method="post" class="d-inline">
+                    <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="CustomerPostId" />
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-trash"></i> Delete

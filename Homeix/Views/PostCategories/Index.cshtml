@@ -16,7 +16,6 @@
                     <i class="bi bi-plus-circle"></i> Create New
                 </a>
 
-                <!-- ✅ ADDED -->
                 <a asp-action="DownloadReport" class="btn btn-secondary">
                     <i class="bi bi-download"></i> Download Report
                 </a>
@@ -29,7 +28,10 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search categories...">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Search categories..." />
                 </div>
             </div>
         </div>
@@ -57,13 +59,21 @@
                                             <td>@item.CategoryName</td>
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                    <a asp-action="Edit" asp-route-id="@item.PostCategoryId" class="btn btn-secondary btn-sm">
+                                                    <a asp-action="Edit"
+                                                       asp-route-id="@item.PostCategoryId"
+                                                       class="btn btn-secondary btn-sm">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
-                                                    <a asp-action="Details" asp-route-id="@item.PostCategoryId" class="btn btn-accent btn-sm">
+
+                                                    <a asp-action="Details"
+                                                       asp-route-id="@item.PostCategoryId"
+                                                       class="btn btn-accent btn-sm">
                                                         <i class="bi bi-info-circle"></i> Details
                                                     </a>
-                                                    <a asp-action="Delete" asp-route-id="@item.PostCategoryId" class="btn btn-danger btn-sm">
+
+                                                    <a asp-action="Delete"
+                                                       asp-route-id="@item.PostCategoryId"
+                                                       class="btn btn-danger btn-sm">
                                                         <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
@@ -93,13 +103,15 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("searchInput");
-            const rows = document.querySelectorAll("#categoriesTable tr");
 
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
+                const rows = document.querySelectorAll("#categoriesTable tr");
+
                 rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(term) ? "" : "none";
+                    row.style.display = row.textContent.toLowerCase().includes(term)
+                        ? ""
+                        : "none";
                 });
             });
         });

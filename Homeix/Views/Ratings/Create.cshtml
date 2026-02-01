@@ -32,16 +32,24 @@
                                    class="form-control"
                                    placeholder="Search user by name..."
                                    value="@(hasRatedUser ? ratedUserNameFromQuery : "")"
-                            @(hasRatedUser ? "readonly" : "") />
+                            @if (hasRatedUser)
+                            {
+                                <text>readonly</text>
+                                ;
+                            } />
 
                             <!-- keep binding -->
-                            <input type="hidden" asp-for="RatedUserId" value="@(hasRatedUser ? ratedUserIdFromQuery : 0)" />
+                            <input type="hidden"
+                                   asp-for="RatedUserId"
+                                   value="@(hasRatedUser ? ratedUserIdFromQuery : 0)" />
+
                             <div id="searchResults" class="list-group mt-1"></div>
                         </div>
 
                         <!-- ⭐ Star Rating -->
                         <div class="mb-3">
                             <label class="form-label">Rating</label>
+
                             <div id="starRating" class="fs-3 text-warning">
                                 @for (int i = 1; i <= 5; i++)
                                 {
@@ -92,12 +100,11 @@
             });
         });
 
-        // 🔍 USER SEARCH (keep your existing feature)
+        // 🔍 USER SEARCH
         const searchInput = document.getElementById("userSearch");
         const results = document.getElementById("searchResults");
         const hiddenUserId = document.querySelector("input[name='RatedUserId']");
 
-        // If preselected (readonly), don't allow searching
         if (searchInput.hasAttribute("readonly")) {
             results.innerHTML = "";
         } else {

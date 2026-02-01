@@ -6,6 +6,7 @@
 
 <div class="container-fluid mt-4">
 
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="text-danger">Delete User</h1>
@@ -13,6 +14,7 @@
         </div>
     </div>
 
+    <!-- ================= CONFIRMATION CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-sm border-danger">
@@ -22,41 +24,42 @@
                 </div>
 
                 <div class="card-body">
-                    <dl class="row">
+                    <dl class="row mb-0">
 
+                        <!-- FULL NAME -->
                         <dt class="col-sm-4 fw-bold">Full Name</dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.FullName)
                         </dd>
 
+                        <!-- EMAIL -->
                         <dt class="col-sm-4 fw-bold">Email</dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.Email)
                         </dd>
 
+                        <!-- PHONE -->
                         <dt class="col-sm-4 fw-bold">Phone Number</dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.PhoneNumber)
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Password Hash</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PasswordHash)
-                        </dd>
-
+                        <!-- PROFILE PICTURE -->
                         <dt class="col-sm-4 fw-bold">Profile Picture</dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.ProfilePicture)
                         </dd>
 
+                        <!-- ROLE -->
                         <dt class="col-sm-4 fw-bold">Role</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Role.RoleId)
+                            @Model.Role?.RoleName
                         </dd>
 
                     </dl>
                 </div>
 
+                <!-- ================= ACTIONS ================= -->
                 <div class="card-footer d-flex justify-content-end gap-2">
                     <form asp-action="Delete" method="post" class="d-inline">
                         <input type="hidden" asp-for="UserId" />

@@ -1,43 +1,33 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerPost>
 
-@using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
-
 @{
     ViewData["Title"] = "My Worker Posts";
-
-    // ✅ Media passed from controller
-    var mediaLookup =
-        ViewBag.PostMedia as Dictionary<int, List<WorkerPostMedia>>
-        ?? new Dictionary<int, List<WorkerPostMedia>>();
-
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
-<link rel="stylesheet" href="~/css/workerposts/index.css" />
+<div class="container mt-4">
 
-<div class="container page-wrapper mt-4">
-
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="page-title">My Posts</h1>
+        <h1 class="fw-bold">@ViewData["Title"]</h1>
 
         <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Create New Post
+            <i class="bi bi-plus-circle me-1"></i> Create New Post
         </a>
     </div>
 
-    <!-- ================= FILTERS ================= -->
+    <!-- FILTERS -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <input id="searchInput"
                            class="form-control"
-                           placeholder="Search title..." />
+                           placeholder="Search by title..." />
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <select id="categoryFilter" class="form-select">
                         <option value="">All Categories</option>
                         @foreach (var cat in Model
@@ -50,19 +40,11 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <select id="statusFilter" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-
             </div>
         </div>
     </div>
 
-    <!-- ================= POSTS LIST ================= -->
+    <!-- POSTS LIST -->
     <div id="postsList">
 
         @if (!Model.Any())
@@ -74,25 +56,17 @@
 
         @foreach (var post in Model)
         {
-            var media =
-            mediaLookup.TryGetValue(post.WorkerPostId, out var list)
-            ? list.OrderByDescending(m => m.UploadedAt).FirstOrDefault()
-            : null;
-
-            var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
-            ? media.MediaPath.Replace("\\", "/")
-            : "/images/no-image.png";
+            var image = post.Media.FirstOrDefault()?.MediaPath ?? "/images/no-image.png";
 
             <div class="card shadow-sm mb-3 post-row"
                  data-title="@post.Title.ToLowerInvariant()"
-                 data-category="@post.PostCategory?.CategoryName"
-                 data-status="@(post.IsActive ? "active" : "inactive")">
+                 data-category="@post.PostCategory?.CategoryName">
 
                 <div class="row g-0 align-items-center">
 
                     <!-- IMAGE -->
                     <div class="col-md-3">
-                        <img src="@imageUrl"
+                        <img src="@image"
                              class="img-fluid rounded-start"
                              style="height:180px; width:100%; object-fit:cover" />
                     </div>
@@ -112,13 +86,9 @@
                                 💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
                             </p>
 
-                            <p class="mb-1 text-muted small">
+                            <p class="mb-0 text-muted small">
                                 Created: @post.CreatedAt.ToString("yyyy-MM-dd")
                             </p>
-
-                            <span class="badge @(post.IsActive ? "bg-success" : "bg-secondary")">
-                                @(post.IsActive ? "Active" : "Inactive")
-                            </span>
 
                         </div>
                     </div>
@@ -161,19 +131,18 @@
 
             const search = document.getElementById("searchInput");
             const category = document.getElementById("categoryFilter");
-            const status = document.getElementById("statusFilter");
             const rows = document.querySelectorAll(".post-row");
 
             function filter() {
+                const term = search.value.toLowerCase();
+
                 rows.forEach(row => {
                     const title = row.dataset.title || "";
                     const cat = row.dataset.category || "";
-                    const stat = row.dataset.status || "";
 
                     const show =
-                        title.includes(search.value.toLowerCase()) &&
-                        (category.value === "" || cat === category.value) &&
-                        (status.value === "" || stat === status.value);
+                        title.includes(term) &&
+                        (category.value === "" || cat === category.value);
 
                     row.style.display = show ? "" : "none";
                 });
@@ -181,7 +150,6 @@
 
             search.addEventListener("input", filter);
             category.addEventListener("change", filter);
-            status.addEventListener("change", filter);
 
             filter();
         });

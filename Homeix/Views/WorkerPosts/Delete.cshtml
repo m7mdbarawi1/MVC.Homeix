@@ -4,88 +4,87 @@
     ViewData["Title"] = "Delete Worker Post";
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="text-danger">Delete Worker Post</h1>
-            <p class="text-muted">Are you sure you want to delete this worker post?</p>
-        </div>
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Delete Worker Post</h1>
+        <p class="text-muted">
+            This action cannot be undone. Please confirm.
+        </p>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-md-9 col-lg-8">
-            <div class="card shadow-sm border-danger">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card border-danger shadow-sm">
 
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Confirm Deletion</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Confirm Deletion
+                    </h5>
                 </div>
 
                 <div class="card-body">
-                    <dl class="row">
 
-                        <dt class="col-sm-4 fw-bold">Title</dt>
+                    <dl class="row mb-0">
+
+                        <dt class="col-sm-4 fw-semibold">Title</dt>
+                        <dd class="col-sm-8">@Model.Title</dd>
+
+                        <dt class="col-sm-4 fw-semibold">Description</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Title)
+                            <div class="text-muted" style="white-space:pre-line;">
+                                @Model.Description
+                            </div>
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Description</dt>
+                        <dt class="col-sm-4 fw-semibold">Location</dt>
+                        <dd class="col-sm-8">@Model.Location</dd>
+
+                        <dt class="col-sm-4 fw-semibold">Price Range</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Description)
+                            @Model.PriceRangeMin JD – @Model.PriceRangeMax JD
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Location</dt>
+                        <dt class="col-sm-4 fw-semibold">Category</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Location)
+                            @Model.PostCategory?.CategoryName
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Price Range (Min)</dt>
+                        <dt class="col-sm-4 fw-semibold">Worker</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PriceRangeMin)
+                            @Model.User?.FullName
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Price Range (Max)</dt>
+                        <dt class="col-sm-4 fw-semibold">Created At</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PriceRangeMax)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Created At</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.CreatedAt)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Active</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.IsActive)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">Category</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PostCategory.PostCategoryId)
-                        </dd>
-
-                        <dt class="col-sm-4 fw-bold">User</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.User.UserId)
+                            @Model.CreatedAt.ToString("yyyy-MM-dd")
                         </dd>
 
                     </dl>
+
                 </div>
 
+                <!-- ACTIONS -->
                 <div class="card-footer d-flex justify-content-end gap-2">
-                    <form asp-action="Delete" method="post" class="d-inline">
+
+                    <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="WorkerPostId" />
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-trash"></i> Delete
                         </button>
                     </form>
 
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancel
                     </a>
+
                 </div>
 
             </div>
+
         </div>
     </div>
 </div>

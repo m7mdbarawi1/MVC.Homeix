@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -15,6 +16,8 @@ namespace Homeix.Models
         [StringLength(50)]
         public string RoleName { get; set; } = string.Empty;
 
+        // 🔗 Navigation
+        [ValidateNever]
         public virtual ICollection<User> Users { get; set; } = new List<User>();
     }
 }

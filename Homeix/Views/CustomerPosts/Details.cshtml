@@ -3,7 +3,6 @@
 @using System.Linq
 
 @functions {
-    // Safely read username if it exists
     string GetUserNameSafe(User? u)
     {
         if (u == null) return "—";
@@ -20,66 +19,51 @@
 @{
     ViewData["Title"] = "Customer Post Details";
 
-    // ✅ FIXED: use CustomerPostMedia
     var mediaList =
         ViewBag.PostMedia as List<CustomerPostMedia>
         ?? new List<CustomerPostMedia>();
 
     mediaList = mediaList
         .Where(m => !string.IsNullOrWhiteSpace(m.MediaPath))
-        .OrderByDescending(m => m.UploadedAt)
+        .OrderByDescending(m => m.MediaId)
         .ToList();
 
     var fallbackImageUrl = "/images/no-image.png";
     var creatorUserName = GetUserNameSafe(Model.User);
-
-    bool hasMedia = mediaList.Count > 0;
+    bool hasMedia = mediaList.Any();
 
     var rawReturnUrl = Context.Request.Query["returnUrl"].ToString();
     var safeReturnUrl =
-        !string.IsNullOrWhiteSpace(rawReturnUrl) && Url.IsLocalUrl(rawReturnUrl)
+        (!string.IsNullOrWhiteSpace(rawReturnUrl) && Url.IsLocalUrl(rawReturnUrl))
             ? rawReturnUrl
             : Url.Action("WorkerDashboard", "Dashboard");
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
-    <!-- ================= HEADER ================= -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                <h2 class="mb-0 fw-bold">@Model.Title</h2>
+    <!-- HEADER -->
+    <div class="mb-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h2 class="fw-bold mb-0">@Model.Title</h2>
 
-                <div class="d-flex flex-wrap gap-2">
-                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
-                        @(Model.IsActive ? "Active" : "Inactive")
-                    </span>
+            @if (!string.IsNullOrWhiteSpace(Model.PostCategory?.CategoryName))
+            {
+                <span class="badge bg-primary">
+                    <i class="bi bi-tags"></i> @Model.PostCategory.CategoryName
+                </span>
+            }
+        </div>
 
-                    @if (!string.IsNullOrWhiteSpace(Model.Status))
-                    {
-                        <span class="badge bg-info text-dark">@Model.Status</span>
-                    }
-
-                    @if (!string.IsNullOrWhiteSpace(Model.PostCategory?.CategoryName))
-                    {
-                        <span class="badge bg-primary">
-                            <i class="bi bi-tags"></i> @Model.PostCategory.CategoryName
-                        </span>
-                    }
-                </div>
-            </div>
-
-            <div class="mt-1 text-muted">
-                <i class="bi bi-geo-alt"></i> @Model.Location
-                <span class="mx-2">•</span>
-                <i class="bi bi-calendar3"></i> @Model.CreatedAt.ToString("yyyy-MM-dd")
-            </div>
+        <div class="text-muted mt-1">
+            <i class="bi bi-geo-alt"></i> @Model.Location
+            <span class="mx-2">•</span>
+            <i class="bi bi-calendar3"></i> @Model.CreatedAt.ToString("yyyy-MM-dd")
         </div>
     </div>
 
     <div class="row g-3">
 
-        <!-- ================= LEFT: IMAGES ================= -->
+        <!-- IMAGES -->
         <div class="col-12 col-lg-7">
             <div class="card shadow-sm">
 
@@ -94,7 +78,6 @@
                                 <div class="carousel-item @(i == 0 ? "active" : "")">
                                     <img src="@url"
                                          class="d-block w-100"
-                                         alt="Post image @(i + 1)"
                                          style="max-height:520px; object-fit:contain;" />
                                 </div>
                             }
@@ -116,25 +99,23 @@
                 else
                 {
                     var imageUrl = hasMedia
-                    ? mediaList[0].MediaPath.Replace("\\", "/")
+                    ? mediaList.First().MediaPath.Replace("\\", "/")
                     : fallbackImageUrl;
 
-                    <div class="bg-secondary bg-opacity-10">
-                        <img src="@imageUrl"
-                             class="d-block w-100"
-                             style="max-height:520px; object-fit:contain;" />
-                    </div>
+                    <img src="@imageUrl"
+                         class="d-block w-100"
+                         style="max-height:520px; object-fit:contain;" />
                 }
 
             </div>
         </div>
 
-        <!-- ================= RIGHT: INFO ================= -->
+        <!-- INFO -->
         <div class="col-12 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <div class="mb-2">
+                    <div class="mb-3">
                         <div class="text-muted small">Price</div>
                         <div class="fs-3 fw-bold text-success">
                             @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
@@ -159,15 +140,14 @@
 
                     <hr />
 
-                    <div class="fw-bold mb-1">Description</div>
+                    <div class="fw-bold mb-2">Description</div>
                     <div class="text-muted" style="white-space:pre-line;">
                         @Model.Description
                     </div>
                 </div>
 
                 <div class="card-footer d-flex justify-content-between">
-                    <a id="cpBackBtn"
-                       href="@safeReturnUrl"
+                    <a href="@safeReturnUrl"
                        class="btn btn-secondary btn-sm">
                         <i class="bi bi-arrow-left-circle"></i> Back
                     </a>
@@ -192,22 +172,6 @@
 
             </div>
         </div>
+
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const btn = document.getElementById("cpBackBtn");
-            if (!btn) return;
-
-            btn.addEventListener("click", function (e) {
-                const href = btn.getAttribute("href");
-                if (href) {
-                    e.preventDefault();
-                    window.location.href = href;
-                }
-            });
-        });
-    </script>
-}

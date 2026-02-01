@@ -17,7 +17,6 @@
         </a>
     </div>
 
-    @* ADDED ONLY: filter to show only active subscriptions *@
     @{
         var activeSubscriptions = (Model ?? Enumerable.Empty<Homeix.Models.Subscription>())
         .Where(s => s != null && s.Status == "Active")
@@ -63,7 +62,6 @@
                                     View Details
                                 </a>
 
-                                @* This stays exactly the same behavior (only shows for Active) *@
                                 @if (sub.Status == "Active")
                                 {
                                     <a asp-controller="SubscriptionPlans"

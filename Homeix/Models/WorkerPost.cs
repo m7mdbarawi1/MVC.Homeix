@@ -7,17 +7,19 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 namespace Homeix.Models
 {
     [Table("WorkerPost")]
-    public partial class WorkerPost
+    public class WorkerPost
     {
         [Key]
         [Column("WorkerPostID")]
         public int WorkerPostId { get; set; }
 
+        [Required]
         [Column("UserID")]
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
 
+        [Required]
         [Column("PostCategoryID")]
-        public int? PostCategoryId { get; set; }
+        public int PostCategoryId { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -30,22 +32,25 @@ namespace Homeix.Models
         [StringLength(200)]
         public string Location { get; set; } = string.Empty;
 
+        [Required]
         [Column(TypeName = "decimal(10,2)")]
-        public decimal? PriceRangeMin { get; set; }
+        public decimal PriceRangeMin { get; set; }
 
+        [Required]
         [Column(TypeName = "decimal(10,2)")]
-        public decimal? PriceRangeMax { get; set; }
+        public decimal PriceRangeMax { get; set; }
 
+        [Required]
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        // 🔗 Navigation Properties
 
         [ValidateNever]
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; } = null!;
 
         [ValidateNever]
-        public virtual PostCategory? PostCategory { get; set; }
+        public virtual PostCategory PostCategory { get; set; } = null!;
 
         [ValidateNever]
         public virtual ICollection<WorkerPostMedia> Media { get; set; } = new List<WorkerPostMedia>();

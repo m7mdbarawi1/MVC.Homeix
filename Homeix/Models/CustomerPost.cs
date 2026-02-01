@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -24,6 +25,7 @@ namespace Homeix.Models
         public string Title { get; set; } = string.Empty;
 
         [Required]
+        [Column(TypeName = "nvarchar(max)")]
         public string Description { get; set; } = string.Empty;
 
         [Required]
@@ -37,20 +39,22 @@ namespace Homeix.Models
         public decimal? PriceRangeMax { get; set; }
 
         [Required]
-        [StringLength(50)]
-        [BindNever]
-        public string Status { get; set; } = "Open";
-
         [Column(TypeName = "datetime")]
         [BindNever]
         public DateTime CreatedAt { get; set; }
 
-        [BindNever]
-        public bool IsActive { get; set; } = true;
+        // 🔗 Navigation
 
+        [ValidateNever]
+        [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }
+
+        [ValidateNever]
+        [ForeignKey(nameof(PostCategoryId))]
         public virtual PostCategory? PostCategory { get; set; }
 
-        public virtual ICollection<CustomerPostMedia> Media { get; set; } = new List<CustomerPostMedia>();
+        [ValidateNever]
+        public virtual ICollection<CustomerPostMedia> Media { get; set; }
+            = new List<CustomerPostMedia>();
     }
 }

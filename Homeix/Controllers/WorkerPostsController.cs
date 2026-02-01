@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Homeix.Data;
 using Homeix.Models;
@@ -39,7 +38,6 @@ namespace Homeix.Controllers
                 .Include(w => w.PostCategory)
                 .Include(w => w.User)
                     .ThenInclude(u => u.RatingRatedUsers)
-                .Where(w => w.IsActive)
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
 
@@ -66,7 +64,7 @@ namespace Homeix.Controllers
         // CREATE (GET)
         // =========================
         [Authorize(Roles = "worker,admin")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             LoadCategories();
             return View();
@@ -92,7 +90,6 @@ namespace Homeix.Controllers
 
             workerPost.UserId = userId;
             workerPost.CreatedAt = DateTime.Now;
-            workerPost.IsActive = true;
 
             _context.WorkerPosts.Add(workerPost);
             await _context.SaveChangesAsync();
@@ -106,8 +103,7 @@ namespace Homeix.Controllers
                     _context.WorkerPostMedia.Add(new WorkerPostMedia
                     {
                         WorkerPostId = workerPost.WorkerPostId,
-                        MediaPath = path,
-                        UploadedAt = DateTime.Now
+                        MediaPath = path
                     });
                 }
 
@@ -187,7 +183,6 @@ namespace Homeix.Controllers
             existing.PriceRangeMin = workerPost.PriceRangeMin;
             existing.PriceRangeMax = workerPost.PriceRangeMax;
             existing.PostCategoryId = workerPost.PostCategoryId;
-            existing.IsActive = workerPost.IsActive;
 
             // Delete selected media
             if (deleteMediaIds != null && deleteMediaIds.Length > 0)
@@ -213,8 +208,7 @@ namespace Homeix.Controllers
                     _context.WorkerPostMedia.Add(new WorkerPostMedia
                     {
                         WorkerPostId = id,
-                        MediaPath = path,
-                        UploadedAt = DateTime.Now
+                        MediaPath = path
                     });
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -15,8 +16,14 @@ namespace Homeix.Models
         [StringLength(100)]
         public string CategoryName { get; set; } = string.Empty;
 
-        public virtual ICollection<CustomerPost> CustomerPosts { get; set; } = new List<CustomerPost>();
+        // 🔗 Navigation
 
-        public virtual ICollection<WorkerPost> WorkerPosts { get; set; } = new List<WorkerPost>();
+        [ValidateNever]
+        public virtual ICollection<CustomerPost> CustomerPosts { get; set; }
+            = new List<CustomerPost>();
+
+        [ValidateNever]
+        public virtual ICollection<WorkerPost> WorkerPosts { get; set; }
+            = new List<WorkerPost>();
     }
 }

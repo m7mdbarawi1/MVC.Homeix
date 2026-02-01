@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Homeix.Models
 {
@@ -15,6 +16,9 @@ namespace Homeix.Models
         [StringLength(50)]
         public string MethodName { get; set; } = string.Empty;
 
-        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        // 🔗 Navigation
+        [ValidateNever]
+        public virtual ICollection<Payment> Payments { get; set; }
+            = new List<Payment>();
     }
 }

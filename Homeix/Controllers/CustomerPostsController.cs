@@ -51,7 +51,7 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             var sb = new StringBuilder();
-            sb.AppendLine("PostId,Title,Category,User,Location,MinPrice,MaxPrice,Status,IsActive,CreatedAt");
+            sb.AppendLine("PostId,Title,Category,User,Location,MinPrice,MaxPrice,CreatedAt");
 
             foreach (var post in posts)
             {
@@ -63,8 +63,6 @@ namespace Homeix.Controllers
                     $"\"{post.Location}\"," +
                     $"{post.PriceRangeMin}," +
                     $"{post.PriceRangeMax}," +
-                    $"{post.Status}," +
-                    $"{post.IsActive}," +
                     $"{post.CreatedAt:yyyy-MM-dd}"
                 );
             }
@@ -83,7 +81,7 @@ namespace Homeix.Controllers
             var post = await _context.CustomerPosts
                 .Include(p => p.PostCategory)
                 .Include(p => p.User)
-                .Include(p => p.Media) // ✅ new media table
+                .Include(p => p.Media)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
             if (post == null) return NotFound();
@@ -97,7 +95,6 @@ namespace Homeix.Controllers
         public IActionResult Create()
         {
             LoadDropdowns();
-            ViewBag.LoggedInUserId = GetUserId();
             return View();
         }
 
@@ -117,13 +114,10 @@ namespace Homeix.Controllers
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(customerPost);
-                ViewBag.LoggedInUserId = customerPost.UserId;
                 return View(customerPost);
             }
 
             customerPost.CreatedAt = DateTime.Now;
-            customerPost.Status = "Open";
-            customerPost.IsActive = true;
 
             _context.CustomerPosts.Add(customerPost);
             await _context.SaveChangesAsync();
@@ -137,8 +131,7 @@ namespace Homeix.Controllers
                     _context.CustomerPostMedia.Add(new CustomerPostMedia
                     {
                         CustomerPostId = customerPost.CustomerPostId,
-                        MediaPath = savedPath,
-                        UploadedAt = DateTime.Now
+                        MediaPath = savedPath
                     });
                 }
 
@@ -172,7 +165,7 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax,IsActive")]
+            [Bind("CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")]
             CustomerPost customerPost,
             List<IFormFile>? newMediaFiles,
             int[]? deleteMediaIds)
@@ -188,26 +181,19 @@ namespace Homeix.Controllers
             if (!ModelState.IsValid)
             {
                 LoadDropdowns(customerPost);
-                // show existing media in view
                 customerPost.Media = existing.Media;
                 return View(customerPost);
             }
 
-            // Keep immutable fields
-            customerPost.UserId = existing.UserId;
-            customerPost.CreatedAt = existing.CreatedAt;
-            customerPost.Status = existing.Status;
-
-            // Update mutable fields
+            // keep immutable
             existing.Title = customerPost.Title;
             existing.Description = customerPost.Description;
             existing.Location = customerPost.Location;
             existing.PriceRangeMin = customerPost.PriceRangeMin;
             existing.PriceRangeMax = customerPost.PriceRangeMax;
             existing.PostCategoryId = customerPost.PostCategoryId;
-            existing.IsActive = customerPost.IsActive;
 
-            // Delete selected media
+            // delete media
             if (deleteMediaIds != null && deleteMediaIds.Length > 0)
             {
                 var toDelete = existing.Media
@@ -221,7 +207,7 @@ namespace Homeix.Controllers
                 }
             }
 
-            // Add new media
+            // add media
             if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
             {
                 foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
@@ -231,8 +217,7 @@ namespace Homeix.Controllers
                     _context.CustomerPostMedia.Add(new CustomerPostMedia
                     {
                         CustomerPostId = id,
-                        MediaPath = savedPath,
-                        UploadedAt = DateTime.Now
+                        MediaPath = savedPath
                     });
                 }
             }
@@ -242,7 +227,7 @@ namespace Homeix.Controllers
         }
 
         // =========================
-        // DELETE (GET)
+        // DELETE
         // =========================
         public async Task<IActionResult> Delete(int? id)
         {
@@ -258,9 +243,6 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =========================
-        // DELETE (POST)
-        // =========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -271,11 +253,8 @@ namespace Homeix.Controllers
 
             if (post == null) return NotFound();
 
-            // delete physical files (DB cascade removes rows)
             foreach (var m in post.Media)
-            {
                 DeletePhysicalFile(m.MediaPath);
-            }
 
             _context.CustomerPosts.Remove(post);
             await _context.SaveChangesAsync();
@@ -313,7 +292,7 @@ namespace Homeix.Controllers
         private void LoadDropdowns(CustomerPost? post = null)
         {
             ViewData["PostCategoryId"] = new SelectList(
-                _context.PostCategories.AsNoTracking().OrderBy(c => c.CategoryName),
+                _context.PostCategories.AsNoTracking(),
                 "PostCategoryId",
                 "CategoryName",
                 post?.PostCategoryId

@@ -6,6 +6,7 @@
 
 <div class="container-fluid mt-4">
 
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
@@ -22,33 +23,40 @@
         </div>
     </div>
 
+    <!-- ================= SEARCH ================= -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search users...">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Search users..." />
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ================= TABLE ================= -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body p-0">
                     <div class="table-responsive">
+
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>@Html.DisplayNameFor(model => model.FullName)</th>
                                     <th>@Html.DisplayNameFor(model => model.Email)</th>
                                     <th>@Html.DisplayNameFor(model => model.PhoneNumber)</th>
-                                    <th>@Html.DisplayNameFor(model => model.PasswordHash)</th>
+                                    <th>Password</th>
                                     <th>@Html.DisplayNameFor(model => model.ProfilePicture)</th>
-                                    <th>@Html.DisplayNameFor(model => model.Role)</th>
+                                    <th>Role</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody id="usersTable">
                                 @if (Model != null && Model.Any())
                                 {
@@ -58,18 +66,42 @@
                                             <td>@item.FullName</td>
                                             <td>@item.Email</td>
                                             <td>@item.PhoneNumber</td>
-                                            <td><span class="badge bg-secondary">••••••</span></td>
-                                            <td>@item.ProfilePicture</td>
-                                            <td>@item.Role?.RoleId</td>
+
+                                            <!-- PASSWORD (MASKED) -->
+                                            <td>
+                                                <span class="badge bg-secondary">••••••</span>
+                                            </td>
+
+                                            <!-- PROFILE PICTURE -->
+                                            <td>
+                                                @(string.IsNullOrWhiteSpace(item.ProfilePicture)
+                                                    ? "—"
+                                                    : item.ProfilePicture)
+                                            </td>
+
+                                            <!-- ROLE -->
+                                            <td>
+                                                @(item.Role?.RoleName ?? "—")
+                                            </td>
+
+                                            <!-- ACTIONS -->
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                    <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-secondary btn-sm">
+                                                    <a asp-action="Edit"
+                                                       asp-route-id="@item.UserId"
+                                                       class="btn btn-secondary btn-sm">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
-                                                    <a asp-action="Details" asp-route-id="@item.UserId" class="btn btn-accent btn-sm">
+
+                                                    <a asp-action="Details"
+                                                       asp-route-id="@item.UserId"
+                                                       class="btn btn-accent btn-sm">
                                                         <i class="bi bi-info-circle"></i> Details
                                                     </a>
-                                                    <a asp-action="Delete" asp-route-id="@item.UserId" class="btn btn-danger btn-sm">
+
+                                                    <a asp-action="Delete"
+                                                       asp-route-id="@item.UserId"
+                                                       class="btn btn-danger btn-sm">
                                                         <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
@@ -86,7 +118,9 @@
                                     </tr>
                                 }
                             </tbody>
+
                         </table>
+
                     </div>
                 </div>
             </div>
@@ -104,7 +138,10 @@
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
-                    row.style.display = row.textContent.toLowerCase().includes(term) ? "" : "none";
+                    row.style.display =
+                        row.textContent.toLowerCase().includes(term)
+                            ? ""
+                            : "none";
                 });
             });
         });

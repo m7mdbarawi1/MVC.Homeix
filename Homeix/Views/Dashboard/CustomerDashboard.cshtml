@@ -98,9 +98,8 @@
 
         @foreach (var post in Model)
         {
-            var media = post.Media?
-            .OrderByDescending(m => m.UploadedAt)
-            .FirstOrDefault();
+            // ✅ FIX: WorkerPostMedia has NO UploadedAt
+            var media = post.Media?.FirstOrDefault();
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
             ? media.MediaPath.Replace("\\", "/")

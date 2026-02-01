@@ -21,10 +21,12 @@
 
             <div class="card shadow-sm">
 
+                <!-- CARD HEADER -->
                 <div class="card-header">
                     <h5 class="mb-0">Details</h5>
                 </div>
 
+                <!-- CARD BODY -->
                 <div class="card-body">
                     <dl class="row mb-0">
 
@@ -33,7 +35,7 @@
                             Worker
                         </dt>
                         <dd class="col-sm-8">
-                            @Model.User?.FullName
+                            @Model?.User?.FullName ?? "—"
                         </dd>
 
                         <!-- NOTES -->
@@ -42,9 +44,9 @@
                         </dt>
                         <dd class="col-sm-8">
                             @(
-                                string.IsNullOrWhiteSpace(Model.Notes)
+                                string.IsNullOrWhiteSpace(Model?.Notes)
                                 ? "—"
-                                : Model.Notes
+                                : Model!.Notes
                                 )
                         </dd>
 

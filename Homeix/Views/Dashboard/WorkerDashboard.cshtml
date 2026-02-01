@@ -22,30 +22,18 @@
 
 <div class="container page-wrapper mt-4">
 
-    <!-- ================= PAGE HEADER ================= -->
+    <!-- HEADER -->
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-
-        <h1 class="page-title mb-0">
-            @Localizer["CustomerRequests"]
-        </h1>
-
-        <a asp-controller="WorkerPosts"
-           asp-action="Create"
-           class="btn btn-primary d-inline-flex align-items-center gap-2">
-            <i class="bi bi-plus-circle"></i>
-            <span>@Localizer["CreateNewPost"]</span>
-        </a>
-
+        <h1 class="page-title mb-0">@Localizer["CustomerRequests"]</h1>
     </div>
 
-    <!-- ================= RESULT COUNT ================= -->
-    <span id="resultCount"
-          class="fw-semibold text-secondary d-block mb-3"></span>
+    <!-- RESULT COUNT -->
+    <span id="resultCount" class="fw-semibold text-secondary d-block mb-3"></span>
 
-    <!-- ================= FILTERS ================= -->
+    <!-- FILTERS -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
-            <div class="row g-2 align-items-end row-cols-1 row-cols-md-2 row-cols-lg-6">
+            <div class="row g-2 row-cols-1 row-cols-md-2 row-cols-lg-6 align-items-end">
 
                 <div class="col">
                     <input id="searchInput"
@@ -67,16 +55,12 @@
                 </div>
 
                 <div class="col">
-                    <input id="minPrice"
-                           type="number"
-                           class="form-control"
+                    <input id="minPrice" type="number" class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col">
-                    <input id="maxPrice"
-                           type="number"
-                           class="form-control"
+                    <input id="maxPrice" type="number" class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
@@ -92,8 +76,7 @@
                 </div>
 
                 <div class="col d-grid">
-                    <button id="favoriteToggle"
-                            class="btn btn-outline-danger text-nowrap">
+                    <button id="favoriteToggle" class="btn btn-outline-danger">
                         ❤️ @Localizer["MyFavorites"]
                     </button>
                 </div>
@@ -102,14 +85,14 @@
         </div>
     </div>
 
-    <!-- ================= POSTS GRID ================= -->
+    <!-- POSTS GRID -->
     <div class="row" id="postsGrid">
 
         @foreach (var post in Model)
         {
             var media =
             mediaLookup.TryGetValue(post.CustomerPostId, out var list)
-            ? list.OrderByDescending(m => m.UploadedAt).FirstOrDefault()
+            ? list.FirstOrDefault()
             : null;
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
@@ -117,57 +100,32 @@
             : "/images/no-image.png";
 
             var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
-
-            var avgRating = ratings.Any()
-            ? ratings.Average(r => r.RatingValue)
-            : 0;
-
+            var avgRating = ratings.Count() > 0 ? ratings.Average(r => r.RatingValue) : 0;
             var isFavorite = favoriteIds.Contains(post.CustomerPostId);
 
             <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
 
-                <div class="card h-100 shadow-sm post-card position-relative"
+                <div class="card h-100 shadow-sm post-card"
                      data-title="@post.Title.ToLowerInvariant()"
                      data-category="@post.PostCategory?.CategoryName"
                      data-price="@post.PriceRangeMin"
                      data-rating="@avgRating"
                      data-favorite="@isFavorite.ToString().ToLowerInvariant()">
 
-                    <!-- ❤️ FAVORITE BUTTON -->
-                    <div class="position-absolute top-0 end-0 p-2 z-1">
-                        @if (isFavorite)
-                        {
-                            <form asp-controller="FavoriteCustomerPosts"
-                                  asp-action="Remove"
-                                  method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden"
-                                       name="postId"
-                                       value="@post.CustomerPostId" />
-                                <button type="submit"
-                                        class="btn btn-sm btn-danger rounded-circle">
-                                    ❤️
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-controller="FavoriteCustomerPosts"
-                                  asp-action="Add"
-                                  method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden"
-                                       name="postId"
-                                       value="@post.CustomerPostId" />
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-danger rounded-circle">
-                                    🤍
-                                </button>
-                            </form>
-                        }
+                    <!-- FAVORITE -->
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <form asp-controller="FavoriteCustomerPosts"
+                              asp-action="@(isFavorite ? "Remove" : "Add")"
+                              method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="postId" value="@post.CustomerPostId" />
+                            <button type="submit"
+                                    class="btn btn-sm @(isFavorite ? "btn-danger" : "btn-outline-danger") rounded-circle">
+                                @(isFavorite ? "❤️" : "🤍")
+                            </button>
+                        </form>
                     </div>
 
-                    <!-- CLICKABLE CONTENT -->
                     <a asp-controller="CustomerPosts"
                        asp-action="Details"
                        asp-route-id="@post.CustomerPostId"
@@ -180,20 +138,18 @@
 
                         <div class="card-body d-flex flex-column">
 
-                            <h5 class="fw-bold mb-1">
-                                @post.Title
-                            </h5>
+                            <h5 class="fw-bold">@post.Title</h5>
 
-                            <p class="text-muted small text-truncate mb-2">
+                            <p class="text-muted small text-truncate">
                                 @post.Description
                             </p>
 
-                            <p class="mb-1 small">
+                            <p class="small mb-1">
                                 <strong>@Localizer["Customer"]:</strong>
                                 @post.User?.FullName
                             </p>
 
-                            <p class="mb-1 small">
+                            <p class="small mb-1">
                                 <strong>@Localizer["Category"]:</strong>
                                 @post.PostCategory?.CategoryName
                             </p>
@@ -202,16 +158,13 @@
                                 💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
                             </p>
 
-                            <div class="small text-muted mb-2">
+                            <div class="small text-muted mt-auto">
                                 ⭐ @avgRating.ToString("0.0") / 5 (@ratings.Count())
                             </div>
 
-                            <span class="badge bg-info mt-auto align-self-start">
-                                @post.Status
-                            </span>
-
                         </div>
                     </a>
+
                 </div>
             </div>
         }
@@ -220,7 +173,7 @@
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", () => {
 
             const search = document.getElementById("searchInput");
             const category = document.getElementById("categoryFilter");
@@ -242,7 +195,7 @@
                     const cat = card.dataset.category || "";
                     const price = parseFloat(card.dataset.price) || 0;
                     const rate = parseFloat(card.dataset.rating) || 0;
-                    const isFavorite = card.dataset.favorite === "true";
+                    const fav = card.dataset.favorite === "true";
 
                     const show =
                         title.includes(search.value.toLowerCase()) &&
@@ -250,34 +203,24 @@
                         price >= (parseFloat(minPrice.value) || 0) &&
                         price <= (parseFloat(maxPrice.value) || Infinity) &&
                         rate >= (parseFloat(rating.value) || 0) &&
-                        (!showFavoritesOnly || isFavorite);
+                        (!showFavoritesOnly || fav);
 
                     card.closest(".post-card-wrapper").style.display = show ? "" : "none";
                     if (show) visible++;
                 });
 
-                resultCount.textContent =
-                    visible + " " + "@Localizer["RequestsFound"]";
+                resultCount.textContent = visible + " @Localizer["RequestsFound"]";
             }
 
-            favoriteBtn.addEventListener("click", () => {
+            favoriteBtn.onclick = () => {
                 showFavoritesOnly = !showFavoritesOnly;
-
                 favoriteBtn.classList.toggle("btn-danger", showFavoritesOnly);
                 favoriteBtn.classList.toggle("btn-outline-danger", !showFavoritesOnly);
-
-                favoriteBtn.innerHTML = showFavoritesOnly
-                    ? "❤️ " + "@Localizer["ShowingFavorites"]"
-                    : "❤️ " + "@Localizer["MyFavorites"]";
-
                 filter();
-            });
+            };
 
-            search.addEventListener("input", filter);
-            category.addEventListener("change", filter);
-            minPrice.addEventListener("input", filter);
-            maxPrice.addEventListener("input", filter);
-            rating.addEventListener("change", filter);
+            [search, category, minPrice, maxPrice, rating]
+                .forEach(el => el.addEventListener("input", filter));
 
             filter();
         });

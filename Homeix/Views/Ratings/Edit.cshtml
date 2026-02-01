@@ -24,13 +24,11 @@
 
                         <input type="hidden" asp-for="RatingId" />
 
-                       
-
                         <!-- Rater -->
                         <div class="mb-3">
                             <label asp-for="RaterUserId" class="form-label"></label>
                             <select asp-for="RaterUserId"
-                                    class="form-control"
+                                    class="form-select"
                                     asp-items="ViewBag.RaterUserId">
                             </select>
                             <span asp-validation-for="RaterUserId" class="text-danger"></span>
@@ -40,7 +38,7 @@
                         <div class="mb-3">
                             <label asp-for="RatedUserId" class="form-label"></label>
                             <select asp-for="RatedUserId"
-                                    class="form-control"
+                                    class="form-select"
                                     asp-items="ViewBag.RatedUserId">
                             </select>
                             <span asp-validation-for="RatedUserId" class="text-danger"></span>
@@ -49,21 +47,29 @@
                         <!-- Rating Value -->
                         <div class="mb-3">
                             <label asp-for="RatingValue" class="form-label"></label>
-                            <input asp-for="RatingValue" type="number" min="1" max="5" class="form-control" />
+                            <input asp-for="RatingValue"
+                                   type="number"
+                                   min="1"
+                                   max="5"
+                                   class="form-control" />
                             <span asp-validation-for="RatingValue" class="text-danger"></span>
                         </div>
 
                         <!-- Review -->
                         <div class="mb-3">
                             <label asp-for="Review" class="form-label"></label>
-                            <textarea asp-for="Review" class="form-control" rows="3"></textarea>
+                            <textarea asp-for="Review"
+                                      class="form-control"
+                                      rows="3"></textarea>
                             <span asp-validation-for="Review" class="text-danger"></span>
                         </div>
 
                         <!-- Created At -->
                         <div class="mb-3">
                             <label asp-for="CreatedAt" class="form-label"></label>
-                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
+                            <input asp-for="CreatedAt"
+                                   type="datetime-local"
+                                   class="form-control" />
                             <span asp-validation-for="CreatedAt" class="text-danger"></span>
                         </div>
 
@@ -72,6 +78,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Save
                             </button>
+
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left-circle"></i> Back
                             </a>

@@ -30,10 +30,10 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             ViewBag.UsersByRoleLabels =
-                JsonSerializer.Serialize(usersByRole.Select(x => x.Role).ToList());
+                JsonSerializer.Serialize(usersByRole.Select(x => x.Role));
 
             ViewBag.UsersByRoleCounts =
-                JsonSerializer.Serialize(usersByRole.Select(x => x.Count).ToList());
+                JsonSerializer.Serialize(usersByRole.Select(x => x.Count));
 
             ViewBag.CustomerPostsCount = await _context.CustomerPosts.CountAsync();
             ViewBag.WorkerPostsCount = await _context.WorkerPosts.CountAsync();
@@ -49,17 +49,16 @@ namespace Homeix.Controllers
                 .OrderBy(g => g.Month)
                 .ToListAsync();
 
-            ViewBag.PaymentMonths =
-                JsonSerializer.Serialize(
-                    payments.Select(p =>
-                        CultureInfo.CurrentCulture
-                            .DateTimeFormat
-                            .GetAbbreviatedMonthName(p.Month)
-                    ).ToList()
-                );
+            ViewBag.PaymentMonths = JsonSerializer.Serialize(
+                payments.Select(p =>
+                    CultureInfo.CurrentCulture
+                        .DateTimeFormat
+                        .GetAbbreviatedMonthName(p.Month)
+                )
+            );
 
             ViewBag.PaymentTotals =
-                JsonSerializer.Serialize(payments.Select(p => p.Total).ToList());
+                JsonSerializer.Serialize(payments.Select(p => p.Total));
 
             var ratings = await _context.Ratings
                 .GroupBy(r => r.RatingValue)
@@ -68,10 +67,10 @@ namespace Homeix.Controllers
                 .ToListAsync();
 
             ViewBag.RatingLabels =
-                JsonSerializer.Serialize(ratings.Select(r => $"⭐ {r.Rating}").ToList());
+                JsonSerializer.Serialize(ratings.Select(r => $"⭐ {r.Rating}"));
 
             ViewBag.RatingCounts =
-                JsonSerializer.Serialize(ratings.Select(r => r.Count).ToList());
+                JsonSerializer.Serialize(ratings.Select(r => r.Count));
 
             return View();
         }
@@ -86,10 +85,9 @@ namespace Homeix.Controllers
 
             var workerPosts = await _context.WorkerPosts
                 .Include(w => w.PostCategory)
-                .Include(w => w.Media) // ✅ WorkerPostMedia
+                .Include(w => w.Media)
                 .Include(w => w.User)
                     .ThenInclude(u => u.RatingRatedUsers)
-                .Where(w => w.IsActive)
                 .OrderByDescending(w => w.CreatedAt)
                 .ToListAsync();
 
@@ -113,10 +111,9 @@ namespace Homeix.Controllers
 
             var customerPosts = await _context.CustomerPosts
                 .Include(c => c.PostCategory)
-                .Include(c => c.Media) // ✅ CustomerPostMedia
+                .Include(c => c.Media)
                 .Include(c => c.User)
                     .ThenInclude(u => u.RatingRatedUsers)
-                .Where(c => c.IsActive)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
 

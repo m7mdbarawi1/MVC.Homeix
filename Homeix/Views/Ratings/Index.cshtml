@@ -16,7 +16,6 @@
                     <i class="bi bi-plus-circle"></i> Create New
                 </a>
 
-                <!-- ✅ ADDED -->
                 <a asp-action="DownloadReport" class="btn btn-secondary">
                     <i class="bi bi-download"></i> Download Report
                 </a>
@@ -29,7 +28,10 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search ratings...">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Search ratings..." />
                 </div>
             </div>
         </div>
@@ -52,6 +54,7 @@
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody id="ratingsTable">
                                 @if (Model != null && Model.Any())
                                 {
@@ -63,21 +66,40 @@
                                                     @item.RatingValue ★
                                                 </span>
                                             </td>
+
                                             <td class="text-truncate" style="max-width: 300px;">
                                                 @item.Review
                                             </td>
-                                            <td>@item.CreatedAt</td>
-                                            <td>@item.RatedUser?.UserId</td>
-                                            <td>@item.RaterUser?.UserId</td>
+
+                                            <td>
+                                                @Html.DisplayFor(_ => item.CreatedAt)
+                                            </td>
+
+                                            <td>
+                                                @item.RatedUser?.UserId
+                                            </td>
+
+                                            <td>
+                                                @item.RaterUser?.UserId
+                                            </td>
+
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                    <a asp-action="Edit" asp-route-id="@item.RatingId" class="btn btn-secondary btn-sm">
+                                                    <a asp-action="Edit"
+                                                       asp-route-id="@item.RatingId"
+                                                       class="btn btn-secondary btn-sm">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
-                                                    <a asp-action="Details" asp-route-id="@item.RatingId" class="btn btn-accent btn-sm">
+
+                                                    <a asp-action="Details"
+                                                       asp-route-id="@item.RatingId"
+                                                       class="btn btn-accent btn-sm">
                                                         <i class="bi bi-info-circle"></i> Details
                                                     </a>
-                                                    <a asp-action="Delete" asp-route-id="@item.RatingId" class="btn btn-danger btn-sm">
+
+                                                    <a asp-action="Delete"
+                                                       asp-route-id="@item.RatingId"
+                                                       class="btn btn-danger btn-sm">
                                                         <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
@@ -88,12 +110,13 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">
+                                        <td colspan="6" class="text-center text-muted py-4">
                                             No ratings found
                                         </td>
                                     </tr>
                                 }
                             </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -111,8 +134,12 @@
 
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
+
                 rows.forEach(row => {
-                    row.style.display = row.textContent.toLowerCase().includes(term) ? "" : "none";
+                    row.style.display =
+                        row.textContent.toLowerCase().includes(term)
+                            ? ""
+                            : "none";
                 });
             });
         });

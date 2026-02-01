@@ -26,7 +26,10 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search roles...">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Search roles..." />
                 </div>
             </div>
         </div>
@@ -44,6 +47,7 @@
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody id="rolesTable">
                                 @if (Model != null && Model.Any())
                                 {
@@ -53,13 +57,21 @@
                                             <td>@item.RoleName</td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
-                                                    <a asp-action="Edit" asp-route-id="@item.RoleId" class="btn btn-secondary btn-sm">
+                                                    <a asp-action="Edit"
+                                                       asp-route-id="@item.RoleId"
+                                                       class="btn btn-secondary btn-sm">
                                                         <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
-                                                    <a asp-action="Details" asp-route-id="@item.RoleId" class="btn btn-accent btn-sm">
+
+                                                    <a asp-action="Details"
+                                                       asp-route-id="@item.RoleId"
+                                                       class="btn btn-accent btn-sm">
                                                         <i class="bi bi-info-circle"></i> Details
                                                     </a>
-                                                    <a asp-action="Delete" asp-route-id="@item.RoleId" class="btn btn-danger btn-sm">
+
+                                                    <a asp-action="Delete"
+                                                       asp-route-id="@item.RoleId"
+                                                       class="btn btn-danger btn-sm">
                                                         <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
@@ -76,6 +88,7 @@
                                     </tr>
                                 }
                             </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -94,7 +107,10 @@
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
-                    row.style.display = row.textContent.toLowerCase().includes(term) ? "" : "none";
+                    row.style.display =
+                        row.textContent.toLowerCase().includes(term)
+                            ? ""
+                            : "none";
                 });
             });
         });

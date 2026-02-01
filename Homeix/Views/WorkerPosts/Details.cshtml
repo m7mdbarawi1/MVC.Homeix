@@ -1,185 +1,154 @@
 ﻿@model Homeix.Models.WorkerPost
-@using Homeix.Models
-
-@functions {
-    string? GetUserNameSafe(User? u)
-    {
-        if (u == null) return null;
-
-        var prop = u.GetType().GetProperty("UserName")
-                   ?? u.GetType().GetProperty("Username");
-
-        return prop?.GetValue(u)?.ToString();
-    }
-}
 
 @{
     ViewData["Title"] = "Worker Post Details";
 
-    // ✅ Media from ViewBag (correct pattern)
-    var mediaLookup =
-        ViewBag.PostMedia as Dictionary<int, List<WorkerPostMedia>>
-        ?? new Dictionary<int, List<WorkerPostMedia>>();
+    var mediaList = Model.Media
+        .Where(m => !string.IsNullOrWhiteSpace(m.MediaPath))
+        .ToList();
 
-    var mediaList =
-        mediaLookup.TryGetValue(Model.WorkerPostId, out var list)
-            ? list
-                .Where(m => !string.IsNullOrWhiteSpace(m.MediaPath))
-                .OrderByDescending(m => m.UploadedAt)
-                .ToList()
-            : new List<WorkerPostMedia>();
+    bool hasMedia = mediaList.Any();
+    var fallbackImage = "/images/no-image.png";
 
-    var fallbackImageUrl = "/images/no-image.png";
-    var creatorUserName = GetUserNameSafe(Model.User) ?? Model.User?.FullName ?? "—";
-    bool hasMedia = mediaList.Count > 0;
+    var returnUrl =
+        Context.Request.Query["returnUrl"].ToString();
 
-    var rawReturnUrl = Context.Request.Query["returnUrl"].ToString();
     var safeReturnUrl =
-        (!string.IsNullOrWhiteSpace(rawReturnUrl) && Url.IsLocalUrl(rawReturnUrl))
-            ? rawReturnUrl
-            : Url.Action("CustomerDashboard", "Dashboard");
+        !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+            ? returnUrl
+            : Url.Action("Index", "Home");
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
     <!-- HEADER -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <h2 class="fw-bold mb-0">@Model.Title</h2>
+    <div class="mb-3">
+        <h2 class="fw-bold">@Model.Title</h2>
 
-                <div class="d-flex gap-2">
-                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
-                        @(Model.IsActive ? "Active" : "Inactive")
-                    </span>
-
-                    @if (!string.IsNullOrWhiteSpace(Model.PostCategory?.CategoryName))
-                    {
-                        <span class="badge bg-primary">
-                            <i class="bi bi-tags"></i> @Model.PostCategory.CategoryName
-                        </span>
-                    }
-                </div>
-            </div>
-
-            <div class="text-muted mt-1">
-                <i class="bi bi-geo-alt"></i> @Model.Location
-                <span class="mx-2">•</span>
-                <i class="bi bi-calendar3"></i> @Model.CreatedAt.ToString("yyyy-MM-dd")
-            </div>
+        <div class="text-muted small">
+            <i class="bi bi-geo-alt"></i> @Model.Location
+            <span class="mx-2">•</span>
+            <i class="bi bi-calendar3"></i> @Model.CreatedAt.ToString("yyyy-MM-dd")
         </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PostCategory?.CategoryName))
+        {
+            <span class="badge bg-primary mt-2">
+                <i class="bi bi-tags"></i> @Model.PostCategory.CategoryName
+            </span>
+        }
     </div>
 
-    <div class="row g-3">
+    <div class="row g-4">
 
-        <!-- LEFT: IMAGES -->
-        <div class="col-12 col-lg-7">
+        <!-- IMAGES -->
+        <div class="col-lg-7">
             <div class="card shadow-sm">
 
                 @if (hasMedia && mediaList.Count > 1)
                 {
-                    <div id="workerPostCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner bg-secondary bg-opacity-10">
+                    <div id="workerPostCarousel"
+                         class="carousel slide"
+                         data-bs-ride="carousel">
+
+                        <div class="carousel-inner bg-light">
                             @for (int i = 0; i < mediaList.Count; i++)
                             {
-                                var url = mediaList[i].MediaPath.Replace("\\", "/");
-
                                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                                    <img src="@url"
+                                    <img src="@mediaList[i].MediaPath"
                                          class="d-block w-100"
                                          style="max-height:520px; object-fit:contain;" />
                                 </div>
                             }
                         </div>
 
-                        <button class="carousel-control-prev" type="button"
-                                data-bs-target="#workerPostCarousel" data-bs-slide="prev">
+                        <button class="carousel-control-prev"
+                                type="button"
+                                data-bs-target="#workerPostCarousel"
+                                data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
                         </button>
 
-                        <button class="carousel-control-next" type="button"
-                                data-bs-target="#workerPostCarousel" data-bs-slide="next">
+                        <button class="carousel-control-next"
+                                type="button"
+                                data-bs-target="#workerPostCarousel"
+                                data-bs-slide="next">
                             <span class="carousel-control-next-icon"></span>
                         </button>
                     </div>
                 }
                 else
                 {
-                    var imageUrl = hasMedia
-                    ? mediaList[0].MediaPath.Replace("\\", "/")
-                    : fallbackImageUrl;
-
-                    <img src="@imageUrl"
-                         class="d-block w-100"
+                    <img src="@(hasMedia ? mediaList[0].MediaPath : fallbackImage)"
+                         class="w-100"
                          style="max-height:520px; object-fit:contain;" />
                 }
 
             </div>
         </div>
 
-        <!-- RIGHT: DETAILS -->
-        <div class="col-12 col-lg-5">
+        <!-- DETAILS -->
+        <div class="col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <div class="mb-2">
-                        <div class="text-muted small">Price</div>
-                        <div class="fs-3 fw-bold text-success">
-                            @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
-                                ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax} JD"
-                                : "Price not specified")
+                    <!-- PRICE -->
+                    <div class="mb-3">
+                        <div class="text-muted small">Price Range</div>
+                        <div class="fs-4 fw-bold text-success">
+                            @Model.PriceRangeMin JD – @Model.PriceRangeMax JD
                         </div>
                     </div>
 
                     <hr />
 
+                    <!-- WORKER -->
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
                              style="width:44px; height:44px;">
                             <i class="bi bi-person fs-4 text-muted"></i>
                         </div>
 
                         <div>
                             <div class="fw-semibold">@Model.User?.FullName</div>
-                            <div class="text-muted small">Username: @creatorUserName</div>
+                            <div class="text-muted small">Worker</div>
                         </div>
                     </div>
 
                     <hr />
 
+                    <!-- DESCRIPTION -->
                     <div class="fw-bold mb-2">Description</div>
-                    <div class="text-muted" style="white-space:pre-line;">
+                    <p class="text-muted" style="white-space:pre-line;">
                         @Model.Description
-                    </div>
+                    </p>
 
                 </div>
 
                 <!-- FOOTER -->
                 <div class="card-footer d-flex justify-content-between">
-                    <a id="wpBackBtn"
-                       asp-controller="Dashboard"
-                       asp-action="CustomerDashboard"
-                       data-return-url="@safeReturnUrl"
-                       class="btn btn-secondary btn-sm">
-                        <i class="bi bi-arrow-left-circle"></i> Back
+
+                    <a href="@safeReturnUrl"
+                       class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Back
                     </a>
 
                     <div class="d-flex gap-2">
                         <a asp-controller="Ratings"
                            asp-action="Create"
                            asp-route-ratedUserId="@Model.UserId"
-                           asp-route-ratedUserName="@creatorUserName"
-                           class="btn btn-outline-warning">
+                           class="btn btn-outline-warning btn-sm">
                             <i class="bi bi-star"></i> Rate
                         </a>
 
                         <a asp-controller="Chat"
                            asp-action="Index"
                            asp-route-userId="@Model.UserId"
-                           class="btn btn-primary">
+                           class="btn btn-primary btn-sm">
                             <i class="bi bi-chat-dots"></i> Chat
                         </a>
                     </div>
+
                 </div>
 
             </div>

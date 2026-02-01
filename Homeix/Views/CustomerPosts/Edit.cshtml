@@ -4,24 +4,21 @@
 @{
     ViewData["Title"] = "Edit Customer Post";
 
-    // ✅ FIXED: use CustomerPostMedia (PostMedium no longer exists)
     var mediaList =
         ViewBag.PostMedia as List<CustomerPostMedia>
         ?? new List<CustomerPostMedia>();
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1>Edit Customer Post</h1>
-        </div>
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Edit Customer Post</h1>
     </div>
 
-    <!-- Centered Form -->
+    <!-- FORM -->
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
+        <div class="col-lg-8 col-md-10">
             <div class="card shadow-sm">
                 <div class="card-body">
 
@@ -29,75 +26,77 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <input type="hidden" asp-for="CustomerPostId" />
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="CreatedAt" />
 
-                        <!-- Category -->
+                        <!-- CATEGORY -->
                         <div class="mb-3">
                             <label asp-for="PostCategoryId" class="form-label"></label>
                             <select asp-for="PostCategoryId"
-                                    class="form-control"
+                                    class="form-select"
                                     asp-items="ViewBag.PostCategoryId">
                             </select>
                             <span asp-validation-for="PostCategoryId" class="text-danger"></span>
                         </div>
 
-                        <!-- Title -->
+                        <!-- TITLE -->
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label"></label>
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
-                        <!-- Description -->
+                        <!-- DESCRIPTION -->
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label"></label>
-                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="4"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <!-- Location -->
+                        <!-- LOCATION -->
                         <div class="mb-3">
                             <label asp-for="Location" class="form-label"></label>
                             <input asp-for="Location" class="form-control" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
-                        <!-- Price Range -->
+                        <!-- PRICE RANGE -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMin" class="form-label"></label>
-                                <input asp-for="PriceRangeMin" type="number" step="0.01" class="form-control" />
+                                <input asp-for="PriceRangeMin"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control" />
                                 <span asp-validation-for="PriceRangeMin" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PriceRangeMax" class="form-label"></label>
-                                <input asp-for="PriceRangeMax" type="number" step="0.01" class="form-control" />
+                                <input asp-for="PriceRangeMax"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control" />
                                 <span asp-validation-for="PriceRangeMax" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <!-- Active -->
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" asp-for="IsActive" />
-                            <label class="form-check-label" asp-for="IsActive">
-                                @Html.DisplayNameFor(model => model.IsActive)
-                            </label>
-                        </div>
-
-                        <!-- ================= EXISTING MEDIA ================= -->
+                        <!-- EXISTING IMAGES -->
                         <div class="mb-4">
-                            <h5 class="mb-2">Current Images</h5>
+                            <h5 class="fw-semibold mb-2">Current Images</h5>
 
-                            @if (mediaList.Count > 0)
+                            @if (mediaList.Any())
                             {
                                 <div class="row g-3">
                                     @foreach (var media in mediaList)
                                     {
                                         <div class="col-6 col-md-4">
                                             <div class="border rounded p-2 h-100">
-                                                <img src="@media.MediaPath"
+                                                <img src="@media.MediaPath.Replace("\\", "/")"
                                                      class="img-fluid rounded border"
-                                                     style="max-height:160px; object-fit:cover; width:100%;" />
+                                                     style="height:160px; width:100%; object-fit:cover;" />
 
                                                 <div class="form-check mt-2">
                                                     <input class="form-check-input"
@@ -116,19 +115,19 @@
                             }
                             else
                             {
-                                <p class="text-muted mb-0">No images uploaded for this post.</p>
+                                <p class="text-muted">No images uploaded for this post.</p>
                             }
                         </div>
 
-                        <!-- ================= ADD NEW MEDIA ================= -->
+                        <!-- ADD NEW IMAGES -->
                         <div class="mb-4">
-                            <label class="form-label">Add New Images</label>
+                            <label class="form-label fw-semibold">Add New Images</label>
 
                             <div id="dropZone"
                                  class="border border-2 border-dashed rounded p-4 text-center"
                                  style="cursor:pointer;">
                                 <p class="text-muted mb-2">
-                                    Drag & drop here or click to select (multiple allowed)
+                                    Drag & drop here or click to select
                                 </p>
 
                                 <input type="file"
@@ -142,11 +141,12 @@
                             </div>
                         </div>
 
-                        <!-- Buttons -->
+                        <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Save
+                                <i class="bi bi-check-circle"></i> Save Changes
                             </button>
+
                             <a asp-action="Index" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left-circle"></i> Back
                             </a>
@@ -158,6 +158,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
@@ -168,31 +169,31 @@
         const input = document.getElementById("mediaInput");
         const preview = document.getElementById("preview");
 
-        dropZone.addEventListener("click", () => input.click());
+        dropZone.onclick = () => input.click();
 
-        dropZone.addEventListener("dragover", e => {
+        dropZone.ondragover = e => {
             e.preventDefault();
             dropZone.classList.add("bg-light");
-        });
+        };
 
-        dropZone.addEventListener("dragleave", () => {
+        dropZone.ondragleave = () => {
             dropZone.classList.remove("bg-light");
-        });
+        };
 
-        dropZone.addEventListener("drop", e => {
+        dropZone.ondrop = e => {
             e.preventDefault();
             dropZone.classList.remove("bg-light");
             input.files = e.dataTransfer.files;
             showPreview(input.files);
-        });
+        };
 
-        input.addEventListener("change", () => showPreview(input.files));
+        input.onchange = () => showPreview(input.files);
 
         function showPreview(files) {
             preview.innerHTML = "";
-            if (!files || files.length === 0) return;
+            if (!files) return;
 
-            Array.from(files).forEach(file => {
+            [...files].forEach(file => {
                 if (!file.type.startsWith("image")) return;
 
                 const col = document.createElement("div");
@@ -201,7 +202,7 @@
                 const img = document.createElement("img");
                 img.src = URL.createObjectURL(file);
                 img.className = "img-fluid rounded border";
-                img.style.maxHeight = "160px";
+                img.style.height = "160px";
                 img.style.objectFit = "cover";
 
                 img.onload = () => URL.revokeObjectURL(img.src);

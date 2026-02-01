@@ -17,52 +17,73 @@
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Edit">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
 
                         <input type="hidden" asp-for="SubscriptionId" />
 
+                        <!-- USER -->
                         <div class="mb-3">
                             <label asp-for="UserId" class="form-label"></label>
                             <select asp-for="UserId"
-                                    class="form-control"
+                                    class="form-select"
                                     asp-items="ViewBag.UserId">
                             </select>
-                            <span asp-validation-for="UserId" class="text-danger"></span>
+                            <span asp-validation-for="UserId"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- PLAN -->
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label"></label>
                             <select asp-for="PlanId"
-                                    class="form-control"
+                                    class="form-select"
                                     asp-items="ViewBag.PlanId">
                             </select>
-                            <span asp-validation-for="PlanId" class="text-danger"></span>
+                            <span asp-validation-for="PlanId"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- START DATE -->
                         <div class="mb-3">
                             <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" type="date" class="form-control" />
-                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                            <input asp-for="StartDate"
+                                   type="date"
+                                   class="form-control" />
+                            <span asp-validation-for="StartDate"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- END DATE -->
                         <div class="mb-3">
                             <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" type="date" class="form-control" />
-                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                            <input asp-for="EndDate"
+                                   type="date"
+                                   class="form-control" />
+                            <span asp-validation-for="EndDate"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- STATUS -->
                         <div class="mb-3">
                             <label asp-for="Status" class="form-label"></label>
-                            <input asp-for="Status" class="form-control" />
-                            <span asp-validation-for="Status" class="text-danger"></span>
+                            <input asp-for="Status"
+                                   class="form-control" />
+                            <span asp-validation-for="Status"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Save
                             </button>
-                            <a asp-action="Index" class="btn btn-secondary">
+
+                            <a asp-action="Index"
+                               class="btn btn-secondary">
                                 <i class="bi bi-arrow-left-circle"></i> Back
                             </a>
                         </div>

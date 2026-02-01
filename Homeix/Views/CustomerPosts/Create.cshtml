@@ -4,16 +4,17 @@
     ViewData["Title"] = "Create Customer Post";
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="page-title">Create Customer Post</h1>
-        </div>
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Create Customer Post</h1>
+        <p class="text-muted mb-0">
+            Describe your request clearly to attract the right workers
+        </p>
     </div>
 
-    <!-- Centered Form -->
+    <!-- FORM CARD -->
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
@@ -24,69 +25,67 @@
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- OPTIONAL: show who is posting (not editable) -->
+                        <!-- CATEGORY -->
                         <div class="mb-3">
-                            <label class="form-label">Posting as (User ID)</label>
-                            <input class="form-control" value="@ViewBag.LoggedInUserId" readonly />
-                        </div>
-
-                        <!-- Category -->
-                        <div class="mb-3">
-                            <label asp-for="PostCategoryId" class="form-label"></label>
+                            <label asp-for="PostCategoryId" class="form-label fw-semibold"></label>
                             <select asp-for="PostCategoryId"
                                     class="form-select"
-                                    asp-items="ViewBag.PostCategoryId">
+                                    asp-items="ViewBag.PostCategoryId"
+                                    required>
                                 <option value="">-- Select Category --</option>
                             </select>
                             <span asp-validation-for="PostCategoryId" class="text-danger"></span>
                         </div>
 
-                        <!-- Title -->
+                        <!-- TITLE -->
                         <div class="mb-3">
-                            <label asp-for="Title" class="form-label"></label>
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
-                        <!-- Description -->
+                        <!-- DESCRIPTION -->
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label"></label>
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
                             <textarea asp-for="Description"
                                       class="form-control"
                                       rows="4"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <!-- Location -->
+                        <!-- LOCATION -->
                         <div class="mb-3">
-                            <label asp-for="Location" class="form-label"></label>
+                            <label asp-for="Location" class="form-label fw-semibold"></label>
                             <input asp-for="Location" class="form-control" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
-                        <!-- Price Range Min -->
-                        <div class="mb-3">
-                            <label asp-for="PriceRangeMin" class="form-label"></label>
-                            <input asp-for="PriceRangeMin"
-                                   type="number"
-                                   step="0.01"
-                                   class="form-control" />
-                            <span asp-validation-for="PriceRangeMin" class="text-danger"></span>
-                        </div>
+                        <!-- PRICE RANGE -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PriceRangeMin" class="form-label fw-semibold"></label>
+                                <input asp-for="PriceRangeMin"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control" />
+                                <span asp-validation-for="PriceRangeMin" class="text-danger"></span>
+                            </div>
 
-                        <!-- Price Range Max -->
-                        <div class="mb-3">
-                            <label asp-for="PriceRangeMax" class="form-label"></label>
-                            <input asp-for="PriceRangeMax"
-                                   type="number"
-                                   step="0.01"
-                                   class="form-control" />
-                            <span asp-validation-for="PriceRangeMax" class="text-danger"></span>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PriceRangeMax" class="form-label fw-semibold"></label>
+                                <input asp-for="PriceRangeMax"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control" />
+                                <span asp-validation-for="PriceRangeMax" class="text-danger"></span>
+                            </div>
                         </div>
 
                         <!-- MEDIA UPLOAD -->
                         <div class="mb-4">
-                            <label class="form-label">Upload Images (optional)</label>
+                            <label class="form-label fw-semibold">
+                                Upload Images <span class="text-muted">(optional)</span>
+                            </label>
 
                             <div id="dropZone"
                                  class="border border-2 border-dashed rounded p-4 text-center"
@@ -97,23 +96,25 @@
 
                                 <input type="file"
                                        id="mediaInput"
-                                       name="mediaFiles"
+                                       name="newMediaFiles"
                                        class="d-none"
                                        accept="image/*"
                                        multiple />
 
                                 <div id="preview" class="row g-2 mt-3"></div>
 
-                                <button type="button" id="clearImagesBtn" class="btn btn-outline-secondary btn-sm mt-3">
+                                <button type="button"
+                                        id="clearImagesBtn"
+                                        class="btn btn-outline-secondary btn-sm mt-3">
                                     Clear selected images
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Buttons -->
+                        <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Create
+                                <i class="bi bi-check-circle"></i> Create Post
                             </button>
 
                             <a asp-action="Index" class="btn btn-secondary">
@@ -137,7 +138,6 @@
         const input = document.getElementById("mediaInput");
         const preview = document.getElementById("preview");
         const clearBtn = document.getElementById("clearImagesBtn");
-
         const fileMap = new Map();
 
         function fileKey(f) {

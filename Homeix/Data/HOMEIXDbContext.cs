@@ -5,8 +5,6 @@ namespace Homeix.Data
 {
     public partial class HOMEIXDbContext : DbContext
     {
-        public HOMEIXDbContext() { }
-
         public HOMEIXDbContext(DbContextOptions<HOMEIXDbContext> options)
             : base(options) { }
 
@@ -29,20 +27,12 @@ namespace Homeix.Data
         public virtual DbSet<WorkerPostMedia> WorkerPostMedia { get; set; } = null!;
         public virtual DbSet<CustomerPostMedia> CustomerPostMedia { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(
-                    "Server=db32386.public.databaseasp.net,1433;Database=db32386;User Id=db32386;Password=9Bm_C?2agZ+3;TrustServerCertificate=True;Encrypt=True;");
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Advertisement>(entity =>
             {
                 entity.HasKey(e => e.AdId);
+
                 entity.HasOne(e => e.CreatedByUser)
                       .WithMany(u => u.Advertisements)
                       .HasForeignKey(e => e.CreatedByUserId)
@@ -61,7 +51,7 @@ namespace Homeix.Data
                 entity.HasOne(e => e.User2)
                       .WithMany(u => u.ConversationUser2s)
                       .HasForeignKey(e => e.User2Id)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<CustomerPost>(entity =>
@@ -76,47 +66,43 @@ namespace Homeix.Data
                 entity.HasOne(e => e.PostCategory)
                       .WithMany(c => c.CustomerPosts)
                       .HasForeignKey(e => e.PostCategoryId)
-                      .OnDelete(DeleteBehavior.SetNull);
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // ✅ Favorites: Worker Posts
+            // ✅ FavoriteWorkerPost
             modelBuilder.Entity<FavoriteWorkerPost>(entity =>
             {
-                entity.HasKey(e => e.FavoriteWorkerPostId);
+                entity.HasKey(e => e.FavoritePostId);
 
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.FavoriteWorkerPosts)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                // ✅ Recommended: enforce integrity with WorkerPost table
-                entity.HasOne<WorkerPost>()
+                entity.HasOne(e => e.WorkerPost)
                       .WithMany()
                       .HasForeignKey(e => e.WorkerPostId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasIndex(e => new { e.UserId, e.WorkerPostId })
-                      .IsUnique();
+                entity.HasIndex(e => new { e.UserId, e.WorkerPostId }).IsUnique();
             });
 
-            // ✅ Favorites: Customer Posts
+            // ✅ FavoriteCustomerPost
             modelBuilder.Entity<FavoriteCustomerPost>(entity =>
             {
-                entity.HasKey(e => e.FavoriteCustomerPostId);
+                entity.HasKey(e => e.FavoritePostId);
 
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.FavoriteCustomerPosts)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                // ✅ Recommended: enforce integrity with CustomerPost table
-                entity.HasOne<CustomerPost>()
+                entity.HasOne(e => e.CustomerPost)
                       .WithMany()
                       .HasForeignKey(e => e.CustomerPostId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasIndex(e => new { e.UserId, e.CustomerPostId })
-                      .IsUnique();
+                entity.HasIndex(e => new { e.UserId, e.CustomerPostId }).IsUnique();
             });
 
             modelBuilder.Entity<Message>(entity =>
@@ -141,12 +127,12 @@ namespace Homeix.Data
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Payments)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(e => e.Subscription)
                       .WithMany(s => s.Payments)
                       .HasForeignKey(e => e.SubscriptionId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.PaymentMethod)
                       .WithMany(m => m.Payments)
@@ -166,7 +152,7 @@ namespace Homeix.Data
                 entity.HasOne(e => e.RatedUser)
                       .WithMany(u => u.RatingRatedUsers)
                       .HasForeignKey(e => e.RatedUserId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Subscription>(entity =>
@@ -206,7 +192,7 @@ namespace Homeix.Data
                 entity.HasOne(e => e.PostCategory)
                       .WithMany(c => c.WorkerPosts)
                       .HasForeignKey(e => e.PostCategoryId)
-                      .OnDelete(DeleteBehavior.SetNull);
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -221,6 +207,8 @@ namespace Homeix.Data
 
             modelBuilder.Entity<WorkerPostMedia>(entity =>
             {
+                entity.HasKey(e => e.MediaId);
+
                 entity.HasOne(e => e.WorkerPost)
                       .WithMany(p => p.Media)
                       .HasForeignKey(e => e.WorkerPostId)
@@ -229,13 +217,13 @@ namespace Homeix.Data
 
             modelBuilder.Entity<CustomerPostMedia>(entity =>
             {
+                entity.HasKey(e => e.MediaId);
+
                 entity.HasOne(e => e.CustomerPost)
                       .WithMany(p => p.Media)
                       .HasForeignKey(e => e.CustomerPostId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
-
-            OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

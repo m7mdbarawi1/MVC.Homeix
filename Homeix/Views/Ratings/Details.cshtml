@@ -49,20 +49,18 @@
                             @Html.DisplayFor(model => model.CreatedAt)
                         </dd>
 
-                        
-
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.RatedUser)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.RatedUser.UserId)
+                            @(Model.RatedUser?.UserId.ToString() ?? "—")
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.RaterUser)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.RaterUser.UserId)
+                            @(Model.RaterUser?.UserId.ToString() ?? "—")
                         </dd>
 
                     </dl>

@@ -6,27 +6,30 @@
 
 <div class="container-fluid mt-4">
 
+    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
 
             <div class="d-flex gap-2">
                 <a asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New
+                    <i class="bi bi-plus-circle me-1"></i> Create New
                 </a>
 
-                <a asp-action="DownloadReport" class="btn btn-secondary">
-                    <i class="bi bi-download"></i> Download Report
+                <a asp-action="DownloadReport" class="btn btn-outline-secondary">
+                    <i class="bi bi-download me-1"></i> Download Report
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Search -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput"
+                    <input type="text"
+                           id="searchInput"
                            class="form-control"
                            placeholder="Search worker posts...">
                 </div>
@@ -34,6 +37,7 @@
         </div>
     </div>
 
+    <!-- Table -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -49,12 +53,12 @@
                                     <th>Max Price</th>
                                     <th>Rating</th>
                                     <th>Created</th>
-                                    <th>Status</th>
                                     <th>Category</th>
                                     <th>Worker</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody id="workerPostsTable">
                                 @if (Model != null && Model.Any())
                                 {
@@ -63,7 +67,7 @@
                                         var ratings = item.User?.RatingRatedUsers
                                         ?? Enumerable.Empty<Homeix.Models.Rating>();
 
-                                        var avgRating = ratings.Any()
+                                        var avgRating = ratings.Count() > 0
                                         ? ratings.Average(r => r.RatingValue)
                                         : 0;
 
@@ -87,37 +91,26 @@
 
                                             <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
 
-                                            <td>
-                                                @if (item.IsActive)
-                                                {
-                                                    <span class="badge bg-success">Active</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-secondary">Inactive</span>
-                                                }
-                                            </td>
-
                                             <td>@item.PostCategory?.CategoryName</td>
                                             <td>@item.User?.FullName</td>
 
                                             <td class="text-center">
-                                                <div class="d-flex justify-content-center gap-2">
+                                                <div class="btn-group btn-group-sm">
                                                     <a asp-action="Edit"
                                                        asp-route-id="@item.WorkerPostId"
-                                                       class="btn btn-secondary btn-sm">
+                                                       class="btn btn-outline-secondary">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </a>
 
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.WorkerPostId"
-                                                       class="btn btn-accent btn-sm">
+                                                       class="btn btn-outline-info">
                                                         <i class="bi bi-info-circle"></i>
                                                     </a>
 
                                                     <a asp-action="Delete"
                                                        asp-route-id="@item.WorkerPostId"
-                                                       class="btn btn-danger btn-sm">
+                                                       class="btn btn-outline-danger">
                                                         <i class="bi bi-trash"></i>
                                                     </a>
                                                 </div>
@@ -128,9 +121,10 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="11"
-                                            class="text-center text-muted">
-                                            No worker posts found
+                                        <td colspan="10" class="text-center p-4">
+                                            <div class="alert alert-secondary mb-0">
+                                                No worker posts found.
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -153,8 +147,7 @@
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
-                    row.style.display =
-                        row.textContent.toLowerCase().includes(term)
+                    row.style.display = row.textContent.toLowerCase().includes(term)
                         ? ""
                         : "none";
                 });

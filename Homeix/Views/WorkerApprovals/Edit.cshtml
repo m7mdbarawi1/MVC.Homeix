@@ -22,13 +22,15 @@
                 <div class="card-body">
 
                     <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+
                         <div asp-validation-summary="ModelOnly"
                              class="text-danger mb-3"></div>
 
                         <!-- APPROVAL ID -->
                         <input type="hidden" asp-for="ApprovalId" />
 
-                        <!-- USER -->
+                        <!-- WORKER -->
                         <div class="mb-3">
                             <label asp-for="UserId" class="form-label">
                                 Worker
@@ -83,7 +85,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    await Html.RenderPartialAsync("_ValidationScriptsPartial")
 }

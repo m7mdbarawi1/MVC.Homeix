@@ -11,31 +11,29 @@
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
-<link rel="stylesheet" href="~/css/customerposts/index.css" />
+<div class="container mt-4">
 
-<div class="container page-wrapper mt-4">
-
-    <!-- ================= HEADER ================= -->
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="page-title">My Posts</h1>
+        <h1 class="fw-bold">My Posts</h1>
 
         <a asp-action="Create" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Create New Post
         </a>
     </div>
 
-    <!-- ================= FILTERS ================= -->
+    <!-- FILTERS -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <div class="row g-2">
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <input id="searchInput"
                            class="form-control"
                            placeholder="Search title..." />
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <select id="categoryFilter" class="form-select">
                         <option value="">All Categories</option>
                         @foreach (var cat in Model
@@ -48,19 +46,11 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <select id="statusFilter" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="open">Open</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-
             </div>
         </div>
     </div>
 
-    <!-- ================= POSTS LIST ================= -->
+    <!-- POSTS LIST -->
     <div id="postsList">
 
         @if (!Model.Any())
@@ -74,7 +64,7 @@
         {
             var media =
             mediaLookup.TryGetValue(post.CustomerPostId, out var list)
-            ? list.OrderByDescending(m => m.UploadedAt).FirstOrDefault()
+            ? list.FirstOrDefault()   // ✅ no UploadedAt
             : null;
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
@@ -83,19 +73,18 @@
 
             <div class="card shadow-sm mb-3 post-row"
                  data-title="@post.Title.ToLowerInvariant()"
-                 data-category="@post.PostCategory?.CategoryName"
-                 data-status="@post.Status.ToLowerInvariant()">
+                 data-category="@post.PostCategory?.CategoryName">
 
                 <div class="row g-0 align-items-center">
 
-                    <!-- 🖼 IMAGE -->
+                    <!-- IMAGE -->
                     <div class="col-md-3">
                         <img src="@imageUrl"
                              class="img-fluid rounded-start"
                              style="height:180px; width:100%; object-fit:cover" />
                     </div>
 
-                    <!-- 📄 CONTENT -->
+                    <!-- CONTENT -->
                     <div class="col-md-6">
                         <div class="card-body">
 
@@ -103,25 +92,22 @@
 
                             <p class="mb-1 text-muted">
                                 <strong>Category:</strong>
-                                @post.PostCategory?.CategoryName
+                                @(post.PostCategory?.CategoryName ?? "—")
                             </p>
 
                             <p class="mb-1 fw-bold text-primary">
-                                💰 @post.PriceRangeMin JD – @post.PriceRangeMax JD
+                                💰 @(post.PriceRangeMin?.ToString() ?? "—") JD –
+                                @(post.PriceRangeMax?.ToString() ?? "—") JD
                             </p>
 
                             <p class="mb-1 text-muted small">
                                 Created: @post.CreatedAt.ToString("yyyy-MM-dd")
                             </p>
 
-                            <span class="badge bg-info">
-                                @post.Status
-                            </span>
-
                         </div>
                     </div>
 
-                    <!-- ⚙ ACTIONS -->
+                    <!-- ACTIONS -->
                     <div class="col-md-3">
                         <div class="d-flex flex-column gap-2 p-3">
 
@@ -159,19 +145,16 @@
 
             const search = document.getElementById("searchInput");
             const category = document.getElementById("categoryFilter");
-            const status = document.getElementById("statusFilter");
             const rows = document.querySelectorAll(".post-row");
 
             function filter() {
                 rows.forEach(row => {
                     const title = row.dataset.title || "";
                     const cat = row.dataset.category || "";
-                    const stat = row.dataset.status || "";
 
                     const show =
                         title.includes(search.value.toLowerCase()) &&
-                        (category.value === "" || cat === category.value) &&
-                        (status.value === "" || stat === status.value);
+                        (category.value === "" || cat === category.value);
 
                     row.style.display = show ? "" : "none";
                 });
@@ -179,7 +162,6 @@
 
             search.addEventListener("input", filter);
             category.addEventListener("change", filter);
-            status.addEventListener("change", filter);
 
             filter();
         });

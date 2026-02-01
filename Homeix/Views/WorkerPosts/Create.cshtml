@@ -4,16 +4,17 @@
     ViewData["Title"] = "Create Worker Post";
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
 
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="page-title">Create Worker Post</h1>
-        </div>
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Create Worker Post</h1>
+        <p class="text-muted">Fill in the details below to publish a new post</p>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
+        <div class="col-md-10 col-lg-8">
+
             <div class="card shadow-sm">
                 <div class="card-body">
 
@@ -22,38 +23,44 @@
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+                        <!-- CATEGORY -->
                         <div class="mb-3">
-                            <label asp-for="PostCategoryId" class="form-label"></label>
+                            <label asp-for="PostCategoryId" class="form-label fw-semibold"></label>
                             <select asp-for="PostCategoryId"
                                     class="form-select"
                                     asp-items="ViewBag.PostCategoryId">
+                                <option value="">-- Select Category --</option>
                             </select>
                             <span asp-validation-for="PostCategoryId" class="text-danger"></span>
                         </div>
 
+                        <!-- TITLE -->
                         <div class="mb-3">
-                            <label asp-for="Title" class="form-label"></label>
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
+                        <!-- DESCRIPTION -->
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label"></label>
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
                             <textarea asp-for="Description"
                                       class="form-control"
                                       rows="4"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
+                        <!-- LOCATION -->
                         <div class="mb-3">
-                            <label asp-for="Location" class="form-label"></label>
+                            <label asp-for="Location" class="form-label fw-semibold"></label>
                             <input asp-for="Location" class="form-control" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
+                        <!-- PRICE RANGE -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="PriceRangeMin" class="form-label"></label>
+                                <label asp-for="PriceRangeMin" class="form-label fw-semibold"></label>
                                 <input asp-for="PriceRangeMin"
                                        type="number"
                                        step="0.01"
@@ -62,7 +69,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="PriceRangeMax" class="form-label"></label>
+                                <label asp-for="PriceRangeMax" class="form-label fw-semibold"></label>
                                 <input asp-for="PriceRangeMax"
                                        type="number"
                                        step="0.01"
@@ -71,14 +78,18 @@
                             </div>
                         </div>
 
+                        <!-- IMAGES -->
                         <div class="mb-4">
-                            <label class="form-label">Upload Images (optional)</label>
+                            <label class="form-label fw-semibold">
+                                Upload Images <span class="text-muted">(optional)</span>
+                            </label>
 
                             <div id="dropZone"
                                  class="border border-2 border-dashed rounded p-4 text-center"
                                  style="cursor:pointer;">
+
                                 <p class="text-muted mb-2">
-                                    Drag & drop here or click to select (multiple allowed)
+                                    Drag & drop images here or click to select
                                 </p>
 
                                 <input type="file"
@@ -90,19 +101,22 @@
 
                                 <div id="preview" class="row g-2 mt-3"></div>
 
-                                <button type="button" id="clearImagesBtn" class="btn btn-outline-secondary btn-sm mt-3">
+                                <button type="button"
+                                        id="clearImagesBtn"
+                                        class="btn btn-outline-secondary btn-sm mt-3">
                                     Clear selected images
                                 </button>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-2 mt-4">
+                        <!-- ACTIONS -->
+                        <div class="d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Create Post
                             </button>
 
-                            <a asp-action="MyPosts" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Back
+                            <a asp-action="MyPosts" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back
                             </a>
                         </div>
 
@@ -110,14 +124,13 @@
 
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 
     <script>
         const dropZone = document.getElementById("dropZone");
@@ -126,66 +139,18 @@
         const clearBtn = document.getElementById("clearImagesBtn");
         const fileMap = new Map();
 
-        function fileKey(f) {
-            return `${f.name}_${f.size}_${f.lastModified}`;
-        }
+        const key = f => `${f.name}_${f.size}_${f.lastModified}`;
 
-        function rebuildInputFiles() {
+        function rebuildFiles() {
             const dt = new DataTransfer();
-            for (const f of fileMap.values()) dt.items.add(f);
+            fileMap.forEach(f => dt.items.add(f));
             input.files = dt.files;
-            showPreview(input.files);
+            renderPreview();
         }
 
-        function addFiles(fileList) {
-            if (!fileList) return;
-            [...fileList].forEach(f => {
-                if (!f.type.startsWith("image/")) return;
-                fileMap.set(fileKey(f), f);
-            });
-            rebuildInputFiles();
-        }
-
-        function clearFiles() {
-            fileMap.clear();
-            rebuildInputFiles();
-        }
-
-        dropZone.onclick = (e) => {
-            if (e.target === clearBtn) return;
-            input.click();
-        };
-
-        dropZone.ondragover = e => {
-            e.preventDefault();
-            dropZone.classList.add("bg-light");
-        };
-
-        dropZone.ondragleave = () => {
-            dropZone.classList.remove("bg-light");
-        };
-
-        dropZone.ondrop = e => {
-            e.preventDefault();
-            dropZone.classList.remove("bg-light");
-            addFiles(e.dataTransfer.files);
-        };
-
-        input.onchange = () => {
-            addFiles(input.files);
-            input.value = "";
-        };
-
-        clearBtn.onclick = (e) => {
-            e.preventDefault();
-            clearFiles();
-        };
-
-        function showPreview(files) {
+        function renderPreview() {
             preview.innerHTML = "";
-            if (!files || files.length === 0) return;
-
-            [...files].forEach(file => {
+            fileMap.forEach(file => {
                 const col = document.createElement("div");
                 col.className = "col-6 col-md-4";
 
@@ -200,5 +165,42 @@
                 preview.appendChild(col);
             });
         }
+
+        function addFiles(files) {
+            [...files].forEach(f => {
+                if (f.type.startsWith("image/")) {
+                    fileMap.set(key(f), f);
+                }
+            });
+            rebuildFiles();
+        }
+
+        dropZone.onclick = e => {
+            if (e.target !== clearBtn) input.click();
+        };
+
+        dropZone.ondragover = e => {
+            e.preventDefault();
+            dropZone.classList.add("bg-light");
+        };
+
+        dropZone.ondragleave = () => dropZone.classList.remove("bg-light");
+
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            dropZone.classList.remove("bg-light");
+            addFiles(e.dataTransfer.files);
+        };
+
+        input.onchange = () => {
+            addFiles(input.files);
+            input.value = "";
+        };
+
+        clearBtn.onclick = e => {
+            e.preventDefault();
+            fileMap.clear();
+            rebuildFiles();
+        };
     </script>
 }

@@ -16,23 +16,29 @@ namespace Homeix.Models
         [Column("RaterUserID")]
         public int? RaterUserId { get; set; }
 
-        [Required]
         [Column("RatedUserID")]
-        public int RatedUserId { get; set; }
+        public int? RatedUserId { get; set; }
 
+        [Required]
         [Range(1, 5)]
         public int RatingValue { get; set; }
 
+        [Column(TypeName = "nvarchar(max)")]
         public string? Review { get; set; }
 
+        [Required]
         [Column(TypeName = "datetime")]
         [BindNever]
         public DateTime CreatedAt { get; set; }
 
-        [ValidateNever]
-        public virtual User RatedUser { get; set; } = null!;
+        // 🔗 Navigation
 
         [ValidateNever]
+        [ForeignKey(nameof(RatedUserId))]
+        public virtual User? RatedUser { get; set; }
+
+        [ValidateNever]
+        [ForeignKey(nameof(RaterUserId))]
         public virtual User? RaterUser { get; set; }
     }
 }

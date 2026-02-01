@@ -1,67 +1,85 @@
 ﻿@model List<Homeix.Models.Advertisement>
 
-@if (Model.Any())
+@if (Model != null && Model.Any())
 {
     var ad = Model.First();
 
-    <div class="modal fade show"
+    <div class="modal fade"
          id="adModal"
-         style="display:block; background: rgba(0,0,0,0.75);"
-         tabindex="-1">
+         tabindex="-1"
+         aria-hidden="true">
 
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
 
-                <!-- HEADER -->
-                <div class="modal-header border-0 justify-content-between">
+                <!-- ================= HEADER ================= -->
+                <div class="modal-header border-0 d-flex justify-content-between align-items-center">
                     <span class="badge bg-warning text-dark px-3 py-2">
                         Advertisement
                     </span>
-
-                    <button type="button"
-                            class="btn-close"
-                            aria-label="Close"
-                            onclick="closeAd()">
-                    </button>
                 </div>
 
-                <!-- BODY -->
+                <!-- ================= BODY ================= -->
                 <div class="modal-body text-center px-4 pb-4">
 
-                    <img src="@ad.ImagePath"
-                         class="img-fluid rounded-3 mb-4"
-                         style="max-height: 420px; object-fit: contain;" />
+                    @if (!string.IsNullOrWhiteSpace(ad.ImagePath))
+                    {
+                        <img src="@ad.ImagePath"
+                             class="img-fluid rounded-3 mb-4"
+                             style="max-height: 420px; object-fit: contain;"
+                             alt="Advertisement" />
+                    }
+                    else
+                    {
+                        <div class="text-muted mb-4">
+                            No advertisement image available
+                        </div>
+                    }
 
                     <div class="d-inline-block px-4 py-2 rounded-pill bg-light text-dark fw-semibold">
                         Closing in <span id="adCountdown">5</span> seconds
                     </div>
 
                 </div>
+
             </div>
         </div>
     </div>
 
     <script>
-        let seconds = 5;
-        const counter = document.getElementById("adCountdown");
+        document.addEventListener("DOMContentLoaded", function () {
 
-        const timer = setInterval(() => {
-            seconds--;
-            counter.innerText = seconds;
+            const modalElement = document.getElementById("adModal");
+            if (!modalElement) return;
 
-            if (seconds <= 0) {
-                closeAd();
-            }
-        }, 1000);
+            const modal = new bootstrap.Modal(modalElement, {
+                backdrop: "static",
+                keyboard: false
+            });
 
-        function closeAd() {
-            clearInterval(timer);
+            modal.show();
 
-            const modal = document.getElementById("adModal");
-            if (modal) modal.remove();
+            let seconds = 5;
+            const counter = document.getElementById("adCountdown");
 
-            document.body.classList.remove("modal-open");
-            document.querySelector(".modal-backdrop")?.remove();
-        }
+            const timer = setInterval(() => {
+                seconds--;
+
+                if (counter) {
+                    counter.innerText = seconds;
+                }
+
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    modal.hide();
+                }
+            }, 1000);
+
+            modalElement.addEventListener("hidden.bs.modal", () => {
+                clearInterval(timer);
+                modalElement.remove();
+            });
+
+        });
     </script>
 }
