@@ -6,17 +6,20 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="text-danger">Delete Payment Method</h1>
-            <p class="text-muted">Are you sure you want to delete this payment method?</p>
+            <h1 class="text-danger mb-1">Delete Payment Method</h1>
+            <p class="text-muted mb-0">
+                Are you sure you want to delete this payment method?
+            </p>
         </div>
     </div>
 
-    <!-- Centered Card -->
+    <!-- ================= CONFIRMATION CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
+
             <div class="card shadow-sm border-danger">
 
                 <!-- Card Header -->
@@ -26,9 +29,11 @@
 
                 <!-- Card Body -->
                 <div class="card-body">
-                    <dl class="row">
+                    <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">Method Name</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            Method Name
+                        </dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.MethodName)
                         </dd>
@@ -40,17 +45,24 @@
                 <div class="card-footer d-flex justify-content-end gap-2">
                     <form asp-action="Delete" method="post" class="d-inline">
                         <input type="hidden" asp-for="PaymentMethodId" />
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-trash"></i> Delete
+
+                        <button type="submit"
+                                class="btn btn-danger d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-trash"></i>
+                            Delete
                         </button>
                     </form>
 
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-arrow-left-circle"></i>
+                        Cancel
                     </a>
                 </div>
 
             </div>
+
         </div>
     </div>
+
 </div>

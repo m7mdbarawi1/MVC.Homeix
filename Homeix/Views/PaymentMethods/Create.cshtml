@@ -6,37 +6,56 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Create Payment Method</h1>
+            <h1 class="page-title mb-1">Create Payment Method</h1>
+            <p class="text-muted mb-0">
+                Add a new payment method to the system.
+            </p>
         </div>
     </div>
 
-    <!-- Centered Form -->
+    <!-- ================= FORM CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
+
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
 
                         <!-- Method Name -->
                         <div class="mb-3">
-                            <label asp-for="MethodName" class="form-label"></label>
-                            <input asp-for="MethodName" class="form-control" />
-                            <span asp-validation-for="MethodName" class="text-danger"></span>
+                            <label asp-for="MethodName"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="MethodName"
+                                   class="form-control"
+                                   placeholder="Enter payment method name" />
+
+                            <span asp-validation-for="MethodName"
+                                  class="text-danger"></span>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-end gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Create
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="submit"
+                                    class="btn btn-primary d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-check-circle"></i>
+                                Create
                             </button>
 
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Back
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-arrow-left-circle"></i>
+                                Back
                             </a>
                         </div>
 
@@ -44,8 +63,10 @@
 
                 </div>
             </div>
+
         </div>
     </div>
+
 </div>
 
 @section Scripts {
