@@ -17,6 +17,12 @@
                     <span class="badge bg-warning text-dark px-3 py-2">
                         Advertisement
                     </span>
+
+                    <!-- ❌ CLOSE BUTTON -->
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                 </div>
 
                 <!-- ================= BODY ================= -->
@@ -53,33 +59,45 @@
             if (!modalElement) return;
 
             const modal = new bootstrap.Modal(modalElement, {
-                backdrop: "static",
-                keyboard: false
+                backdrop: false,
+                keyboard: true
             });
 
-            modal.show();
+            let showIntervalSeconds = 6;
+            let autoCloseSeconds = 5;
+            let timer = null;
+            let reopenTimer = null;
 
-            let seconds = 5;
-            const counter = document.getElementById("adCountdown");
+            function showAd() {
+                modal.show();
 
-            const timer = setInterval(() => {
-                seconds--;
+                let seconds = autoCloseSeconds;
+                const counter = document.getElementById("adCountdown");
+                if (counter) counter.textContent = seconds;
 
-                if (counter) {
-                    counter.innerText = seconds;
-                }
+                timer = setInterval(() => {
+                    seconds--;
+                    if (counter) counter.textContent = seconds;
 
-                if (seconds <= 0) {
-                    clearInterval(timer);
-                    modal.hide();
-                }
-            }, 1000);
+                    if (seconds <= 0) {
+                        clearInterval(timer);
+                        modal.hide();
+                    }
+                }, 1000);
+            }
 
             modalElement.addEventListener("hidden.bs.modal", () => {
                 clearInterval(timer);
-                modalElement.remove();
+
+                // 🔁 Reopen after X seconds
+                reopenTimer = setTimeout(() => {
+                    showAd();
+                }, showIntervalSeconds * 1000);
             });
 
+            // 🚀 First show
+            showAd();
         });
     </script>
+
 }
