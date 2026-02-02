@@ -20,35 +20,18 @@ namespace Homeix.Controllers
         }
 
         // =========================
-        // MY FAVORITES
-        // =========================
-        public async Task<IActionResult> Index()
-        {
-            int userId = GetUserId();
-
-            var favorites = await _context.FavoriteWorkerPosts
-                .Where(f => f.UserId == userId)
-                .Include(f => f.WorkerPost)
-                    .ThenInclude(p => p.PostCategory)
-                .Include(f => f.WorkerPost)
-                    .ThenInclude(p => p.Media)
-                .OrderByDescending(f => f.FavoritePostId)
-                .ToListAsync();
-
-            return View(favorites);
-        }
-
-        // =========================
         // ADD TO FAVORITES
         // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(int workerPostId)
+        public async Task<IActionResult> Add(int workerPostId, string returnUrl)
         {
             int userId = GetUserId();
 
             bool exists = await _context.FavoriteWorkerPosts
-                .AnyAsync(f => f.UserId == userId && f.WorkerPostId == workerPostId);
+                .AnyAsync(f =>
+                    f.UserId == userId &&
+                    f.WorkerPostId == workerPostId);
 
             if (!exists)
             {
@@ -61,7 +44,7 @@ namespace Homeix.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Details", "WorkerPosts", new { id = workerPostId });
+            return RedirectBack(returnUrl);
         }
 
         // =========================
@@ -69,12 +52,14 @@ namespace Homeix.Controllers
         // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Remove(int workerPostId)
+        public async Task<IActionResult> Remove(int workerPostId, string returnUrl)
         {
             int userId = GetUserId();
 
             var favorite = await _context.FavoriteWorkerPosts
-                .FirstOrDefaultAsync(f => f.UserId == userId && f.WorkerPostId == workerPostId);
+                .FirstOrDefaultAsync(f =>
+                    f.UserId == userId &&
+                    f.WorkerPostId == workerPostId);
 
             if (favorite != null)
             {
@@ -82,17 +67,28 @@ namespace Homeix.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectBack(returnUrl);
         }
 
         // =========================
-        // HELPERS
+        // REDIRECT BACK TO SAME PAGE
+        // =========================
+        private IActionResult RedirectBack(string returnUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return LocalRedirect(returnUrl);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // =========================
+        // USER ID HELPER
         // =========================
         private int GetUserId()
         {
             var claim = User.FindFirst("UserId");
             if (claim == null)
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("UserId claim not found.");
 
             return int.Parse(claim.Value);
         }

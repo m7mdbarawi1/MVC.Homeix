@@ -8,8 +8,8 @@ namespace Homeix.Models
     public class FavoriteCustomerPost
     {
         [Key]
-        [Column("FavoritePostID")]
-        public int FavoritePostId { get; set; }
+        [Column("FavoriteCustomerPostID")]
+        public int FavoriteCustomerPostId { get; set; }
 
         [Required]
         [Column("UserID")]
@@ -19,7 +19,7 @@ namespace Homeix.Models
         [Column("CustomerPostID")]
         public int CustomerPostId { get; set; }
 
-        // 🔗 Navigation
+        // 🔗 Navigation Properties
 
         [ValidateNever]
         [ForeignKey(nameof(UserId))]

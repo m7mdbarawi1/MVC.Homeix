@@ -100,7 +100,7 @@
             : "/images/no-image.png";
 
             var ratings = post.User?.RatingRatedUsers ?? Enumerable.Empty<Rating>();
-            var avgRating = ratings.Count() > 0 ? ratings.Average(r => r.RatingValue) : 0;
+            var avgRating = ratings.Any() ? ratings.Average(r => r.RatingValue) : 0;
             var isFavorite = favoriteIds.Contains(post.CustomerPostId);
 
             <div class="col-md-4 col-lg-3 mb-4 post-card-wrapper">
@@ -112,20 +112,31 @@
                      data-rating="@avgRating"
                      data-favorite="@isFavorite.ToString().ToLowerInvariant()">
 
-                    <!-- FAVORITE -->
-                    <div class="position-absolute top-0 end-0 p-2">
+                    <!-- ❤️ FAVORITE BUTTON -->
+                    <!-- 🔑 FIX: prevent navigation at ALL levels -->
+                    <div class="position-absolute top-0 end-0 p-2"
+                         onclick="event.stopPropagation(); event.preventDefault();">
                         <form asp-controller="FavoriteCustomerPosts"
                               asp-action="@(isFavorite ? "Remove" : "Add")"
-                              method="post">
+                              method="post"
+                              onclick="event.stopPropagation(); event.preventDefault();">
                             @Html.AntiForgeryToken()
-                            <input type="hidden" name="postId" value="@post.CustomerPostId" />
+
+                            <input type="hidden" name="customerPostId"
+                                   value="@post.CustomerPostId" />
+
+                            <input type="hidden" name="returnUrl"
+                                   value="@returnUrl" />
+
                             <button type="submit"
+                                    onclick="event.stopPropagation(); event.preventDefault(); this.closest('form').submit();"
                                     class="btn btn-sm @(isFavorite ? "btn-danger" : "btn-outline-danger") rounded-circle">
                                 @(isFavorite ? "❤️" : "🤍")
                             </button>
                         </form>
                     </div>
 
+                    <!-- CARD LINK -->
                     <a asp-controller="CustomerPosts"
                        asp-action="Details"
                        asp-route-id="@post.CustomerPostId"
@@ -164,7 +175,6 @@
 
                         </div>
                     </a>
-
                 </div>
             </div>
         }

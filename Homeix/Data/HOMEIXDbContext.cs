@@ -70,9 +70,10 @@ namespace Homeix.Data
             });
 
             // ✅ FavoriteWorkerPost
+            // ✅ FavoriteWorkerPost (CORRECT)
             modelBuilder.Entity<FavoriteWorkerPost>(entity =>
             {
-                entity.HasKey(e => e.FavoritePostId);
+                entity.HasKey(e => e.FavoriteWorkerPostId);
 
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.FavoriteWorkerPosts)
@@ -84,13 +85,16 @@ namespace Homeix.Data
                       .HasForeignKey(e => e.WorkerPostId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasIndex(e => new { e.UserId, e.WorkerPostId }).IsUnique();
+                // Prevent duplicate favorites
+                entity.HasIndex(e => new { e.UserId, e.WorkerPostId })
+                      .IsUnique();
             });
 
-            // ✅ FavoriteCustomerPost
+
+            // ✅ FavoriteCustomerPost (FIXED)
             modelBuilder.Entity<FavoriteCustomerPost>(entity =>
             {
-                entity.HasKey(e => e.FavoritePostId);
+                entity.HasKey(e => e.FavoriteCustomerPostId);
 
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.FavoriteCustomerPosts)
@@ -102,7 +106,8 @@ namespace Homeix.Data
                       .HasForeignKey(e => e.CustomerPostId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasIndex(e => new { e.UserId, e.CustomerPostId }).IsUnique();
+                entity.HasIndex(e => new { e.UserId, e.CustomerPostId })
+                      .IsUnique();
             });
 
             modelBuilder.Entity<Message>(entity =>
@@ -224,6 +229,8 @@ namespace Homeix.Data
                       .HasForeignKey(e => e.CustomerPostId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
