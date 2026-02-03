@@ -7,10 +7,6 @@
 @{
     ViewData["Title"] = Localizer["CustomerRequests"];
 
-    var mediaLookup =
-        ViewBag.PostMedia as Dictionary<int, List<CustomerPostMedia>>
-        ?? new Dictionary<int, List<CustomerPostMedia>>();
-
     var favoriteIds =
         ViewBag.FavoritePostIds as List<int>
         ?? new List<int>();
@@ -28,7 +24,8 @@
     </div>
 
     <!-- RESULT COUNT -->
-    <span id="resultCount" class="fw-semibold text-secondary d-block mb-3"></span>
+    <span id="resultCount"
+          class="fw-semibold text-secondary d-block mb-3"></span>
 
     <!-- FILTERS -->
     <div class="card mb-4 shadow-sm">
@@ -55,12 +52,16 @@
                 </div>
 
                 <div class="col">
-                    <input id="minPrice" type="number" class="form-control"
+                    <input id="minPrice"
+                           type="number"
+                           class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col">
-                    <input id="maxPrice" type="number" class="form-control"
+                    <input id="maxPrice"
+                           type="number"
+                           class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
 
@@ -76,7 +77,8 @@
                 </div>
 
                 <div class="col d-grid">
-                    <button id="favoriteToggle" class="btn btn-outline-danger">
+                    <button id="favoriteToggle"
+                            class="btn btn-outline-danger">
                         ❤️ @Localizer["MyFavorites"]
                     </button>
                 </div>
@@ -90,10 +92,7 @@
 
         @foreach (var post in Model)
         {
-            var media =
-            mediaLookup.TryGetValue(post.CustomerPostId, out var list)
-            ? list.FirstOrDefault()
-            : null;
+            var media = post.Media?.FirstOrDefault();
 
             var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
             ? media.MediaPath.Replace("\\", "/")
@@ -113,7 +112,6 @@
                      data-favorite="@isFavorite.ToString().ToLowerInvariant()">
 
                     <!-- ❤️ FAVORITE BUTTON -->
-                    <!-- 🔑 FIX: prevent navigation at ALL levels -->
                     <div class="position-absolute top-0 end-0 p-2"
                          onclick="event.stopPropagation(); event.preventDefault();">
                         <form asp-controller="FavoriteCustomerPosts"
@@ -122,10 +120,12 @@
                               onclick="event.stopPropagation(); event.preventDefault();">
                             @Html.AntiForgeryToken()
 
-                            <input type="hidden" name="customerPostId"
+                            <input type="hidden"
+                                   name="customerPostId"
                                    value="@post.CustomerPostId" />
 
-                            <input type="hidden" name="returnUrl"
+                            <input type="hidden"
+                                   name="returnUrl"
                                    value="@returnUrl" />
 
                             <button type="submit"
@@ -219,7 +219,8 @@
                     if (show) visible++;
                 });
 
-                resultCount.textContent = visible + " @Localizer["RequestsFound"]";
+                resultCount.textContent =
+                    visible + " @Localizer["RequestsFound"]";
             }
 
             favoriteBtn.onclick = () => {

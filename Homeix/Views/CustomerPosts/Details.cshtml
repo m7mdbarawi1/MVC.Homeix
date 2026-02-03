@@ -14,16 +14,24 @@
                ?? u.FullName
                ?? "—";
     }
+
+    string NormalizePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return "/images/no-image.png";
+
+        path = path.Replace("\\", "/");
+
+        return path.StartsWith("/")
+            ? path
+            : "/" + path;
+    }
 }
 
 @{
     ViewData["Title"] = "Customer Post Details";
 
-    var mediaList =
-        ViewBag.PostMedia as List<CustomerPostMedia>
-        ?? new List<CustomerPostMedia>();
-
-    mediaList = mediaList
+    var mediaList = (Model.Media ?? new List<CustomerPostMedia>())
         .Where(m => !string.IsNullOrWhiteSpace(m.MediaPath))
         .OrderByDescending(m => m.MediaId)
         .ToList();
@@ -65,31 +73,37 @@
 
         <!-- IMAGES -->
         <div class="col-12 col-lg-7">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm overflow-hidden">
 
                 @if (hasMedia && mediaList.Count > 1)
                 {
-                    <div id="customerPostCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div id="customerPostCarousel"
+                         class="carousel slide"
+                         data-bs-ride="carousel">
+
                         <div class="carousel-inner bg-secondary bg-opacity-10">
                             @for (int i = 0; i < mediaList.Count; i++)
                             {
-                                var url = mediaList[i].MediaPath.Replace("\\", "/");
+                                var imageUrl = NormalizePath(mediaList[i].MediaPath);
 
                                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                                    <img src="@url"
-                                         class="d-block w-100"
+                                    <img src="@imageUrl"
+                                         class="d-block w-100 img-fluid"
+                                         alt="Customer Post Image"
                                          style="max-height:520px; object-fit:contain;" />
                                 </div>
                             }
                         </div>
 
-                        <button class="carousel-control-prev" type="button"
+                        <button class="carousel-control-prev"
+                                type="button"
                                 data-bs-target="#customerPostCarousel"
                                 data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
                         </button>
 
-                        <button class="carousel-control-next" type="button"
+                        <button class="carousel-control-next"
+                                type="button"
                                 data-bs-target="#customerPostCarousel"
                                 data-bs-slide="next">
                             <span class="carousel-control-next-icon"></span>
@@ -99,11 +113,12 @@
                 else
                 {
                     var imageUrl = hasMedia
-                    ? mediaList.First().MediaPath.Replace("\\", "/")
+                    ? NormalizePath(mediaList.First().MediaPath)
                     : fallbackImageUrl;
 
                     <img src="@imageUrl"
-                         class="d-block w-100"
+                         class="d-block w-100 img-fluid"
+                         alt="Customer Post Image"
                          style="max-height:520px; object-fit:contain;" />
                 }
 
@@ -134,7 +149,9 @@
 
                         <div>
                             <div class="fw-semibold">@Model.User?.FullName</div>
-                            <div class="text-muted small">Username: @creatorUserName</div>
+                            <div class="text-muted small">
+                                Username: @creatorUserName
+                            </div>
                         </div>
                     </div>
 

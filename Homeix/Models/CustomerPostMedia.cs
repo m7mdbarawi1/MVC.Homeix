@@ -20,7 +20,6 @@ namespace Homeix.Models
         public string MediaPath { get; set; } = string.Empty;
 
         // 🔗 Navigation
-
         [ValidateNever]
         [ForeignKey(nameof(CustomerPostId))]
         public virtual CustomerPost CustomerPost { get; set; } = null!;

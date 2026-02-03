@@ -1,63 +1,63 @@
-﻿@model Homeix.Models.CustomerPost
-@using Homeix.Models
+﻿@model Homeix.Models.WorkerPost
 
 @{
-    ViewData["Title"] = "Edit Customer Post";
-
-    var mediaList =
-        ViewBag.PostMedia as List<CustomerPostMedia>
-        ?? new List<CustomerPostMedia>();
+    ViewData["Title"] = "Create Worker Post";
 }
 
 <div class="container mt-4">
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">Edit Customer Post</h1>
+        <h1 class="fw-bold">Create Worker Post</h1>
+        <p class="text-muted">Fill in the details below to publish a new post</p>
     </div>
 
-    <!-- FORM -->
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+        <div class="col-md-10 col-lg-8">
+
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create"
+                          method="post"
+                          enctype="multipart/form-data">
 
-                        <input type="hidden" asp-for="CustomerPostId" />
-                        <input type="hidden" asp-for="UserId" />
-                        <input type="hidden" asp-for="CreatedAt" />
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
 
                         <!-- CATEGORY -->
                         <div class="mb-3">
-                            <label asp-for="PostCategoryId" class="form-label"></label>
+                            <label asp-for="PostCategoryId" class="form-label fw-semibold"></label>
                             <select asp-for="PostCategoryId"
                                     class="form-select"
                                     asp-items="ViewBag.PostCategoryId">
+                                <option value="">-- Select Category --</option>
                             </select>
-                            <span asp-validation-for="PostCategoryId" class="text-danger"></span>
+                            <span asp-validation-for="PostCategoryId"
+                                  class="text-danger"></span>
                         </div>
 
                         <!-- TITLE -->
                         <div class="mb-3">
-                            <label asp-for="Title" class="form-label"></label>
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
                             <input asp-for="Title" class="form-control" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
                         <!-- DESCRIPTION -->
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label"></label>
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
                             <textarea asp-for="Description"
-                                      class="form-control"
-                                      rows="4"></textarea>
+                                      rows="4"
+                                      class="form-control"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <!-- LOCATION -->
                         <div class="mb-3">
-                            <label asp-for="Location" class="form-label"></label>
+                            <label asp-for="Location" class="form-label fw-semibold"></label>
                             <input asp-for="Location" class="form-control" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
@@ -65,74 +65,40 @@
                         <!-- PRICE RANGE -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="PriceRangeMin" class="form-label"></label>
+                                <label asp-for="PriceRangeMin" class="form-label fw-semibold"></label>
                                 <input asp-for="PriceRangeMin"
                                        type="number"
                                        step="0.01"
                                        class="form-control" />
-                                <span asp-validation-for="PriceRangeMin" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="PriceRangeMax" class="form-label"></label>
+                                <label asp-for="PriceRangeMax" class="form-label fw-semibold"></label>
                                 <input asp-for="PriceRangeMax"
                                        type="number"
                                        step="0.01"
                                        class="form-control" />
-                                <span asp-validation-for="PriceRangeMax" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <!-- EXISTING IMAGES -->
+                        <!-- IMAGES -->
                         <div class="mb-4">
-                            <h5 class="fw-semibold mb-2">Current Images</h5>
-
-                            @if (mediaList.Any())
-                            {
-                                <div class="row g-3">
-                                    @foreach (var media in mediaList)
-                                    {
-                                        <div class="col-6 col-md-4">
-                                            <div class="border rounded p-2 h-100">
-                                                <img src="@media.MediaPath.Replace("\\", "/")"
-                                                     class="img-fluid rounded border"
-                                                     style="height:160px; width:100%; object-fit:cover;" />
-
-                                                <div class="form-check mt-2">
-                                                    <input class="form-check-input"
-                                                           type="checkbox"
-                                                           name="deleteMediaIds"
-                                                           value="@media.MediaId"
-                                                           id="del_@media.MediaId" />
-                                                    <label class="form-check-label" for="del_@media.MediaId">
-                                                        Delete
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <p class="text-muted">No images uploaded for this post.</p>
-                            }
-                        </div>
-
-                        <!-- ADD NEW IMAGES -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Add New Images</label>
+                            <label class="form-label fw-semibold">
+                                Upload Images <span class="text-muted">(optional)</span>
+                            </label>
 
                             <div id="dropZone"
                                  class="border border-2 border-dashed rounded p-4 text-center"
                                  style="cursor:pointer;">
+
                                 <p class="text-muted mb-2">
-                                    Drag & drop here or click to select
+                                    Drag & drop images here or click to select
                                 </p>
 
+                                <!-- MUST MATCH CONTROLLER -->
                                 <input type="file"
                                        id="mediaInput"
-                                       name="newMediaFiles"
+                                       name="mediaFiles"
                                        class="d-none"
                                        accept="image/*"
                                        multiple />
@@ -144,11 +110,11 @@
                         <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Save Changes
+                                <i class="bi bi-check-circle"></i> Create Post
                             </button>
 
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Back
+                            <a asp-action="MyPosts" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back
                             </a>
                         </div>
 
@@ -156,9 +122,9 @@
 
                 </div>
             </div>
+
         </div>
     </div>
-
 </div>
 
 @section Scripts {
@@ -184,12 +150,12 @@
             e.preventDefault();
             dropZone.classList.remove("bg-light");
             input.files = e.dataTransfer.files;
-            showPreview(input.files);
+            renderPreview(input.files);
         };
 
-        input.onchange = () => showPreview(input.files);
+        input.onchange = () => renderPreview(input.files);
 
-        function showPreview(files) {
+        function renderPreview(files) {
             preview.innerHTML = "";
             if (!files) return;
 

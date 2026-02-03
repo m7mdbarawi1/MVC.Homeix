@@ -65,16 +65,26 @@
 
                 <!-- ACTIONS -->
                 <div class="card-footer d-flex justify-content-end gap-2">
+
                     <form asp-action="Delete" method="post">
-                        <input type="hidden" asp-for="CustomerPostId" />
-                        <button type="submit" class="btn btn-danger">
+                        @Html.AntiForgeryToken()
+
+                        <!-- IMPORTANT: must match DeleteConfirmed(int id) -->
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.CustomerPostId" />
+
+                        <button type="submit"
+                                class="btn btn-danger">
                             <i class="bi bi-trash"></i> Delete
                         </button>
                     </form>
 
-                    <a asp-action="Index" class="btn btn-secondary">
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
                         <i class="bi bi-arrow-left-circle"></i> Cancel
                     </a>
+
                 </div>
 
             </div>

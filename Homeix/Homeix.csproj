@@ -37,6 +37,7 @@
     <Folder Include="Resources\Views\Ratings\" />
     <Folder Include="Resources\Views\PaymentMethods\" />
     <Folder Include="Resources\Views\Offers\" />
+    <Folder Include="wwwroot\uploads\profile\" />
   </ItemGroup>
 
 </Project>

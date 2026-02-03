@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Homeix.Data;
 using Homeix.Models;
@@ -40,38 +39,6 @@ namespace Homeix.Controllers
         }
 
         // =========================
-        // DOWNLOAD REPORT
-        // =========================
-        public async Task<IActionResult> DownloadReport()
-        {
-            var posts = await _context.CustomerPosts
-                .Include(p => p.PostCategory)
-                .Include(p => p.User)
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
-
-            var sb = new StringBuilder();
-            sb.AppendLine("PostId,Title,Category,User,Location,MinPrice,MaxPrice,CreatedAt");
-
-            foreach (var post in posts)
-            {
-                sb.AppendLine(
-                    $"{post.CustomerPostId}," +
-                    $"\"{post.Title}\"," +
-                    $"\"{post.PostCategory?.CategoryName}\"," +
-                    $"\"{post.User?.FullName}\"," +
-                    $"\"{post.Location}\"," +
-                    $"{post.PriceRangeMin}," +
-                    $"{post.PriceRangeMax}," +
-                    $"{post.CreatedAt:yyyy-MM-dd}"
-                );
-            }
-
-            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-            return File(bytes, "text/csv", "CustomerPostsReport.csv");
-        }
-
-        // =========================
         // DETAILS
         // =========================
         public async Task<IActionResult> Details(int? id)
@@ -84,9 +51,7 @@ namespace Homeix.Controllers
                 .Include(p => p.Media)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (post == null) return NotFound();
-
-            return View(post);
+            return post == null ? NotFound() : View(post);
         }
 
         // =========================
@@ -109,6 +74,9 @@ namespace Homeix.Controllers
             List<IFormFile>? mediaFiles)
         {
             customerPost.UserId = GetUserId();
+            customerPost.CreatedAt = DateTime.Now;
+
+            ModelState.Remove(nameof(CustomerPost.CreatedAt));
             ModelState.Remove(nameof(CustomerPost.UserId));
 
             if (!ModelState.IsValid)
@@ -117,21 +85,19 @@ namespace Homeix.Controllers
                 return View(customerPost);
             }
 
-            customerPost.CreatedAt = DateTime.Now;
-
             _context.CustomerPosts.Add(customerPost);
             await _context.SaveChangesAsync();
 
-            if (mediaFiles != null && mediaFiles.Any(f => f != null && f.Length > 0))
+            if (mediaFiles != null && mediaFiles.Any())
             {
-                foreach (var file in mediaFiles.Where(f => f != null && f.Length > 0))
+                foreach (var file in mediaFiles.Where(f => f.Length > 0))
                 {
-                    var savedPath = await SaveCustomerPostMediaAsync(file);
+                    var path = await SaveCustomerPostMediaAsync(file);
 
                     _context.CustomerPostMedia.Add(new CustomerPostMedia
                     {
                         CustomerPostId = customerPost.CustomerPostId,
-                        MediaPath = savedPath
+                        MediaPath = path
                     });
                 }
 
@@ -167,16 +133,18 @@ namespace Homeix.Controllers
             int id,
             [Bind("CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")]
             CustomerPost customerPost,
-            List<IFormFile>? newMediaFiles,
+            List<IFormFile>? mediaFiles,
             int[]? deleteMediaIds)
         {
-            if (id != customerPost.CustomerPostId) return NotFound();
+            if (id != customerPost.CustomerPostId)
+                return NotFound();
 
             var existing = await _context.CustomerPosts
                 .Include(p => p.Media)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (existing == null) return NotFound();
+            if (existing == null)
+                return NotFound();
 
             if (!ModelState.IsValid)
             {
@@ -185,7 +153,7 @@ namespace Homeix.Controllers
                 return View(customerPost);
             }
 
-            // keep immutable
+            // Update fields
             existing.Title = customerPost.Title;
             existing.Description = customerPost.Description;
             existing.Location = customerPost.Location;
@@ -193,7 +161,7 @@ namespace Homeix.Controllers
             existing.PriceRangeMax = customerPost.PriceRangeMax;
             existing.PostCategoryId = customerPost.PostCategoryId;
 
-            // delete media
+            // Delete selected media
             if (deleteMediaIds != null && deleteMediaIds.Length > 0)
             {
                 var toDelete = existing.Media
@@ -207,17 +175,17 @@ namespace Homeix.Controllers
                 }
             }
 
-            // add media
-            if (newMediaFiles != null && newMediaFiles.Any(f => f != null && f.Length > 0))
+            // Add new media (WORKER-PROVEN LOGIC)
+            if (mediaFiles != null && mediaFiles.Any())
             {
-                foreach (var file in newMediaFiles.Where(f => f != null && f.Length > 0))
+                foreach (var file in mediaFiles.Where(f => f.Length > 0))
                 {
-                    var savedPath = await SaveCustomerPostMediaAsync(file);
+                    var path = await SaveCustomerPostMediaAsync(file);
 
                     _context.CustomerPostMedia.Add(new CustomerPostMedia
                     {
                         CustomerPostId = id,
-                        MediaPath = savedPath
+                        MediaPath = path
                     });
                 }
             }
@@ -238,9 +206,7 @@ namespace Homeix.Controllers
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (post == null) return NotFound();
-
-            return View(post);
+            return post == null ? NotFound() : View(post);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -251,10 +217,13 @@ namespace Homeix.Controllers
                 .Include(p => p.Media)
                 .FirstOrDefaultAsync(p => p.CustomerPostId == id);
 
-            if (post == null) return NotFound();
+            if (post == null)
+                return NotFound();
 
-            foreach (var m in post.Media)
-                DeletePhysicalFile(m.MediaPath);
+            foreach (var media in post.Media)
+            {
+                DeletePhysicalFile(media.MediaPath);
+            }
 
             _context.CustomerPosts.Remove(post);
             await _context.SaveChangesAsync();
@@ -284,8 +253,9 @@ namespace Homeix.Controllers
         // =========================
         private int GetUserId()
         {
-            var claim = User.FindFirst("UserId");
-            if (claim == null) throw new UnauthorizedAccessException();
+            var claim = User.FindFirst("UserId")
+                ?? throw new UnauthorizedAccessException();
+
             return int.Parse(claim.Value);
         }
 
@@ -304,11 +274,14 @@ namespace Homeix.Controllers
             ".jpg", ".jpeg", ".png", ".gif", ".webp"
         };
 
+        // =========================
+        // FILE SAVE (IDENTICAL TO WORKER)
+        // =========================
         private static async Task<string> SaveCustomerPostMediaAsync(IFormFile file)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (!AllowedImageExtensions.Contains(ext))
-                throw new InvalidOperationException("Only image files are allowed.");
+                throw new InvalidOperationException("Invalid image type.");
 
             var uploadDir = Path.Combine(
                 Directory.GetCurrentDirectory(),
@@ -329,13 +302,13 @@ namespace Homeix.Controllers
         {
             if (string.IsNullOrWhiteSpace(relativePath)) return;
 
-            var physicalPath = Path.Combine(
+            var path = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "wwwroot",
                 relativePath.TrimStart('/'));
 
-            if (System.IO.File.Exists(physicalPath))
-                System.IO.File.Delete(physicalPath);
+            if (System.IO.File.Exists(path))
+                System.IO.File.Delete(path);
         }
     }
 }

@@ -1,14 +1,9 @@
 ﻿@model IEnumerable<Homeix.Models.CustomerPost>
-@using Homeix.Models
 
 @{
     ViewData["Title"] = "My Customer Posts";
-
-    var mediaLookup =
-        ViewBag.PostMedia as Dictionary<int, List<CustomerPostMedia>>
-        ?? new Dictionary<int, List<CustomerPostMedia>>();
-
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
+    var fallbackImage = "/images/no-image.png";
 }
 
 <div class="container mt-4">
@@ -62,14 +57,12 @@
 
         @foreach (var post in Model)
         {
-            var media =
-            mediaLookup.TryGetValue(post.CustomerPostId, out var list)
-            ? list.FirstOrDefault()   // ✅ no UploadedAt
-            : null;
-
-            var imageUrl = !string.IsNullOrWhiteSpace(media?.MediaPath)
-            ? media.MediaPath.Replace("\\", "/")
-            : "/images/no-image.png";
+            var imageUrl =
+            post.Media != null && post.Media.Any()
+            ? post.Media
+            .OrderByDescending(m => m.MediaId)
+            .First().MediaPath.Replace("\\", "/")
+            : fallbackImage;
 
             <div class="card shadow-sm mb-3 post-row"
                  data-title="@post.Title.ToLowerInvariant()"
