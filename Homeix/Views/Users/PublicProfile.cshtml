@@ -13,9 +13,10 @@
         </div>
     </div>
 
-    <!-- PROFILE CARD -->
+    <!-- SINGLE UNIFIED CARD -->
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-9 col-lg-8">
+
             <div class="card shadow-sm">
                 <div class="card-body">
 
@@ -28,40 +29,93 @@
                              style="width:150px;height:150px;object-fit:cover;" />
                     </div>
 
-                    <dl class="row mb-0">
+                    <!-- USER INFO -->
+                    <dl class="row mb-4">
 
-                        <!-- FULL NAME -->
-                        <dt class="col-sm-4 fw-bold">Full Name</dt>
-                        <dd class="col-sm-8">@Model.FullName</dd>
+                        <dt class="col-sm-3 fw-bold">Full Name</dt>
+                        <dd class="col-sm-9">@Model.FullName</dd>
 
-                        <!-- EMAIL -->
-                        <dt class="col-sm-4 fw-bold">Email</dt>
-                        <dd class="col-sm-8">@Model.Email</dd>
+                        <dt class="col-sm-3 fw-bold">Email</dt>
+                        <dd class="col-sm-9">@Model.Email</dd>
 
-                        <!-- PHONE -->
-                        <dt class="col-sm-4 fw-bold">Phone</dt>
-                        <dd class="col-sm-8">
+                        <dt class="col-sm-3 fw-bold">Phone</dt>
+                        <dd class="col-sm-9">
                             @(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "—" : Model.PhoneNumber)
                         </dd>
 
-                        <!-- ROLE -->
-                        <dt class="col-sm-4 fw-bold">Role</dt>
-                        <dd class="col-sm-8">@Model.Role?.RoleName</dd>
+                        <dt class="col-sm-3 fw-bold">Role</dt>
+                        <dd class="col-sm-9">@Model.Role?.RoleName</dd>
 
                     </dl>
+
+                    <hr />
+
+                    <!-- RATINGS & REVIEWS -->
+                    <h5 class="fw-semibold mb-3">
+                        Ratings & Reviews
+                        <span class="text-muted">
+                            (@(Model.RatingRatedUsers == null ? 0 : Model.RatingRatedUsers.Count))
+                        </span>
+                    </h5>
+
+                    @if (Model.RatingRatedUsers != null && Model.RatingRatedUsers.Any())
+                    {
+                        @foreach (var rating in Model.RatingRatedUsers
+                       .OrderByDescending(r => r.CreatedAt))
+                        {
+                            <div class="border-bottom pb-3 mb-3">
+
+                                <!-- RATER -->
+                                <div class="fw-semibold">
+                                    @rating.RaterUser?.FullName
+                                </div>
+
+                                <!-- STARS -->
+                                <div class="text-warning mb-1">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= rating.RatingValue
+                                            ? "bi-star-fill"
+                                            : "bi-star")"></i>
+                                    }
+                                </div>
+
+                                <!-- COMMENT -->
+                                <div class="text-muted">
+                                    @(string.IsNullOrWhiteSpace(rating.Review)
+                                        ? "No comment provided."
+                                        : rating.Review)
+                                </div>
+
+                                <!-- DATE -->
+                                <div class="text-secondary small mt-1">
+                                    @rating.CreatedAt.ToString("dd MMM yyyy")
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            This user has not received any ratings yet.
+                        </p>
+                    }
 
                 </div>
 
                 <!-- FOOTER -->
-                <div class="card-footer d-flex justify-content-end">
+                <div class="card-footer text-center">
                     <button type="button"
                             onclick="history.back()"
                             class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi"></i> Back
                     </button>
                 </div>
 
             </div>
+
         </div>
     </div>
+
 </div>
