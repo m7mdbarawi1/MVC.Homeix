@@ -67,11 +67,12 @@
                         </button>
                     </form>
 
-                    <a asp-action="Index"
-                       class="btn btn-secondary d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-arrow-left-circle"></i>
-                        Cancel
-                    </a>
+                    <!-- UNIVERSAL BACK BUTTON -->
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            onclick="history.back()">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
                 </div>
 
             </div>

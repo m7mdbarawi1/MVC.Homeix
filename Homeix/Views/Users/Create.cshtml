@@ -95,11 +95,12 @@
                                 Create
                             </button>
 
-                            <a asp-action="Index"
-                               class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i>
-                                Cancel
-                            </a>
+                            <!-- UNIVERSAL BACK BUTTON -->
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="history.back()">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
                         </div>
 
                     </form>

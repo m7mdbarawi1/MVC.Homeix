@@ -14,6 +14,7 @@
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
+
                 <div class="card-body">
 
                     <h4 class="text-center mb-4">Rate a User</h4>
@@ -32,11 +33,7 @@
                                    class="form-control"
                                    placeholder="Search user by name..."
                                    value="@(hasRatedUser ? ratedUserNameFromQuery : "")"
-                            @if (hasRatedUser)
-                            {
-                                <text>readonly</text>
-                                ;
-                            } />
+                            @(hasRatedUser ? "readonly" : "") />
 
                             <!-- keep binding -->
                             <input type="hidden"
@@ -72,9 +69,20 @@
                                       placeholder="Optional review..."></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            Submit Rating
-                        </button>
+                        <!-- ACTIONS -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Submit Rating
+                            </button>
+
+                            <!-- UNIVERSAL BACK BUTTON -->
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="history.back()">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
+                        </div>
+
                     </form>
 
                 </div>

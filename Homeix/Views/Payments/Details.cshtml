@@ -71,9 +71,11 @@
 
                 <!-- Footer -->
                 <div class="card-footer text-end">
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left-circle"></i> Back
-                    </a>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            onclick="history.back()">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
                 </div>
 
             </div>

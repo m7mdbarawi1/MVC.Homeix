@@ -164,10 +164,11 @@
                 </div>
 
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="@safeReturnUrl"
-                       class="btn btn-secondary btn-sm">
-                        <i class="bi bi-arrow-left-circle"></i> Back
-                    </a>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            onclick="history.back()">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
 
                     <div class="d-flex gap-2">
                         <a asp-controller="Ratings"

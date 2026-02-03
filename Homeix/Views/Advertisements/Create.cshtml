@@ -7,6 +7,7 @@
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
+
             <div class="card shadow-sm">
                 <div class="card-body">
 
@@ -57,18 +58,30 @@
                         </div>
 
                         <!-- Active -->
-                        <div class="form-check mb-3">
+                        <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="IsActive" />
                             <label class="form-check-label">Active</label>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-upload"></i> Create Advertisement
-                        </button>
+                        <!-- ACTIONS -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload"></i> Create Advertisement
+                            </button>
+
+                            <!-- UNIVERSAL BACK BUTTON -->
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="history.back()">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
+                        </div>
+
                     </form>
 
                 </div>
             </div>
+
         </div>
     </div>
 </div>
