@@ -3,18 +3,6 @@
 @using System.Linq
 
 @functions {
-    string GetUserNameSafe(User? u)
-    {
-        if (u == null) return "—";
-
-        var prop = u.GetType().GetProperty("UserName")
-                   ?? u.GetType().GetProperty("Username");
-
-        return prop?.GetValue(u)?.ToString()
-               ?? u.FullName
-               ?? "—";
-    }
-
     string NormalizePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -36,9 +24,8 @@
         .OrderByDescending(m => m.MediaId)
         .ToList();
 
-    var fallbackImageUrl = "/images/no-image.png";
-    var creatorUserName = GetUserNameSafe(Model.User);
     bool hasMedia = mediaList.Any();
+    var fallbackImageUrl = "/images/no-image.png";
 }
 
 <div class="container mt-4">
@@ -134,7 +121,7 @@
 
                     <hr />
 
-                    <!-- OWNER (CLICKABLE) -->
+                    <!-- OWNER -->
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
                              style="width:44px; height:44px;">
@@ -173,7 +160,6 @@
                         <a asp-controller="Ratings"
                            asp-action="Create"
                            asp-route-ratedUserId="@Model.UserId"
-                           asp-route-ratedUserName="@creatorUserName"
                            class="btn btn-outline-warning">
                             <i class="bi bi-star"></i> Rate
                         </a>

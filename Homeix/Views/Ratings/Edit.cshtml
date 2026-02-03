@@ -2,87 +2,60 @@
 
 @{
     ViewData["Title"] = "Edit Rating";
+    string ratedUserName = ViewBag.RatedUserName as string ?? "User";
 }
 
 <div class="container-fluid mt-4">
-
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1>Edit Rating</h1>
-        </div>
-    </div>
-
-    <!-- Centered Form -->
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
+        <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Edit">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <h4 class="text-center mb-4">
+                        Edit Rating for @ratedUserName
+                    </h4>
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                         <input type="hidden" asp-for="RatingId" />
+                        <input type="hidden" asp-for="RatedUserId" />
 
-                        <!-- Rater -->
+                        <!-- ⭐ STAR RATING -->
                         <div class="mb-3">
-                            <label asp-for="RaterUserId" class="form-label"></label>
-                            <select asp-for="RaterUserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RaterUserId">
-                            </select>
-                            <span asp-validation-for="RaterUserId" class="text-danger"></span>
+                            <label class="form-label">Rating</label>
+
+                            <div class="fs-3 text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi @(i <= Model.RatingValue ? "bi-star-fill" : "bi-star") star"
+                                       data-value="@i"
+                                       style="cursor:pointer;"></i>
+                                }
+                            </div>
+
+                            <input type="hidden" asp-for="RatingValue" />
                         </div>
 
-                        <!-- Rated User -->
-                        <div class="mb-3">
-                            <label asp-for="RatedUserId" class="form-label"></label>
-                            <select asp-for="RatedUserId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RatedUserId">
-                            </select>
-                            <span asp-validation-for="RatedUserId" class="text-danger"></span>
-                        </div>
-
-                        <!-- Rating Value -->
-                        <div class="mb-3">
-                            <label asp-for="RatingValue" class="form-label"></label>
-                            <input asp-for="RatingValue"
-                                   type="number"
-                                   min="1"
-                                   max="5"
-                                   class="form-control" />
-                            <span asp-validation-for="RatingValue" class="text-danger"></span>
-                        </div>
-
-                        <!-- Review -->
+                        <!-- ✍ REVIEW -->
                         <div class="mb-3">
                             <label asp-for="Review" class="form-label"></label>
                             <textarea asp-for="Review"
                                       class="form-control"
                                       rows="3"></textarea>
-                            <span asp-validation-for="Review" class="text-danger"></span>
                         </div>
 
-                        <!-- Created At -->
-                        <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label"></label>
-                            <input asp-for="CreatedAt"
-                                   type="datetime-local"
-                                   class="form-control" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-end gap-2 mt-4">
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Save
+                                Save Changes
                             </button>
 
                             <button type="button"
-                                    class="btn btn-secondary"
+                                    class="btn btn-outline-secondary"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                Back
                             </button>
                         </div>
 
@@ -95,7 +68,19 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", () => {
+                const value = star.dataset.value;
+                document.querySelector("input[name='RatingValue']").value = value;
+
+                document.querySelectorAll(".star").forEach(s => {
+                    s.classList.toggle("bi-star-fill", s.dataset.value <= value);
+                    s.classList.toggle("bi-star", s.dataset.value > value);
+                });
+            });
+        });
+    </script>
 }
