@@ -40,19 +40,19 @@
             <div class="container-fluid homeix-nav-shell bg-main shadow-sm">
 
                 <a class="navbar-brand d-flex align-items-center"
-                   asp-controller="Account" asp-action="HomeRedirect">
+                asp-controller="Account" asp-action="HomeRedirect">
                     <img src="~/homeixlogo.jpg"
-                         class="homeix-logo-round me-2"
-                         alt="Homeix" />
+                    class="homeix-logo-round me-2"
+                    alt="Homeix" />
                 </a>
 
                 <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarMain"
-                        aria-controls="navbarMain"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarMain"
+                aria-controls="navbarMain"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -102,12 +102,10 @@
                             else if (roleName == "customer")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="CustomerPosts" asp-action="MyPosts">My Posts</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="WorkerApprovals" asp-action="MyRequests">Become a Professional</a></li>
                             }
                             else if (roleName == "worker")
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Subscriptions" asp-action="Index">Subscription</a></li>
                             }
                         }
 
@@ -117,8 +115,8 @@
                     <div class="d-flex align-items-center gap-2 flex-wrap">
 
                         <button id="langToggle"
-                                class="btn btn-outline-light btn-sm lang-icon-btn"
-                                type="button">
+                        class="btn btn-outline-light btn-sm lang-icon-btn"
+                        type="button">
                             <span class="lang-icon">
                                 <span class="lang-tile tile-a">A</span>
                                 <span class="lang-tile tile-ar">ع</span>
@@ -133,20 +131,52 @@
                         {
                             <div class="dropdown">
                                 <a class="btn btn-outline-light btn-sm dropdown-toggle"
-                                   data-bs-toggle="dropdown">
+                                data-bs-toggle="dropdown">
                                     @User.Identity!.Name <small>(@roleName)</small>
                                 </a>
 
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
+
                                     <li>
-                                        <form asp-controller="Account" asp-action="LogoutPost" method="post" class="px-3">
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">
+                                            My Profile
+                                        </a>
+                                    </li>
+
+                                    @if (roleName == "worker")
+                                    {
+                                        <li>
+                                            <a class="dropdown-item"
+                                            asp-controller="Subscriptions"
+                                            asp-action="Index">
+                                                Subscription
+                                            </a>
+                                        </li>
+                                    }
+                                    else if (roleName == "customer")
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="WorkerApprovals" asp-action="MyRequests">Apply for Worker Role</a>
+                                        </li>
+                                    }
+
+                                    <li><hr class="dropdown-divider" /></li>
+
+                                    <li>
+                                        <form asp-controller="Account"
+                                              asp-action="LogoutPost"
+                                              method="post"
+                                              class="px-3">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm w-100">
+                                                Logout
+                                            </button>
                                         </form>
                                     </li>
+
                                 </ul>
+
                             </div>
                         }
                         else
