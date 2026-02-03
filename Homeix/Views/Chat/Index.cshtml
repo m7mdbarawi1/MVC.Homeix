@@ -42,9 +42,10 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="online-dot" data-user-id="@user.UserId"></span>
 
+                                    <!-- ✅ FIXED: ProfilePicture now points to /uploads/profile/{fileName} -->
                                     <img src="@(string.IsNullOrEmpty(user.ProfilePicture)
                                             ? Url.Content("~/images/default-user.png")
-                                            : user.ProfilePicture)"
+                                            : Url.Content($"~/uploads/profile/{user.ProfilePicture}"))"
                                          class="rounded-circle flex-shrink-0"
                                          width="40" height="40"
                                          alt="@(user.FullName)" />
