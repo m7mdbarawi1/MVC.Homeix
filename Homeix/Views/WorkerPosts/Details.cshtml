@@ -102,7 +102,14 @@
                         </div>
 
                         <div>
-                            <div class="fw-semibold">@Model.User?.FullName</div>
+                            <!-- ✅ CLICKABLE OWNER NAME -->
+                            <a asp-controller="Users"
+                               asp-action="PublicProfile"
+                               asp-route-id="@Model.UserId"
+                               class="fw-semibold text-decoration-none">
+                                @Model.User?.FullName
+                            </a>
+
                             <div class="text-muted small">Worker</div>
                         </div>
                     </div>

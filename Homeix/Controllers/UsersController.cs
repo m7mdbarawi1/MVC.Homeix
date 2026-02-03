@@ -143,5 +143,18 @@ namespace Homeix.Controllers
             if (!hasSpecial) { error = "Password must contain at least 1 special character."; return false; }
             return true;
         }
+
+        public async Task<IActionResult> PublicProfile(int id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
+                return NotFound();
+
+            return View(user);
+        }
+
     }
 }

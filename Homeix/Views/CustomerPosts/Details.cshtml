@@ -39,12 +39,6 @@
     var fallbackImageUrl = "/images/no-image.png";
     var creatorUserName = GetUserNameSafe(Model.User);
     bool hasMedia = mediaList.Any();
-
-    var rawReturnUrl = Context.Request.Query["returnUrl"].ToString();
-    var safeReturnUrl =
-        (!string.IsNullOrWhiteSpace(rawReturnUrl) && Url.IsLocalUrl(rawReturnUrl))
-            ? rawReturnUrl
-            : Url.Action("WorkerDashboard", "Dashboard");
 }
 
 <div class="container mt-4">
@@ -89,7 +83,6 @@
                                 <div class="carousel-item @(i == 0 ? "active" : "")">
                                     <img src="@imageUrl"
                                          class="d-block w-100 img-fluid"
-                                         alt="Customer Post Image"
                                          style="max-height:520px; object-fit:contain;" />
                                 </div>
                             }
@@ -118,7 +111,6 @@
 
                     <img src="@imageUrl"
                          class="d-block w-100 img-fluid"
-                         alt="Customer Post Image"
                          style="max-height:520px; object-fit:contain;" />
                 }
 
@@ -130,6 +122,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
 
+                    <!-- PRICE -->
                     <div class="mb-3">
                         <div class="text-muted small">Price</div>
                         <div class="fs-3 fw-bold text-success">
@@ -141,6 +134,7 @@
 
                     <hr />
 
+                    <!-- OWNER (CLICKABLE) -->
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
                              style="width:44px; height:44px;">
@@ -148,7 +142,13 @@
                         </div>
 
                         <div>
-                            <div class="fw-semibold">@Model.User?.FullName</div>
+                            <a asp-controller="Users"
+                               asp-action="PublicProfile"
+                               asp-route-id="@Model.UserId"
+                               class="fw-semibold text-decoration-none">
+                                @Model.User?.FullName
+                            </a>
+
                             <div class="text-muted small">
                                 Username: @creatorUserName
                             </div>
@@ -157,12 +157,15 @@
 
                     <hr />
 
+                    <!-- DESCRIPTION -->
                     <div class="fw-bold mb-2">Description</div>
                     <div class="text-muted" style="white-space:pre-line;">
                         @Model.Description
                     </div>
+
                 </div>
 
+                <!-- FOOTER -->
                 <div class="card-footer d-flex justify-content-between">
                     <button type="button"
                             class="btn btn-secondary"

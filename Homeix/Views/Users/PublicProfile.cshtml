@@ -1,0 +1,67 @@
+﻿@model Homeix.Models.User
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="container-fluid mt-4">
+
+    <!-- HEADER -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold">User Profile</h1>
+        </div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <!-- PROFILE IMAGE -->
+                    <div class="text-center mb-4">
+                        <img src="@(string.IsNullOrEmpty(Model.ProfilePicture)
+                            ? Url.Content("~/images/default-user.png")
+                            : Url.Content("~/uploads/profile/" + Model.ProfilePicture))"
+                             class="rounded-circle border shadow"
+                             style="width:150px;height:150px;object-fit:cover;" />
+                    </div>
+
+                    <dl class="row mb-0">
+
+                        <!-- FULL NAME -->
+                        <dt class="col-sm-4 fw-bold">Full Name</dt>
+                        <dd class="col-sm-8">@Model.FullName</dd>
+
+                        <!-- EMAIL -->
+                        <dt class="col-sm-4 fw-bold">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <!-- PHONE -->
+                        <dt class="col-sm-4 fw-bold">Phone</dt>
+                        <dd class="col-sm-8">
+                            @(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "—" : Model.PhoneNumber)
+                        </dd>
+
+                        <!-- ROLE -->
+                        <dt class="col-sm-4 fw-bold">Role</dt>
+                        <dd class="col-sm-8">@Model.Role?.RoleName</dd>
+
+                    </dl>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="card-footer d-flex justify-content-end">
+                    <button type="button"
+                            onclick="history.back()"
+                            class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -57,6 +57,7 @@
                                 </div>
                             </a>
                         }
+
                     }
                     else
                     {
@@ -83,10 +84,13 @@
 
                         @if (selectedUser != null)
                         {
-                            <div class="min-w-0">
-                                <div class="fw-semibold text-truncate">@selectedUser.FullName</div>
-                                <div class="small text-muted text-truncate" id="typingIndicator" aria-live="polite"></div>
-                            </div>
+                            <a asp-controller="Users"
+                               asp-action="PublicProfile"
+                               asp-route-id="@selectedUser.UserId"
+                               class="fw-bold text-truncate d-block text-decoration-none text-reset">
+                                @selectedUser.FullName
+                            </a>
+                            <div class="small text-muted text-truncate" id="typingIndicator" aria-live="polite"></div>
                         }
                         else
                         {
