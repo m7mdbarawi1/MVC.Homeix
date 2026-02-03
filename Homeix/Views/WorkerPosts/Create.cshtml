@@ -79,6 +79,7 @@
                                 <input asp-for="PriceRangeMin"
                                        type="number"
                                        step="0.01"
+                                       min="0"
                                        class="form-control" />
                             </div>
 
@@ -88,22 +89,35 @@
                                 <input asp-for="PriceRangeMax"
                                        type="number"
                                        step="0.01"
+                                       min="0"
                                        class="form-control" />
                             </div>
                         </div>
 
-                        <!-- IMAGE UPLOAD (SIMPLE & SAFE) -->
+                        <!-- ADD IMAGES (WITH REMOVE SUPPORT) -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
                                 Upload Images <span class="text-muted">(optional)</span>
                             </label>
 
-                            <!-- MUST MATCH controller parameter -->
-                            <input type="file"
-                                   name="mediaFiles"
-                                   class="form-control"
-                                   accept="image/*"
-                                   multiple />
+                            <div id="dropZone"
+                                 class="border border-2 border-dashed rounded p-4 text-center"
+                                 style="cursor:pointer;">
+
+                                <p class="text-muted mb-2">
+                                    Drag & drop images here or click to select
+                                </p>
+
+                                <!-- MUST MATCH controller parameter -->
+                                <input type="file"
+                                       id="mediaInput"
+                                       name="mediaFiles"
+                                       class="d-none"
+                                       accept="image/*"
+                                       multiple />
+
+                                <div id="preview" class="row g-2 mt-3"></div>
+                            </div>
                         </div>
 
                         <!-- ACTIONS -->
@@ -130,4 +144,79 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const dropZone = document.getElementById("dropZone");
+        const input = document.getElementById("mediaInput");
+        const preview = document.getElementById("preview");
+
+        let selectedFiles = [];
+
+        dropZone.onclick = () => input.click();
+
+        dropZone.ondragover = e => {
+            e.preventDefault();
+            dropZone.classList.add("bg-light");
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.classList.remove("bg-light");
+        };
+
+        dropZone.ondrop = e => {
+            e.preventDefault();
+            dropZone.classList.remove("bg-light");
+            addFiles(e.dataTransfer.files);
+        };
+
+        input.onchange = () => addFiles(input.files);
+
+        function addFiles(files) {
+            for (const file of files) {
+                if (!file.type.startsWith("image")) continue;
+                selectedFiles.push(file);
+            }
+            renderPreview();
+            syncInputFiles();
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            renderPreview();
+            syncInputFiles();
+        }
+
+        function renderPreview() {
+            preview.innerHTML = "";
+
+            selectedFiles.forEach((file, index) => {
+                const col = document.createElement("div");
+                col.className = "col-6 col-md-4 position-relative";
+
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.className = "img-fluid rounded border";
+                img.style.height = "160px";
+                img.style.objectFit = "cover";
+
+                img.onload = () => URL.revokeObjectURL(img.src);
+
+                const removeBtn = document.createElement("button");
+                removeBtn.type = "button";
+                removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0 m-1";
+                removeBtn.innerHTML = "&times;";
+                removeBtn.onclick = () => removeFile(index);
+
+                col.appendChild(img);
+                col.appendChild(removeBtn);
+                preview.appendChild(col);
+            });
+        }
+
+        function syncInputFiles() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            input.files = dataTransfer.files;
+        }
+    </script>
 }
