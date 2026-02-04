@@ -51,7 +51,6 @@
                                     <th>Location</th>
                                     <th>Min Price</th>
                                     <th>Max Price</th>
-                                    <th>Rating</th>
                                     <th>Created</th>
                                     <th>Category</th>
                                     <th>Worker</th>
@@ -64,13 +63,6 @@
                                 {
                                     foreach (var item in Model)
                                     {
-                                        var ratings = item.User?.RatingRatedUsers
-                                        ?? Enumerable.Empty<Homeix.Models.Rating>();
-
-                                        var avgRating = ratings.Count() > 0
-                                        ? ratings.Average(r => r.RatingValue)
-                                        : 0;
-
                                         <tr>
                                             <td>@item.Title</td>
 
@@ -82,36 +74,29 @@
                                             <td>@item.PriceRangeMin</td>
                                             <td>@item.PriceRangeMax</td>
 
-                                            <td>
-                                                ⭐ @avgRating.ToString("0.0") / 5
-                                                <small class="text-muted">
-                                                    (@ratings.Count())
-                                                </small>
-                                            </td>
-
                                             <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
 
                                             <td>@item.PostCategory?.CategoryName</td>
                                             <td>@item.User?.FullName</td>
 
                                             <td class="text-center">
-                                                <div class="btn-group btn-group-sm">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
                                                     <a asp-action="Edit"
                                                        asp-route-id="@item.WorkerPostId"
-                                                       class="btn btn-outline-secondary">
-                                                        <i class="bi bi-pencil-square"></i>
+                                                       class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
 
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.WorkerPostId"
-                                                       class="btn btn-outline-info">
-                                                        <i class="bi bi-info-circle"></i>
+                                                       class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
                                                     </a>
 
                                                     <a asp-action="Delete"
                                                        asp-route-id="@item.WorkerPostId"
-                                                       class="btn btn-outline-danger">
-                                                        <i class="bi bi-trash"></i>
+                                                       class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
                                             </td>
@@ -121,7 +106,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="10" class="text-center p-4">
+                                        <td colspan="9" class="text-center p-4">
                                             <div class="alert alert-secondary mb-0">
                                                 No worker posts found.
                                             </div>

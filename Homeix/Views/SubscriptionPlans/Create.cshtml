@@ -6,65 +6,71 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create Subscription Plan</h1>
         </div>
     </div>
 
-    <!-- Centered Form -->
+    <!-- ================= FORM ================= -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
 
-                        <!-- Plan Name -->
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <!-- PLAN NAME -->
                         <div class="mb-3">
                             <label asp-for="PlanName" class="form-label"></label>
                             <input asp-for="PlanName" class="form-control" />
                             <span asp-validation-for="PlanName" class="text-danger"></span>
                         </div>
 
-                        <!-- Price -->
+                        <!-- PRICE -->
                         <div class="mb-3">
                             <label asp-for="Price" class="form-label"></label>
                             <input asp-for="Price"
                                    type="number"
                                    step="0.01"
+                                   min="0"
                                    class="form-control" />
                             <span asp-validation-for="Price" class="text-danger"></span>
                         </div>
 
-                        <!-- Duration -->
+                        <!-- DURATION -->
                         <div class="mb-3">
                             <label asp-for="DurationDays" class="form-label"></label>
                             <input asp-for="DurationDays"
                                    type="number"
+                                   min="1"
                                    class="form-control" />
                             <span asp-validation-for="DurationDays" class="text-danger"></span>
                         </div>
 
-                        <!-- Active -->
-                        <div class="form-check mb-3">
+                        <!-- ACTIVE -->
+                        <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="IsActive" />
                             <label class="form-check-label" asp-for="IsActive"></label>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-end gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary">
+                        <!-- ================= ACTIONS ================= -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit"
+                                    class="btn btn-primary btn-sm">
                                 <i class="bi bi-check-circle"></i> Create
                             </button>
 
-                                <button type="button"
-                                        class="btn btn-secondary"
-                                        onclick="history.back()">
-                                    <i class="bi bi-arrow-left"></i> Back
-                                </button>
+                            <button type="button"
+                                    class="btn btn-secondary btn-sm"
+                                    onclick="history.back()">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
                         </div>
 
                     </form>

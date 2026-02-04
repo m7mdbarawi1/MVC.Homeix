@@ -6,31 +6,34 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= PAGE HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="fw-bold">Post Category Details</h1>
+            <h1 class="page-title fw-bold">
+                Post Category Details
+            </h1>
         </div>
     </div>
 
-    <!-- Centered Card -->
+    <!-- ================= DETAILS CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
 
             <div class="card shadow-sm">
 
-                <!-- Card Header -->
+                <!-- CARD HEADER -->
                 <div class="card-header">
                     <h5 class="mb-0">Details</h5>
                 </div>
 
-                <!-- Card Body -->
+                <!-- CARD BODY -->
                 <div class="card-body">
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">
+                        <dt class="col-sm-4 fw-semibold">
                             @Html.DisplayNameFor(model => model.CategoryName)
                         </dt>
+
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.CategoryName)
                         </dd>
@@ -38,14 +41,18 @@
                     </dl>
                 </div>
 
-                <button type="button"
-                        class="btn btn-secondary"
-                        onclick="history.back()">
-                    <i class="bi bi-arrow-left"></i> Back
-                </button>
+                <!-- ================= ACTIONS ================= -->
+                <div class="card-footer d-flex justify-content-end">
+                    <button type="button"
+                            class="btn btn-secondary btn-sm"
+                            onclick="history.back()">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
+                </div>
 
             </div>
 
         </div>
     </div>
+
 </div>

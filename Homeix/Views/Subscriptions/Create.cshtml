@@ -5,12 +5,15 @@
 }
 
 <div class="container-fluid mt-4">
+
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create Subscription</h1>
         </div>
     </div>
 
+    <!-- ================= FORM CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
@@ -19,8 +22,10 @@
                     <form asp-action="Create" method="post" id="subscriptionForm">
                         @Html.AntiForgeryToken()
 
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
 
+                        <!-- USER -->
                         <div class="mb-3">
                             <label class="form-label">User</label>
                             <input class="form-control"
@@ -28,6 +33,7 @@
                                    readonly />
                         </div>
 
+                        <!-- PLAN -->
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label"></label>
                             <select asp-for="PlanId"
@@ -35,9 +41,11 @@
                                     asp-items="ViewBag.PlanId"
                                     id="planSelect">
                             </select>
-                            <span asp-validation-for="PlanId" class="text-danger"></span>
+                            <span asp-validation-for="PlanId"
+                                  class="text-danger"></span>
                         </div>
 
+                        <!-- START DATE -->
                         <div class="mb-3">
                             <label asp-for="StartDate" class="form-label"></label>
                             <input asp-for="StartDate"
@@ -46,6 +54,7 @@
                                    id="startDate" />
                         </div>
 
+                        <!-- END DATE -->
                         <div class="mb-3">
                             <label asp-for="EndDate" class="form-label"></label>
                             <input asp-for="EndDate"
@@ -54,19 +63,23 @@
                                    id="endDate" />
                         </div>
 
+                        <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="button"
-                                    class="btn btn-primary"
+                                    class="btn btn-primary d-inline-flex align-items-center gap-2"
                                     id="openModalBtn">
-                                <i class="bi bi-credit-card"></i> Subscribe
+                                <i class="bi bi-credit-card"></i>
+                                Subscribe
                             </button>
 
                             <button type="button"
-                                    class="btn btn-secondary"
+                                    class="btn btn-secondary d-inline-flex align-items-center gap-2"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                Back
                             </button>
                         </div>
+
                     </form>
 
                 </div>
@@ -75,13 +88,16 @@
     </div>
 </div>
 
+<!-- ================= PAYMENT MODAL ================= -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <div class="modal-header">
                 <h5 class="modal-title">Confirm Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -96,17 +112,19 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <div class="card-footer d-flex justify-content-end">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </button>
+            <!-- MODAL ACTIONS -->
+            <div class="modal-footer d-flex justify-content-end gap-2">
+                <button type="button"
+                        class="btn btn-secondary d-inline-flex align-items-center gap-2"
+                        data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+                </button>
 
                 <button type="submit"
-                        class="btn btn-success"
+                        class="btn btn-success d-inline-flex align-items-center gap-2"
                         form="subscriptionForm">
+                    <i class="bi bi-check-circle"></i>
                     Confirm & Pay
                 </button>
             </div>

@@ -6,10 +6,12 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
+    <!-- ================= PAGE HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="mb-0 fw-bold">Payment Method Details</h1>
+            <h1 class="page-title fw-bold">
+                Payment Method Details
+            </h1>
         </div>
     </div>
 
@@ -19,16 +21,16 @@
 
             <div class="card shadow-sm">
 
-                <!-- Card Header -->
+                <!-- CARD HEADER -->
                 <div class="card-header">
                     <h5 class="mb-0">Details</h5>
                 </div>
 
-                <!-- Card Body -->
+                <!-- CARD BODY -->
                 <div class="card-body">
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">
+                        <dt class="col-sm-4 fw-semibold">
                             @Html.DisplayNameFor(model => model.MethodName)
                         </dt>
                         <dd class="col-sm-8">
@@ -38,12 +40,13 @@
                     </dl>
                 </div>
 
-                <!-- Card Footer -->
+                <!-- ================= ACTIONS ================= -->
                 <div class="card-footer d-flex justify-content-end">
                     <button type="button"
-                            class="btn btn-secondary"
+                            class="btn btn-secondary btn-sm"
                             onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi bi-arrow-left"></i>
+                        Back
                     </button>
                 </div>
 

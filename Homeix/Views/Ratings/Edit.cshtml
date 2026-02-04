@@ -6,57 +6,77 @@
 }
 
 <div class="container-fluid mt-4">
+
+    <!-- ================= HEADER ================= -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">
+                Edit Rating
+            </h1>
+            <p class="text-muted mb-0">
+                Update your rating for <strong>@ratedUserName</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= FORM CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <h4 class="text-center mb-4">
-                        Edit Rating for @ratedUserName
-                    </h4>
-
                     <form asp-action="Edit" method="post">
                         @Html.AntiForgeryToken()
 
-                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3"></div>
 
                         <input type="hidden" asp-for="RatingId" />
                         <input type="hidden" asp-for="RatedUserId" />
 
-                        <!-- ⭐ STAR RATING -->
-                        <div class="mb-3">
-                            <label class="form-label">Rating</label>
+                        <!-- ================= STAR RATING ================= -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Rating
+                            </label>
 
-                            <div class="fs-3 text-warning">
+                            <div class="fs-2 text-warning">
                                 @for (int i = 1; i <= 5; i++)
                                 {
-                                    <i class="bi @(i <= Model.RatingValue ? "bi-star-fill" : "bi-star") star"
-                                       data-value="@i"
-                                       style="cursor:pointer;"></i>
+                                        <i class="bi @(i <= Model.RatingValue ? "bi-star-fill" : "bi-star") star"
+                                           data-value="@i"
+                                           style="cursor:pointer;"></i>
                                 }
                             </div>
 
                             <input type="hidden" asp-for="RatingValue" />
                         </div>
 
-                        <!-- ✍ REVIEW -->
-                        <div class="mb-3">
-                            <label asp-for="Review" class="form-label"></label>
+                        <!-- ================= REVIEW ================= -->
+                        <div class="mb-4">
+                            <label asp-for="Review"
+                                   class="form-label fw-semibold"></label>
+
                             <textarea asp-for="Review"
                                       class="form-control"
-                                      rows="3"></textarea>
+                                      rows="4"
+                                      placeholder="Write your review (optional)..."></textarea>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                Save Changes
+                        <!-- ================= ACTIONS ================= -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-sm">
+                                <i class="bi bi-check-circle"></i> Save Changes
                             </button>
 
                             <button type="button"
-                                    class="btn btn-outline-secondary"
+                                    class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
-                                Back
+                                <i class="bi bi-arrow-left"></i> Back
                             </button>
+
                         </div>
 
                     </form>
@@ -68,19 +88,19 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" />
 
-    <script>
-        document.querySelectorAll(".star").forEach(star => {
-            star.addEventListener("click", () => {
-                const value = star.dataset.value;
-                document.querySelector("input[name='RatingValue']").value = value;
+        <script>
+            document.querySelectorAll(".star").forEach(star => {
+                star.addEventListener("click", () => {
+                    const value = star.dataset.value;
+                    document.querySelector("input[name='RatingValue']").value = value;
 
-                document.querySelectorAll(".star").forEach(s => {
-                    s.classList.toggle("bi-star-fill", s.dataset.value <= value);
-                    s.classList.toggle("bi-star", s.dataset.value > value);
+                    document.querySelectorAll(".star").forEach(s => {
+                        s.classList.toggle("bi-star-fill", s.dataset.value <= value);
+                        s.classList.toggle("bi-star", s.dataset.value > value);
+                    });
                 });
             });
-        });
-    </script>
+        </script>
 }

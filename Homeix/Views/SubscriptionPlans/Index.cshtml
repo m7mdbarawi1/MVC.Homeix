@@ -6,19 +6,21 @@
 
 <div class="container mt-5">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="text-center mb-5">
         <h1 class="page-title">@ViewData["Title"]</h1>
         <p class="text-muted fs-5">
             Simple, transparent pricing. Upgrade or cancel anytime.
         </p>
 
-        <a asp-action="DownloadReport" class="btn btn-secondary mt-3">
-            <i class="bi bi-download"></i> Download Report
+        <a asp-action="DownloadReport"
+           class="btn btn-secondary d-inline-flex align-items-center gap-2 mt-3">
+            <i class="bi bi-download"></i>
+            Download Report
         </a>
     </div>
 
-    <!-- Plans -->
+    <!-- ================= PLANS ================= -->
     <div class="row justify-content-center g-4">
 
         @foreach (var plan in Model.Where(p => p.IsActive))
@@ -57,11 +59,13 @@
                             </li>
                         </ul>
 
+                        <!-- ACTION -->
                         <div class="mt-auto">
                             <a asp-controller="Subscriptions"
                                asp-action="Create"
                                asp-route-planId="@plan.PlanId"
-                               class="btn btn-accent btn-lg w-100">
+                               class="btn btn-accent btn-lg w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-credit-card"></i>
                                 Subscribe
                             </a>
                         </div>
@@ -74,12 +78,14 @@
 
     </div>
 
-    <!-- Admin CTA -->
+    <!-- ================= ADMIN CTA ================= -->
     @if (User.IsInRole("admin"))
     {
         <div class="text-center mt-5">
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Create New Plan
+            <a asp-action="Create"
+               class="btn btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle"></i>
+                Create New Plan
             </a>
         </div>
     }

@@ -66,12 +66,15 @@
                                             <td>@item.PaymentMethod?.MethodName</td>
                                             <td>@item.Subscription?.SubscriptionId</td>
                                             <td>@item.User?.UserId</td>
+
                                             <td class="text-center">
-                                                <a asp-action="Details"
-                                                   asp-route-id="@item.PaymentId"
-                                                   class="btn btn-outline-info btn-sm">
-                                                    <i class="bi bi-info-circle"></i> Details
-                                                </a>
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Details"
+                                                       asp-route-id="@item.PaymentId"
+                                                       class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     }

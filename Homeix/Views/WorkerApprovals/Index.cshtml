@@ -75,19 +75,17 @@
 
                                             <!-- ACTIONS -->
                                             <td class="text-center">
-                                                <div class="d-flex justify-content-center gap-2">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.ApprovalId"
-                                                       class="btn btn-accent btn-sm"
-                                                       title="Details">
-                                                        <i class="bi bi-info-circle"></i>
+                                                       class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
                                                     </a>
 
                                                     <a asp-action="Delete"
                                                        asp-route-id="@item.ApprovalId"
-                                                       class="btn btn-danger btn-sm"
-                                                       title="Delete">
-                                                        <i class="bi bi-trash"></i>
+                                                       class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </div>
                                             </td>

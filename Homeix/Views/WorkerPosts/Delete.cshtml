@@ -72,14 +72,13 @@
 
                     <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="WorkerPostId" />
-                        <button type="submit" class="btn btn-danger">
+                        <button type="submit" class="btn btn-danger btn-sm">
                             <i class="bi bi-trash"></i> Delete
                         </button>
                     </form>
 
-                    <!-- UNIVERSAL BACK BUTTON -->
                     <button type="button"
-                            class="btn btn-outline-secondary"
+                            class="btn btn-secondary btn-sm"
                             onclick="history.back()">
                         <i class="bi bi-arrow-left"></i> Back
                     </button>
