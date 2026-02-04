@@ -54,45 +54,7 @@ namespace Homeix.Controllers
                 query = query.Where(s => s.UserId == userId);
             }
 
-            var subscriptions = await query.ToListAsync();
-            return View(subscriptions);
-        }
-
-        // =========================
-        // DOWNLOAD REPORT
-        // =========================
-        public async Task<IActionResult> DownloadReport()
-        {
-            IQueryable<Subscription> query = _context.Subscriptions
-                .Include(s => s.Plan)
-                .Include(s => s.User);
-
-            if (!IsAdmin())
-            {
-                int userId = GetCurrentUserId();
-                query = query.Where(s => s.UserId == userId);
-            }
-
-            var subs = await query.ToListAsync();
-
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine("SubscriptionId,User,Plan,StartDate,EndDate,Status,Price");
-
-            foreach (var s in subs)
-            {
-                sb.AppendLine(
-                    $"{s.SubscriptionId}," +
-                    $"\"{s.User?.FullName}\"," +
-                    $"\"{s.Plan?.PlanName}\"," +
-                    $"{s.StartDate:yyyy-MM-dd}," +
-                    $"{s.EndDate:yyyy-MM-dd}," +
-                    $"{s.Status}," +
-                    $"{s.Plan?.Price}"
-                );
-            }
-
-            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
-            return File(bytes, "text/csv", "SubscriptionsReport.csv");
+            return View(await query.ToListAsync());
         }
 
         // =========================
@@ -114,7 +76,6 @@ namespace Homeix.Controllers
             }
 
             var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
-
             if (subscription == null)
                 return NotFound();
 
@@ -126,68 +87,75 @@ namespace Homeix.Controllers
         // =========================
         public IActionResult Create()
         {
-            ViewData["PlanId"] = new SelectList(
-                _context.SubscriptionPlans.Where(p => p.IsActive),
-                "PlanId",
-                "PlanName"
-            );
+            ViewBag.Plans = _context.SubscriptionPlans
+                .Where(p => p.IsActive)
+                .ToList();
 
-            var model = new Subscription
-            {
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today.AddDays(30),
-                Status = "Active"
-            };
-
-            return View(model);
+            return View(new Subscription());
         }
 
         // =========================
-        // CREATE (POST)
+        // CREATE (POST) ✅ FIXED
         // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("PlanId,StartDate,EndDate")] Subscription subscription)
+        public async Task<IActionResult> Create([Bind("PlanId")] Subscription subscription)
         {
             if (!ModelState.IsValid)
             {
-                ViewData["PlanId"] = new SelectList(
-                    _context.SubscriptionPlans.Where(p => p.IsActive),
-                    "PlanId",
-                    "PlanName",
-                    subscription.PlanId
-                );
+                ViewBag.Plans = _context.SubscriptionPlans
+                    .Where(p => p.IsActive)
+                    .ToList();
+
                 return View(subscription);
             }
 
             int userId = GetCurrentUserId();
-            subscription.UserId = userId;
-            subscription.Status = "Active";
 
-            // Expire existing subscriptions
+            var plan = await _context.SubscriptionPlans
+                .FirstOrDefaultAsync(p => p.PlanId == subscription.PlanId && p.IsActive);
+
+            if (plan == null)
+                return BadRequest("Invalid subscription plan.");
+
+            // Expire old subscriptions
             var activeSubs = await _context.Subscriptions
                 .Where(s => s.UserId == userId && s.Status == "Active")
                 .ToListAsync();
 
-            foreach (var sub in activeSubs)
+            foreach (var s in activeSubs)
             {
-                sub.Status = "Expired";
-                sub.EndDate = DateTime.Today;
+                s.Status = "Expired";
+                s.EndDate = DateTime.Today;
             }
+
+            // Create subscription
+            subscription.UserId = userId;
+            subscription.StartDate = DateTime.Today;
+            subscription.EndDate = DateTime.Today.AddDays(plan.DurationDays);
+            subscription.Status = "Active";
 
             _context.Subscriptions.Add(subscription);
             await _context.SaveChangesAsync();
 
-            // Create payment (NO Status, NO Quote)
-            var plan = await _context.SubscriptionPlans
-                .FirstAsync(p => p.PlanId == subscription.PlanId);
+            // ✅ GET REAL PAYMENT METHOD (NO HARD CODE)
+            var paymentMethod = await _context.PaymentMethods
+                .OrderBy(pm => pm.PaymentMethodId)
+                .FirstOrDefaultAsync();
 
+            if (paymentMethod == null)
+            {
+                throw new InvalidOperationException(
+                    "No PaymentMethod exists. Please create one first."
+                );
+            }
+
+            // Create payment safely
             var payment = new Payment
             {
                 UserId = userId,
                 SubscriptionId = subscription.SubscriptionId,
-                PaymentMethodId = 1,
+                PaymentMethodId = paymentMethod.PaymentMethodId,
                 Amount = plan.Price,
                 PaymentDate = DateTime.Now
             };
@@ -215,7 +183,6 @@ namespace Homeix.Controllers
             }
 
             var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
-
             if (subscription == null)
                 return NotFound();
 
@@ -230,17 +197,14 @@ namespace Homeix.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")] Subscription subscription)
+            [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")]
+            Subscription subscription)
         {
             if (id != subscription.SubscriptionId)
                 return NotFound();
 
             if (!IsAdmin())
-            {
-                int userId = GetCurrentUserId();
-                if (subscription.UserId != userId)
-                    return Forbid();
-            }
+                return Forbid();
 
             if (!ModelState.IsValid)
             {
@@ -255,24 +219,17 @@ namespace Homeix.Controllers
         }
 
         // =========================
-        // DELETE (GET)
+        // DELETE
         // =========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            IQueryable<Subscription> query = _context.Subscriptions
+            var subscription = await _context.Subscriptions
                 .Include(s => s.Plan)
-                .Include(s => s.User);
-
-            if (!IsAdmin())
-            {
-                int userId = GetCurrentUserId();
-                query = query.Where(s => s.UserId == userId);
-            }
-
-            var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(s => s.SubscriptionId == id);
 
             if (subscription == null)
                 return NotFound();
@@ -280,28 +237,28 @@ namespace Homeix.Controllers
             return View(subscription);
         }
 
-        // =========================
-        // DELETE (POST)
-        // =========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            IQueryable<Subscription> query = _context.Subscriptions;
+            // Get subscription with related payments
+            var subscription = await _context.Subscriptions
+                .Include(s => s.Payments)
+                .FirstOrDefaultAsync(s => s.SubscriptionId == id);
 
-            if (!IsAdmin())
+            if (subscription == null)
+                return RedirectToAction(nameof(Index));
+
+            // 🔥 1. DELETE PAYMENTS FIRST
+            if (subscription.Payments.Any())
             {
-                int userId = GetCurrentUserId();
-                query = query.Where(s => s.UserId == userId);
+                _context.Payments.RemoveRange(subscription.Payments);
             }
 
-            var subscription = await query.FirstOrDefaultAsync(s => s.SubscriptionId == id);
+            // 🔥 2. DELETE SUBSCRIPTION
+            _context.Subscriptions.Remove(subscription);
 
-            if (subscription != null)
-            {
-                _context.Subscriptions.Remove(subscription);
-                await _context.SaveChangesAsync();
-            }
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -319,7 +276,7 @@ namespace Homeix.Controllers
             );
 
             ViewData["PlanId"] = new SelectList(
-                _context.SubscriptionPlans,
+                _context.SubscriptionPlans.Where(p => p.IsActive),
                 "PlanId",
                 "PlanName",
                 sub?.PlanId

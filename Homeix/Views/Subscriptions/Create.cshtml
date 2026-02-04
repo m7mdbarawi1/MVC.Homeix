@@ -4,16 +4,33 @@
     ViewData["Title"] = "Create Subscription";
 }
 
+<!-- ================= NON-BLOCKING MODAL FIX ================= -->
+<style>
+    /* Do NOT lock the page */
+    body.modal-open {
+        overflow: auto !important;
+        padding-right: 0 !important;
+    }
+
+    /* Allow clicks through modal background */
+    .modal {
+        pointer-events: none;
+    }
+
+    /* Only modal dialog is clickable */
+    .modal-dialog {
+        pointer-events: auto;
+    }
+</style>
+
 <div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title">Create Subscription</h1>
         </div>
     </div>
 
-    <!-- ================= FORM CARD ================= -->
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card shadow-sm">
@@ -22,64 +39,54 @@
                     <form asp-action="Create" method="post" id="subscriptionForm">
                         @Html.AntiForgeryToken()
 
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger mb-3"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <!-- USER -->
                         <div class="mb-3">
                             <label class="form-label">User</label>
-                            <input class="form-control"
-                                   value="@User.Identity?.Name"
-                                   readonly />
+                            <input class="form-control" value="@User.Identity?.Name" readonly />
                         </div>
 
                         <!-- PLAN -->
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label"></label>
-                            <select asp-for="PlanId"
-                                    class="form-select"
-                                    asp-items="ViewBag.PlanId"
-                                    id="planSelect">
+                            <select asp-for="PlanId" class="form-select" id="planSelect">
+                                <option value="">-- Select Plan --</option>
+
+                                @foreach (var plan in (IEnumerable<Homeix.Models.SubscriptionPlan>)ViewBag.Plans)
+                                {
+                                    <option value="@plan.PlanId"
+                                            data-name="@plan.PlanName"
+                                            data-price="@plan.Price"
+                                            data-duration="@plan.DurationDays">
+                                        @plan.PlanName
+                                    </option>
+                                }
                             </select>
-                            <span asp-validation-for="PlanId"
-                                  class="text-danger"></span>
+                            <span asp-validation-for="PlanId" class="text-danger"></span>
                         </div>
 
-                        <!-- START DATE -->
+                        <!-- DATE PREVIEW -->
                         <div class="mb-3">
-                            <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate"
-                                   type="date"
-                                   class="form-control"
-                                   id="startDate" />
+                            <label class="form-label">Start Date</label>
+                            <input class="form-control" id="previewStart" readonly />
                         </div>
 
-                        <!-- END DATE -->
                         <div class="mb-3">
-                            <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate"
-                                   type="date"
-                                   class="form-control"
-                                   id="endDate" />
+                            <label class="form-label">End Date</label>
+                            <input class="form-control" id="previewEnd" readonly />
                         </div>
 
-                        <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
-                            <button type="button"
-                                    class="btn btn-primary d-inline-flex align-items-center gap-2"
-                                    id="openModalBtn">
+                            <button type="button" class="btn btn-primary" id="openModalBtn">
                                 <i class="bi bi-credit-card"></i>
                                 Subscribe
                             </button>
 
-                            <button type="button"
-                                    class="btn btn-secondary d-inline-flex align-items-center gap-2"
-                                    onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i>
+                            <button type="button" class="btn btn-secondary" onclick="history.back()">
                                 Back
                             </button>
                         </div>
-
                     </form>
 
                 </div>
@@ -88,13 +95,17 @@
     </div>
 </div>
 
-<!-- ================= PAYMENT MODAL ================= -->
-<div class="modal fade" id="paymentModal" tabindex="-1">
+<!-- ================= SUBSCRIPTION POPUP (NON-BLOCKING) ================= -->
+<div class="modal fade"
+     id="paymentModal"
+     tabindex="-1"
+     aria-hidden="true">
+
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Payment</h5>
+                <h5 class="modal-title">Confirm Subscription</h5>
                 <button type="button"
                         class="btn-close"
                         data-bs-dismiss="modal"></button>
@@ -112,19 +123,16 @@
                 </div>
             </div>
 
-            <!-- MODAL ACTIONS -->
-            <div class="modal-footer d-flex justify-content-end gap-2">
+            <div class="modal-footer">
                 <button type="button"
-                        class="btn btn-secondary d-inline-flex align-items-center gap-2"
+                        class="btn btn-secondary"
                         data-bs-dismiss="modal">
-                    <i class="bi bi-arrow-left"></i>
                     Back
                 </button>
 
                 <button type="submit"
-                        class="btn btn-success d-inline-flex align-items-center gap-2"
+                        class="btn btn-success"
                         form="subscriptionForm">
-                    <i class="bi bi-check-circle"></i>
                     Confirm & Pay
                 </button>
             </div>
@@ -137,36 +145,52 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
-        const plans = JSON.parse('@Html.Raw(
-        System.Text.Json.JsonSerializer.Serialize(
-            ViewBag.PlanData ?? new List<object>()
-        )
-    )');
+        document.addEventListener("DOMContentLoaded", function () {
 
-        const modal = new bootstrap.Modal(
-            document.getElementById('paymentModal')
-        );
+            const planSelect = document.getElementById("planSelect");
+            const startPreview = document.getElementById("previewStart");
+            const endPreview = document.getElementById("previewEnd");
+            const modalEl = document.getElementById("paymentModal");
 
-        document.getElementById('openModalBtn')
-            .addEventListener('click', function () {
+            const modal = new bootstrap.Modal(modalEl, {
+                backdrop: false,
+                focus: false,
+                keyboard: true
+            });
 
-                const planId = document.getElementById('planSelect').value;
-                const plan = plans.find(p => p.planId == planId);
+            planSelect.addEventListener("change", function () {
+                const opt = this.options[this.selectedIndex];
+                if (!opt.dataset.duration) return;
 
-                if (!plan) {
+                const start = new Date();
+                const end = new Date();
+                end.setDate(start.getDate() + parseInt(opt.dataset.duration));
+
+                startPreview.value = start.toISOString().split("T")[0];
+                endPreview.value = end.toISOString().split("T")[0];
+            });
+
+            document.getElementById("openModalBtn").addEventListener("click", function () {
+
+                const opt = planSelect.options[planSelect.selectedIndex];
+                if (!opt || !opt.dataset.name) {
                     alert("Please select a plan.");
                     return;
                 }
 
-                document.getElementById('mPlan').innerText = plan.planName;
-                document.getElementById('mPrice').innerText = plan.price;
-                document.getElementById('mDuration').innerText = plan.durationDays;
-                document.getElementById('mStart').innerText =
-                    document.getElementById('startDate').value;
-                document.getElementById('mEnd').innerText =
-                    document.getElementById('endDate').value;
+                document.getElementById("mPlan").innerText = opt.dataset.name;
+                document.getElementById("mPrice").innerText = opt.dataset.price;
+                document.getElementById("mDuration").innerText = opt.dataset.duration;
+                document.getElementById("mStart").innerText = startPreview.value;
+                document.getElementById("mEnd").innerText = endPreview.value;
 
                 modal.show();
             });
+
+            modalEl.addEventListener("hidden.bs.modal", () => {
+                document.body.classList.remove("modal-open");
+                document.querySelectorAll(".modal-backdrop").forEach(b => b.remove());
+            });
+        });
     </script>
 }

@@ -6,7 +6,7 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
+    <!-- HEADER -->
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="fw-bold page-title">Edit Subscription</h1>
@@ -16,19 +16,15 @@
         </div>
     </div>
 
-    <!-- ================= FORM CARD ================= -->
+    <!-- FORM -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body">
 
-                    <form asp-action="Edit" method="post">
+                    <form asp-action="Edit" method="post" id="editForm">
                         @Html.AntiForgeryToken()
 
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger mb-3"></div>
-
-                        <!-- REQUIRED -->
                         <input type="hidden" asp-for="SubscriptionId" />
 
                         <!-- USER -->
@@ -38,63 +34,62 @@
                                     class="form-select"
                                     asp-items="ViewBag.UserId">
                             </select>
-                            <span asp-validation-for="UserId"
-                                  class="text-danger"></span>
                         </div>
 
                         <!-- PLAN -->
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label fw-semibold"></label>
+
                             <select asp-for="PlanId"
                                     class="form-select"
-                                    asp-items="ViewBag.PlanId">
+                                    id="planSelect">
+                                @foreach (var item in (SelectList)ViewBag.PlanId)
+                                {
+                                    <option value="@item.Value"
+                                            data-duration="@item.Text.Split('-').Last()">
+                                        @item.Text
+                                    </option>
+                                }
                             </select>
-                            <span asp-validation-for="PlanId"
-                                  class="text-danger"></span>
                         </div>
 
-                        <!-- START DATE -->
+                        <!-- START DATE (LOCKED) -->
                         <div class="mb-3">
                             <label asp-for="StartDate" class="form-label fw-semibold"></label>
                             <input asp-for="StartDate"
                                    type="date"
-                                   class="form-control" />
-                            <span asp-validation-for="StartDate"
-                                  class="text-danger"></span>
+                                   class="form-control"
+                                   readonly />
                         </div>
 
-                        <!-- END DATE -->
+                        <!-- END DATE (LOCKED) -->
                         <div class="mb-3">
                             <label asp-for="EndDate" class="form-label fw-semibold"></label>
                             <input asp-for="EndDate"
                                    type="date"
-                                   class="form-control" />
-                            <span asp-validation-for="EndDate"
-                                  class="text-danger"></span>
+                                   class="form-control"
+                                   readonly />
                         </div>
 
                         <!-- STATUS -->
                         <div class="mb-3">
                             <label asp-for="Status" class="form-label fw-semibold"></label>
-                            <input asp-for="Status"
-                                   class="form-control" />
-                            <span asp-validation-for="Status"
-                                  class="text-danger"></span>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Expired">Expired</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
                         </div>
 
                         <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <button type="submit"
-                                    class="btn btn-primary d-inline-flex align-items-center gap-2">
-                                <i class="bi bi-check-circle"></i>
+                            <button type="submit" class="btn btn-primary">
                                 Save
                             </button>
 
-                            <!-- UNIVERSAL BACK BUTTON -->
                             <button type="button"
-                                    class="btn btn-secondary d-inline-flex align-items-center gap-2"
+                                    class="btn btn-secondary"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i>
                                 Back
                             </button>
                         </div>
@@ -105,11 +100,31 @@
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const planSelect = document.getElementById("planSelect");
+            const startInput = document.querySelector("[name='StartDate']");
+            const endInput = document.querySelector("[name='EndDate']");
+
+            planSelect.addEventListener("change", function () {
+
+                const selected = this.options[this.selectedIndex];
+                const duration = selected.dataset.duration;
+
+                if (!duration) return;
+
+                const start = new Date();
+                const end = new Date();
+
+                end.setDate(start.getDate() + parseInt(duration));
+
+                startInput.value = start.toISOString().split("T")[0];
+                endInput.value = end.toISOString().split("T")[0];
+            });
+        });
+    </script>
 }

@@ -41,14 +41,23 @@
                             @Html.DisplayNameFor(model => model.Price)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Price) JOD
+                            @Model.Price.ToString("0.00") JOD
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
                             @Html.DisplayNameFor(model => model.DurationDays)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.DurationDays) days
+                            @Model.DurationDays days
+                        </dd>
+
+                        <dt class="col-sm-4 fw-bold">
+                            @Html.DisplayNameFor(model => model.MaxPostsPerMonth)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @(Model.MaxPostsPerMonth.HasValue
+                                ? Model.MaxPostsPerMonth.Value.ToString()
+                                : "Unlimited")
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">

@@ -28,46 +28,55 @@
                 <div class="card-body">
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.StartDate)
-                        </dt>
+                        <!-- USER -->
+                        <dt class="col-sm-4 fw-bold">User</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.StartDate)
+                            @Model.User?.FullName
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.EndDate)
-                        </dt>
+                        <!-- PLAN -->
+                        <dt class="col-sm-4 fw-bold">Plan</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.EndDate)
+                            @Model.Plan?.PlanName
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Status)
-                        </dt>
+                        <!-- PRICE -->
+                        <dt class="col-sm-4 fw-bold">Price</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Status)
+                            @Model.Plan?.Price JOD
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Plan)
-                        </dt>
+                        <!-- DURATION -->
+                        <dt class="col-sm-4 fw-bold">Duration</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Plan.PlanId)
+                            @Model.Plan?.DurationDays days
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.User)
-                        </dt>
+                        <!-- START DATE -->
+                        <dt class="col-sm-4 fw-bold">Start Date</dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.User.UserId)
+                            @Model.StartDate.ToString("yyyy-MM-dd")
+                        </dd>
+
+                        <!-- END DATE -->
+                        <dt class="col-sm-4 fw-bold">End Date</dt>
+                        <dd class="col-sm-8">
+                            @Model.EndDate.ToString("yyyy-MM-dd")
+                        </dd>
+
+                        <!-- STATUS -->
+                        <dt class="col-sm-4 fw-bold">Status</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">
+                                @Model.Status
+                            </span>
                         </dd>
 
                     </dl>
                 </div>
 
                 <!-- ================= ACTIONS ================= -->
-                <div class="card-footer d-flex justify-content-end">
+                <div class="card-footer d-flex justify-content-end gap-2">
                     <button type="button"
                             class="btn btn-secondary d-inline-flex align-items-center gap-2"
                             onclick="history.back()">

@@ -53,6 +53,20 @@
                             <span asp-validation-for="DurationDays" class="text-danger"></span>
                         </div>
 
+                        <!-- MAX POSTS PER MONTH -->
+                        <div class="mb-3">
+                            <label asp-for="MaxPostsPerMonth" class="form-label"></label>
+                            <input asp-for="MaxPostsPerMonth"
+                                   type="number"
+                                   min="1"
+                                   max="1000"
+                                   class="form-control" />
+                            <small class="text-muted">
+                                Leave empty for unlimited posts.
+                            </small>
+                            <span asp-validation-for="MaxPostsPerMonth" class="text-danger"></span>
+                        </div>
+
                         <!-- ACTIVE -->
                         <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="IsActive" />
