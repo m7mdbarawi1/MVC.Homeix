@@ -224,44 +224,75 @@
     <main class="container-fluid flex-grow-1 py-4">
         @RenderBody()
     </main>
-
     <!-- FOOTER -->
     <footer class="footer mt-auto">
-        <div class="container py-3 small">
-            <div class="row g-2">
+        <div class="container py-4 small">
 
+            <!-- MAIN CONTENT -->
+            <div class="row text-center gy-3">
+
+                <!-- HOMEIX -->
                 <div class="col-md-4">
-                    <strong>Homeix</strong>
-                    <div class="opacity-75">
+                    <strong class="d-block mb-1">Homeix</strong>
+                    <div class="opacity-75 mb-2">
                         Verified professionals • Secure workflow • In-app chat
                     </div>
+                    <a asp-controller="Home"
+                       asp-action="AboutUs"
+                       class="link-light text-decoration-none opacity-75">
+                        About Us
+                    </a>
                 </div>
 
+                <!-- CONTACT -->
                 <div class="col-md-4">
-                    <strong>Contact</strong>
+                    <strong class="d-block mb-1">Contact</strong>
                     <div class="opacity-75">
-                        <div><i class="bi bi-telephone me-2"></i> +962 7 0000 0000</div>
-                        <div><i class="bi bi-geo-alt me-2"></i> Amman — HTU</div>
-                        <div><i class="bi bi-envelope me-2"></i> support@homeix.com</div>
+                        <div>
+                            <i class="bi bi-geo-alt me-2"></i>
+                            Amman, Jordan — HTU
+                        </div>
+                        <div>
+                            <i class="bi bi-envelope me-2"></i>
+                            <a href="mailto:homeix.jo@gmail.com"
+                               class="link-light text-decoration-none">
+                                homeix.jo@gmail.com
+                            </a>
+                        </div>
                     </div>
                 </div>
 
+                <!-- FOLLOW -->
                 <div class="col-md-4">
-                    <strong>Follow</strong>
-                    <div class="opacity-75">
-                        <a class="link-light text-decoration-none me-3" href="#">
-                            <i class="bi bi-instagram"></i> Instagram
+                    <strong class="d-block mb-1">Follow Us</strong>
+                    <div class="opacity-75 d-flex justify-content-center gap-4">
+                        <a class="link-light text-decoration-none fs-5"
+                           href="https://www.linkedin.com"
+                           target="_blank"
+                           rel="noopener">
+                            <i class="bi bi-linkedin"></i>
                         </a>
-                        <a class="link-light text-decoration-none" href="#">
-                            <i class="bi bi-facebook"></i> Facebook
+                        <a class="link-light text-decoration-none fs-5" href="#">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a class="link-light text-decoration-none fs-5" href="#">
+                            <i class="bi bi-instagram"></i>
                         </a>
                     </div>
-                    <div class="opacity-75 mt-2">© 2025 Homeix</div>
                 </div>
 
             </div>
+
+            <!-- COPYRIGHT -->
+            <div class="row mt-4">
+                <div class="col text-center opacity-75">
+                    © 2025 Homeix
+                </div>
+            </div>
+
         </div>
     </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

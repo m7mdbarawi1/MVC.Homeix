@@ -1,15 +1,17 @@
-﻿@model Homeix.Models.WorkerPost
+﻿@model Homeix.Models.Advertisement
 
 @{
-    ViewData["Title"] = "Create Worker Post";
+    ViewData["Title"] = "Create Advertisement";
 }
 
 <div class="container mt-4">
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">Create Worker Post</h1>
-        <p class="text-muted">Fill in the details below to publish a new post</p>
+        <h1 class="fw-bold">Create Advertisement</h1>
+        <p class="text-muted">
+            Fill in the details below to publish a new advertisement
+        </p>
     </div>
 
     <div class="row justify-content-center">
@@ -27,19 +29,6 @@
                         <div asp-validation-summary="ModelOnly"
                              class="text-danger mb-3"></div>
 
-                        <!-- CATEGORY -->
-                        <div class="mb-3">
-                            <label asp-for="PostCategoryId"
-                                   class="form-label fw-semibold"></label>
-                            <select asp-for="PostCategoryId"
-                                    class="form-select"
-                                    asp-items="ViewBag.PostCategoryId">
-                                <option value="">-- Select Category --</option>
-                            </select>
-                            <span asp-validation-for="PostCategoryId"
-                                  class="text-danger"></span>
-                        </div>
-
                         <!-- TITLE -->
                         <div class="mb-3">
                             <label asp-for="Title"
@@ -50,54 +39,10 @@
                                   class="text-danger"></span>
                         </div>
 
-                        <!-- DESCRIPTION -->
-                        <div class="mb-3">
-                            <label asp-for="Description"
-                                   class="form-label fw-semibold"></label>
-                            <textarea asp-for="Description"
-                                      rows="4"
-                                      class="form-control"></textarea>
-                            <span asp-validation-for="Description"
-                                  class="text-danger"></span>
-                        </div>
-
-                        <!-- LOCATION -->
-                        <div class="mb-3">
-                            <label asp-for="Location"
-                                   class="form-label fw-semibold"></label>
-                            <input asp-for="Location"
-                                   class="form-control" />
-                            <span asp-validation-for="Location"
-                                  class="text-danger"></span>
-                        </div>
-
-                        <!-- PRICE RANGE -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="PriceRangeMin"
-                                       class="form-label fw-semibold"></label>
-                                <input asp-for="PriceRangeMin"
-                                       type="number"
-                                       step="0.01"
-                                       min="0"
-                                       class="form-control" />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="PriceRangeMax"
-                                       class="form-label fw-semibold"></label>
-                                <input asp-for="PriceRangeMax"
-                                       type="number"
-                                       step="0.01"
-                                       min="0"
-                                       class="form-control" />
-                            </div>
-                        </div>
-
-                        <!-- ADD IMAGES (WITH REMOVE SUPPORT) -->
+                        <!-- IMAGE (DRAG & DROP) -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Upload Images <span class="text-muted">(optional)</span>
+                                Advertisement Image
                             </label>
 
                             <div id="dropZone"
@@ -105,32 +50,64 @@
                                  style="cursor:pointer;">
 
                                 <p class="text-muted mb-2">
-                                    Drag & drop images here or click to select
+                                    Drag & drop image here or click to select
                                 </p>
 
-                                <!-- MUST MATCH controller parameter -->
-                                <input type="file"
-                                       id="mediaInput"
-                                       name="mediaFiles"
+                                <input asp-for="ImageFile"
+                                       type="file"
+                                       id="imageInput"
                                        class="d-none"
-                                       accept="image/*"
-                                       multiple />
+                                       accept="image/*" />
 
-                                <div id="preview" class="row g-2 mt-3"></div>
+                                <div id="preview" class="mt-3"></div>
                             </div>
+                        </div>
+
+                        <!-- DATE RANGE -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StartDate"
+                                       class="form-label fw-semibold"></label>
+                                <input asp-for="StartDate"
+                                       type="date"
+                                       class="form-control" />
+                                <span asp-validation-for="StartDate"
+                                      class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EndDate"
+                                       class="form-label fw-semibold"></label>
+                                <input asp-for="EndDate"
+                                       type="date"
+                                       class="form-control" />
+                                <span asp-validation-for="EndDate"
+                                      class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- ACTIVE -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input"
+                                   asp-for="IsActive" />
+                            <label class="form-check-label fw-semibold">
+                                Active
+                            </label>
                         </div>
 
                         <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
-                                <i class="bi bi-check-circle"></i> Create Post
+                                <i class="bi bi-check-circle"></i>
+                                Create Advertisement
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                Back
                             </button>
                         </div>
 
@@ -148,10 +125,8 @@
 
     <script>
         const dropZone = document.getElementById("dropZone");
-        const input = document.getElementById("mediaInput");
+        const input = document.getElementById("imageInput");
         const preview = document.getElementById("preview");
-
-        let selectedFiles = [];
 
         dropZone.onclick = () => input.click();
 
@@ -167,57 +142,25 @@
         dropZone.ondrop = e => {
             e.preventDefault();
             dropZone.classList.remove("bg-light");
-            addFiles(e.dataTransfer.files);
+            input.files = e.dataTransfer.files;
+            showPreview(input.files[0]);
         };
 
-        input.onchange = () => addFiles(input.files);
+        input.onchange = () => showPreview(input.files[0]);
 
-        function addFiles(files) {
-            for (const file of files) {
-                if (!file.type.startsWith("image")) continue;
-                selectedFiles.push(file);
-            }
-            renderPreview();
-            syncInputFiles();
-        }
-
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-            renderPreview();
-            syncInputFiles();
-        }
-
-        function renderPreview() {
+        function showPreview(file) {
             preview.innerHTML = "";
+            if (!file || !file.type.startsWith("image")) return;
 
-            selectedFiles.forEach((file, index) => {
-                const col = document.createElement("div");
-                col.className = "col-6 col-md-4 position-relative";
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+            img.className = "img-fluid rounded border";
+            img.style.maxHeight = "180px";
+            img.style.objectFit = "cover";
 
-                const img = document.createElement("img");
-                img.src = URL.createObjectURL(file);
-                img.className = "img-fluid rounded border";
-                img.style.height = "160px";
-                img.style.objectFit = "cover";
+            img.onload = () => URL.revokeObjectURL(img.src);
 
-                img.onload = () => URL.revokeObjectURL(img.src);
-
-                const removeBtn = document.createElement("button");
-                removeBtn.type = "button";
-                removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0 m-1";
-                removeBtn.innerHTML = "&times;";
-                removeBtn.onclick = () => removeFile(index);
-
-                col.appendChild(img);
-                col.appendChild(removeBtn);
-                preview.appendChild(col);
-            });
-        }
-
-        function syncInputFiles() {
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            input.files = dataTransfer.files;
+            preview.appendChild(img);
         }
     </script>
 }
