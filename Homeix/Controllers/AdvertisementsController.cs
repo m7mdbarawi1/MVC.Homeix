@@ -23,7 +23,7 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // ================= INDEX =================
+
         public async Task<IActionResult> Index()
         {
             var ads = await _context.Advertisements

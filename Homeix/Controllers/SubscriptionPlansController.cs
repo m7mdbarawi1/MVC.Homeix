@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class SubscriptionPlansController : Controller
     {
         private readonly HOMEIXDbContext _context;

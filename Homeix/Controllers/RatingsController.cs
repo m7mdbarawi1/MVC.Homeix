@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class RatingsController : Controller
     {
         private readonly HOMEIXDbContext _context;
@@ -62,7 +63,6 @@ namespace Homeix.Controllers
             );
         }
 
-        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -78,7 +78,6 @@ namespace Homeix.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Create(int? ratedUserId)
         {
             if (ratedUserId.HasValue)
@@ -99,7 +98,6 @@ namespace Homeix.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Create([Bind("RatedUserId,RatingValue,Review")] Rating rating)
         {
             int raterId = int.Parse(User.FindFirstValue("UserId") ?? "0");
@@ -129,8 +127,11 @@ namespace Homeix.Controllers
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
-            // ✅ ALWAYS GO TO DASHBOARD (LIKE LOGIN)
-            return RedirectToAction("PublicProfile", "Users");
+            return RedirectToAction(
+                "PublicProfile",
+                "Users",
+                new { id = rating.RatedUserId }
+            );
         }
 
         [HttpGet]

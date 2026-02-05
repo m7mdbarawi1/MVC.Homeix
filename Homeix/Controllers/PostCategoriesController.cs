@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class PostCategoriesController : Controller
     {
         private readonly HOMEIXDbContext _context;

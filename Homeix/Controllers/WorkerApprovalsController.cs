@@ -8,6 +8,7 @@ using Homeix.Models;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class WorkerApprovalsController : Controller
     {
         private readonly HOMEIXDbContext _context;

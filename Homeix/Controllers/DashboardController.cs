@@ -17,9 +17,6 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // =========================
-        // ADMIN DASHBOARD
-        // =========================
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> AdminDashboard()
         {
@@ -75,9 +72,6 @@ namespace Homeix.Controllers
             return View();
         }
 
-        // =========================
-        // CUSTOMER DASHBOARD
-        // =========================
         [Authorize(Roles = "customer")]
         public async Task<IActionResult> CustomerDashboard()
         {
@@ -101,9 +95,6 @@ namespace Homeix.Controllers
             return View(workerPosts);
         }
 
-        // =========================
-        // WORKER DASHBOARD
-        // =========================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> WorkerDashboard()
         {
@@ -127,9 +118,6 @@ namespace Homeix.Controllers
             return View(customerPosts);
         }
 
-        // =========================
-        // HELPERS
-        // =========================
         private int GetCurrentUserId()
         {
             var claim = User.FindFirst("UserId");

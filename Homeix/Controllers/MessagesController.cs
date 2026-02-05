@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class MessagesController : Controller
     {
         private readonly HOMEIXDbContext _context;

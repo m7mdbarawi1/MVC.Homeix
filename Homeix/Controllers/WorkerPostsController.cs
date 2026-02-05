@@ -38,7 +38,6 @@ namespace Homeix.Controllers
             return View(posts);
         }
         
-        [Authorize(Roles = "worker,admin")]
         public async Task<IActionResult> Details(int id)
         {
             var post = await _context.WorkerPosts

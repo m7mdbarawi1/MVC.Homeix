@@ -119,7 +119,6 @@ namespace Homeix.Controllers
             return View();
         }
 
-        // Keep this action working (in case you post messages by form somewhere)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Send(int conversationId, string messageText)

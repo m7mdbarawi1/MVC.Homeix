@@ -7,18 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
+    [Authorize]
     public class ConversationsController : Controller
     {
         private readonly HOMEIXDbContext _context;
+        
         public ConversationsController(HOMEIXDbContext context) {_context = context;}
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var conversations = await _context.Conversations.Include(c => c.User1).Include(c => c.User2).ToListAsync();
             return View(conversations);
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var conversations = await _context.Conversations.Include(c => c.User1).Include(c => c.User2).OrderByDescending(c => c.CreatedAt).ToListAsync();
@@ -31,6 +36,7 @@ namespace Homeix.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "ConversationsReport.csv");
         }
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -38,11 +44,13 @@ namespace Homeix.Controllers
             if (conversation == null) return NotFound();
             return View(conversation);
         }
+        
         public IActionResult Create()
         {
             LoadUsersDropdowns();
             return View();
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( [Bind("User1Id,User2Id")] Conversation conversation)
@@ -57,6 +65,7 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -65,6 +74,7 @@ namespace Homeix.Controllers
             LoadUsersDropdowns(conversation.User1Id, conversation.User2Id);
             return View(conversation);
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ConversationId,User1Id,User2Id")] Conversation conversation)
@@ -82,6 +92,7 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -89,6 +100,7 @@ namespace Homeix.Controllers
             if (conversation == null) return NotFound();
             return View(conversation);
         }
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

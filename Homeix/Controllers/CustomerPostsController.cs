@@ -22,10 +22,8 @@ namespace Homeix.Controllers
         {
             _context = context;
         }
-
-        // =========================
-        // INDEX
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var posts = await _context.CustomerPosts
@@ -37,10 +35,7 @@ namespace Homeix.Controllers
 
             return View(posts);
         }
-
-        // =========================
-        // DETAILS
-        // =========================
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -53,25 +48,18 @@ namespace Homeix.Controllers
 
             return post == null ? NotFound() : View(post);
         }
-
-        // =========================
-        // CREATE (GET)
-        // =========================
+        
+        [Authorize(Roles = "customer")]
         public IActionResult Create()
         {
             LoadDropdowns();
             return View();
         }
 
-        // =========================
-        // CREATE (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")]
-            CustomerPost customerPost,
-            List<IFormFile>? mediaFiles)
+        [Authorize(Roles = "customer")]
+        public async Task<IActionResult> Create([Bind("PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")] CustomerPost customerPost, List<IFormFile>? mediaFiles)
         {
             customerPost.UserId = GetUserId();
             customerPost.CreatedAt = DateTime.Now;
@@ -107,9 +95,7 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =========================
-        // EDIT (GET)
-        // =========================
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -124,17 +110,10 @@ namespace Homeix.Controllers
             return View(post);
         }
 
-        // =========================
-        // EDIT (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")]
-            CustomerPost customerPost,
-            List<IFormFile>? mediaFiles,
-            int[]? deleteMediaIds)
+        [Authorize(Roles = "customer")]
+        public async Task<IActionResult> Edit(int id,[Bind("CustomerPostId,PostCategoryId,Title,Description,Location,PriceRangeMin,PriceRangeMax")] CustomerPost customerPost,List<IFormFile>? mediaFiles,int[]? deleteMediaIds)
         {
             if (id != customerPost.CustomerPostId)
                 return NotFound();
@@ -194,9 +173,7 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =========================
-        // DELETE
-        // =========================
+        [Authorize(Roles = "customer,admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -211,6 +188,7 @@ namespace Homeix.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "customer,admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var post = await _context.CustomerPosts
@@ -231,9 +209,7 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(MyPosts));
         }
 
-        // =========================
-        // MY POSTS
-        // =========================
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> MyPosts()
         {
             int userId = GetUserId();
@@ -248,9 +224,6 @@ namespace Homeix.Controllers
             return View(posts);
         }
 
-        // =========================
-        // HELPERS
-        // =========================
         private int GetUserId()
         {
             var claim = User.FindFirst("UserId")
@@ -274,9 +247,6 @@ namespace Homeix.Controllers
             ".jpg", ".jpeg", ".png", ".gif", ".webp"
         };
 
-        // =========================
-        // FILE SAVE (IDENTICAL TO WORKER)
-        // =========================
         private static async Task<string> SaveCustomerPostMediaAsync(IFormFile file)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -311,9 +281,7 @@ namespace Homeix.Controllers
                 System.IO.File.Delete(path);
         }
 
-        // =========================
-        // DOWNLOAD REPORT
-        // =========================
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var posts = await _context.CustomerPosts

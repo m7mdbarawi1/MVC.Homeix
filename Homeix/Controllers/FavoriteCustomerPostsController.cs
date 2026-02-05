@@ -19,9 +19,7 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // =========================
-        // ADD TO FAVORITES
-        // =========================
+        [Authorize(Roles = "worker")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(int customerPostId, string returnUrl)
@@ -47,9 +45,7 @@ namespace Homeix.Controllers
             return RedirectBack(returnUrl);
         }
 
-        // =========================
-        // REMOVE FROM FAVORITES
-        // =========================
+        [Authorize(Roles = "worker")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int customerPostId, string returnUrl)
@@ -70,9 +66,6 @@ namespace Homeix.Controllers
             return RedirectBack(returnUrl);
         }
 
-        // =========================
-        // REDIRECT BACK TO SAME PAGE
-        // =========================
         private IActionResult RedirectBack(string returnUrl)
         {
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -81,9 +74,6 @@ namespace Homeix.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // =========================
-        // USER ID HELPER
-        // =========================
         private int GetUserId()
         {
             var claim = User.FindFirst("UserId");
