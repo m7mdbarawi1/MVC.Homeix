@@ -4,9 +4,18 @@
     ViewData["Title"] = "Create Advertisement";
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Create Advertisement</h1>
+        <p class="text-muted">
+            Fill in the details below to publish a new advertisement
+        </p>
+    </div>
+
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-10 col-lg-8">
 
             <div class="card shadow-sm">
                 <div class="card-body">
@@ -16,23 +25,32 @@
                           enctype="multipart/form-data">
 
                         @Html.AntiForgeryToken()
-                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-                        <!-- Title -->
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <!-- TITLE -->
                         <div class="mb-3">
-                            <label asp-for="Title" class="form-label"></label>
-                            <input asp-for="Title" class="form-control" />
+                            <label asp-for="Title"
+                                   class="form-label fw-semibold"></label>
+                            <input asp-for="Title"
+                                   class="form-control" />
+                            <span asp-validation-for="Title"
+                                  class="text-danger"></span>
                         </div>
 
-                        <!-- Drag & Drop Image -->
+                        <!-- IMAGE (DRAG & DROP) -->
                         <div class="mb-4">
-                            <label class="form-label">Advertisement Image</label>
+                            <label class="form-label fw-semibold">
+                                Advertisement Image
+                            </label>
 
                             <div id="dropZone"
-                                 class="border border-2 rounded p-4 text-center"
+                                 class="border border-2 border-dashed rounded p-4 text-center"
                                  style="cursor:pointer;">
+
                                 <p class="text-muted mb-2">
-                                    Drag & drop image or click to select
+                                    Drag & drop image here or click to select
                                 </p>
 
                                 <input asp-for="ImageFile"
@@ -45,35 +63,51 @@
                             </div>
                         </div>
 
-                        <!-- Start Date -->
-                        <div class="mb-3">
-                            <label asp-for="StartDate" class="form-label"></label>
-                            <input asp-for="StartDate" type="date" class="form-control" />
+                        <!-- DATE RANGE -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StartDate"
+                                       class="form-label fw-semibold"></label>
+                                <input asp-for="StartDate"
+                                       type="date"
+                                       class="form-control" />
+                                <span asp-validation-for="StartDate"
+                                      class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EndDate"
+                                       class="form-label fw-semibold"></label>
+                                <input asp-for="EndDate"
+                                       type="date"
+                                       class="form-control" />
+                                <span asp-validation-for="EndDate"
+                                      class="text-danger"></span>
+                            </div>
                         </div>
 
-                        <!-- End Date -->
-                        <div class="mb-3">
-                            <label asp-for="EndDate" class="form-label"></label>
-                            <input asp-for="EndDate" type="date" class="form-control" />
-                        </div>
-
-                        <!-- Active -->
+                        <!-- ACTIVE -->
                         <div class="form-check mb-4">
-                            <input class="form-check-input" asp-for="IsActive" />
-                            <label class="form-check-label">Active</label>
+                            <input class="form-check-input"
+                                   asp-for="IsActive" />
+                            <label class="form-check-label fw-semibold">
+                                Active
+                            </label>
                         </div>
 
                         <!-- ACTIONS -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-upload"></i> Create Advertisement
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit"
+                                    class="btn btn-primary btn-sm">
+                                <i class="bi bi-check-circle"></i>
+                                Create Advertisement
                             </button>
 
-                            <!-- UNIVERSAL BACK BUTTON -->
                             <button type="button"
-                                    class="btn btn-outline-secondary"
+                                    class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                Back
                             </button>
                         </div>
 
@@ -116,12 +150,16 @@
 
         function showPreview(file) {
             preview.innerHTML = "";
-            if (!file) return;
+            if (!file || !file.type.startsWith("image")) return;
 
             const img = document.createElement("img");
             img.src = URL.createObjectURL(file);
-            img.className = "img-fluid rounded";
-            img.style.maxHeight = "200px";
+            img.className = "img-fluid rounded border";
+            img.style.maxHeight = "180px";
+            img.style.objectFit = "cover";
+
+            img.onload = () => URL.revokeObjectURL(img.src);
+
             preview.appendChild(img);
         }
     </script>
