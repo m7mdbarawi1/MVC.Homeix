@@ -78,6 +78,7 @@ namespace Homeix.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "worker,customer")]
         public async Task<IActionResult> Create(int? ratedUserId)
         {
             if (ratedUserId.HasValue)
@@ -98,6 +99,7 @@ namespace Homeix.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "worker,customer")]
         public async Task<IActionResult> Create([Bind("RatedUserId,RatingValue,Review")] Rating rating)
         {
             int raterId = int.Parse(User.FindFirstValue("UserId") ?? "0");
@@ -180,7 +182,6 @@ namespace Homeix.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -196,7 +197,6 @@ namespace Homeix.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var rating = await _context.Ratings.FindAsync(id);

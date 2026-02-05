@@ -33,7 +33,6 @@ namespace Homeix.Controllers
             return View(ads);
         }
 
-        // ================= DOWNLOAD REPORT =================
         public async Task<IActionResult> DownloadReport()
         {
             var ads = await _context.Advertisements
@@ -64,7 +63,6 @@ namespace Homeix.Controllers
             );
         }
 
-        // ================= DETAILS =================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -77,13 +75,12 @@ namespace Homeix.Controllers
             return View(ad);
         }
 
-        // ================= CREATE (GET) =================
+
         public IActionResult Create()
         {
             return View();
         }
 
-        // ================= CREATE (POST) =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Advertisement advertisement)
@@ -112,7 +109,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ================= EDIT (GET) =================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -123,13 +119,9 @@ namespace Homeix.Controllers
             return View(ad);
         }
 
-        // ================= EDIT (POST) =================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            Advertisement advertisement,
-            IFormFile? ImageFile)
+        public async Task<IActionResult> Edit( int id, Advertisement advertisement,IFormFile? ImageFile)
         {
             if (id != advertisement.AdId)
                 return NotFound();
@@ -163,7 +155,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ================= DELETE (GET) =================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -176,7 +167,6 @@ namespace Homeix.Controllers
             return View(ad);
         }
 
-        // ================= DELETE (POST) =================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -193,7 +183,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ================= IMAGE HELPERS =================
 
         private static readonly string[] AllowedImageExtensions =
         {
