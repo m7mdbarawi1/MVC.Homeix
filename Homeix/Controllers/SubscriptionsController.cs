@@ -282,5 +282,41 @@ namespace Homeix.Controllers
                 sub?.PlanId
             );
         }
+
+        // =========================
+        // DOWNLOAD REPORT (ADMIN)
+        // =========================
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DownloadReport()
+        {
+            var subs = await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Include(s => s.User)
+                .OrderByDescending(s => s.StartDate)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+
+            sb.AppendLine(
+                "SubscriptionId,User,Plan,StartDate,EndDate,Status"
+            );
+
+            foreach (var s in subs)
+            {
+                sb.AppendLine(
+                    $"{s.SubscriptionId}," +
+                    $"\"{s.User?.FullName}\"," +
+                    $"\"{s.Plan?.PlanName}\"," +
+                    $"{s.StartDate:yyyy-MM-dd}," +
+                    $"{s.EndDate:yyyy-MM-dd}," +
+                    $"\"{s.Status}\""
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+
+            return File(bytes, "text/csv", "SubscriptionsReport.csv");
+        }
+
     }
 }

@@ -6,16 +6,14 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- ================= HEADER ================= -->
+    <!-- Header -->
     <div class="row mb-4">
-        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <h1 class="mb-0">@ViewData["Title"]</h1>
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
 
             <div class="d-flex gap-2">
-                <a asp-action="Create"
-                   class="btn btn-primary d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-plus-circle"></i>
-                    Create New
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Create New
                 </a>
 
                 <a asp-action="DownloadReport"
@@ -27,7 +25,7 @@
         </div>
     </div>
 
-    <!-- ================= SEARCH ================= -->
+    <!-- Search -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -41,7 +39,7 @@
         </div>
     </div>
 
-    <!-- ================= TABLE ================= -->
+    <!-- Table -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -53,7 +51,7 @@
                                 <tr>
                                     <th>Rating</th>
                                     <th>Review</th>
-                                    <th>Created At</th>
+                                    <th>Created</th>
                                     <th>Rated User</th>
                                     <th>Rater User</th>
                                     <th class="text-center">Actions</th>
@@ -65,73 +63,50 @@
                                 {
                                     foreach (var item in Model)
                                     {
-                                                <tr>
-                                                    <!-- RATING -->
-                                                    <td>
-                                                        <span class="badge bg-warning text-dark">
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-warning text-dark">
                                                     @item.RatingValue ★
-                                                        </span>
-                                                    </td>
+                                                </span>
+                                            </td>
 
-                                                    <!-- REVIEW -->
-                                                    <td class="text-truncate" style="max-width: 300px;">
-                                                @(string.IsNullOrWhiteSpace(item.Review)
-                                                        ? "—"
-                                                        : item.Review)
-                                                    </td>
+                                            <td class="text-truncate" style="max-width:300px;">
+                                                @item.Review
+                                            </td>
 
-                                                    <!-- DATE -->
-                                                    <td>
-                                                @item.CreatedAt.ToString("yyyy-MM-dd")
-                                                    </td>
+                                            <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
 
-                                                    <!-- RATED USER -->
-                                                    <td>
-                                                @item.RatedUser?.FullName ?? "—"
-                                                    </td>
+                                            <!-- SAME STYLE AS WorkerPosts -->
+                                            <td>@item.RatedUser?.FullName</td>
+                                            <td>@item.RaterUser?.FullName</td>
 
-                                                    <!-- RATER USER -->
-                                                    <td>
-                                                @item.RaterUser?.FullName ?? "—"
-                                                    </td>
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <a asp-action="Details"
+                                                       asp-route-id="@item.RatingId"
+                                                       class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
 
-                                                    <!-- ACTIONS -->
-                                                    <td class="text-center">
-                                                        <div class="d-flex flex-wrap justify-content-center gap-2">
-
-                                                            <a asp-action="Edit"
-                                                               asp-route-id="@item.RatingId"
-                                                               class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1">
-                                                                <i class="bi bi-pencil-square"></i>
-                                                                Edit
-                                                            </a>
-
-                                                            <a asp-action="Details"
-                                                               asp-route-id="@item.RatingId"
-                                                               class="btn btn-accent btn-sm d-inline-flex align-items-center gap-1">
-                                                                <i class="bi bi-info-circle"></i>
-                                                                Details
-                                                            </a>
-
-                                                            <a asp-action="Delete"
-                                                               asp-route-id="@item.RatingId"
-                                                               class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1">
-                                                                <i class="bi bi-trash"></i>
-                                                                Delete
-                                                            </a>
-
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                    <a asp-action="Delete"
+                                                       asp-route-id="@item.RatingId"
+                                                       class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     }
                                 }
                                 else
                                 {
-                                        <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">
+                                    <tr>
+                                        <td colspan="6" class="text-center p-4">
+                                            <div class="alert alert-secondary mb-0">
                                                 No ratings found.
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 }
                             </tbody>
 
@@ -146,21 +121,19 @@
 </div>
 
 @section Scripts {
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const searchInput = document.getElementById("searchInput");
-                const rows = document.querySelectorAll("#ratingsTable tr");
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#ratingsTable tr");
 
-                searchInput.addEventListener("input", function () {
-                    const term = searchInput.value.toLowerCase();
-
-                    rows.forEach(row => {
-                        row.style.display =
-                            row.textContent.toLowerCase().includes(term)
-                                ? ""
-                                : "none";
-                    });
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    row.style.display = row.textContent.toLowerCase().includes(term)
+                        ? ""
+                        : "none";
                 });
             });
-        </script>
+        });
+    </script>
 }

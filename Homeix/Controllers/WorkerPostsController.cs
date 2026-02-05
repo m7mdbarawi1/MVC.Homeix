@@ -319,5 +319,41 @@ namespace Homeix.Controllers
             if (System.IO.File.Exists(path))
                 System.IO.File.Delete(path);
         }
+
+        // =========================
+        // DOWNLOAD REPORT (ADMIN)
+        // =========================
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DownloadReport()
+        {
+            var posts = await _context.WorkerPosts
+                .Include(w => w.PostCategory)
+                .Include(w => w.User)
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+
+            sb.AppendLine("WorkerPostId,Title,Category,Location,PriceRangeMin,PriceRangeMax,CreatedAt,Worker");
+
+            foreach (var w in posts)
+            {
+                sb.AppendLine(
+                    $"{w.WorkerPostId}," +
+                    $"\"{w.Title}\"," +
+                    $"\"{w.PostCategory?.CategoryName}\"," +
+                    $"\"{w.Location}\"," +
+                    $"{w.PriceRangeMin}," +
+                    $"{w.PriceRangeMax}," +
+                    $"{w.CreatedAt:yyyy-MM-dd HH:mm}," +
+                    $"\"{w.User?.FullName}\""
+                );
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+
+            return File(bytes, "text/csv", "WorkerPostsReport.csv");
+        }
+
     }
 }
