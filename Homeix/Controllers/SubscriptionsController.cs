@@ -21,9 +21,6 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        // =========================
-        // HELPERS
-        // =========================
         private bool IsAdmin()
         {
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -39,9 +36,7 @@ namespace Homeix.Controllers
             return int.Parse(claim.Value);
         }
 
-        // =========================
-        // INDEX
-        // =========================
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             IQueryable<Subscription> query = _context.Subscriptions
@@ -57,9 +52,7 @@ namespace Homeix.Controllers
             return View(await query.ToListAsync());
         }
 
-        // =========================
-        // DETAILS
-        // =========================
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -81,10 +74,8 @@ namespace Homeix.Controllers
 
             return View(subscription);
         }
-
-        // =========================
-        // CREATE (GET)
-        // =========================
+        
+        [Authorize]
         public IActionResult Create()
         {
             ViewBag.Plans = _context.SubscriptionPlans
@@ -94,11 +85,9 @@ namespace Homeix.Controllers
             return View(new Subscription());
         }
 
-        // =========================
-        // CREATE (POST) ✅ FIXED
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("PlanId")] Subscription subscription)
         {
             if (!ModelState.IsValid)
@@ -163,12 +152,13 @@ namespace Homeix.Controllers
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
-        }
+            if (User.IsInRole("admin"))
+                return RedirectToAction(nameof(Index));
 
-        // =========================
-        // EDIT (GET)
-        // =========================
+            return RedirectToAction(nameof(MySubscriptions));
+        }
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -190,15 +180,10 @@ namespace Homeix.Controllers
             return View(subscription);
         }
 
-        // =========================
-        // EDIT (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")]
-            Subscription subscription)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("SubscriptionId,UserId,PlanId,StartDate,EndDate,Status")] Subscription subscription)
         {
             if (id != subscription.SubscriptionId)
                 return NotFound();
@@ -217,10 +202,8 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // DELETE
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -239,6 +222,7 @@ namespace Homeix.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Get subscription with related payments
@@ -260,12 +244,12 @@ namespace Homeix.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            if (User.IsInRole("admin"))
+                return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(MySubscriptions));
         }
 
-        // =========================
-        // DROPDOWNS
-        // =========================
         private void ReloadDropdowns(Subscription? sub = null)
         {
             ViewData["UserId"] = new SelectList(
@@ -282,10 +266,21 @@ namespace Homeix.Controllers
                 sub?.PlanId
             );
         }
+        
+        [Authorize(Roles = "worker,customer")]
+        public async Task<IActionResult> MySubscriptions()
+        {
+            int userId = int.Parse(User.FindFirst("UserId")!.Value);
 
-        // =========================
-        // DOWNLOAD REPORT (ADMIN)
-        // =========================
+            var subs = await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.StartDate)
+                .ToListAsync();
+
+            return View(subs);
+        }
+        
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Models;
 using Homeix.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
@@ -20,10 +21,8 @@ namespace Homeix.Controllers
         {
             _context = context;
         }
-
-        // =========================
-        // INDEX
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var users = await _context.Users
@@ -33,10 +32,8 @@ namespace Homeix.Controllers
 
             return View(users);
         }
-
-        // =========================
-        // DOWNLOAD REPORT (CSV)
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var users = await _context.Users
@@ -66,10 +63,8 @@ namespace Homeix.Controllers
                 "UsersReport.csv"
             );
         }
-
-        // =========================
-        // DETAILS
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -85,27 +80,17 @@ namespace Homeix.Controllers
             return View(user);
         }
 
-        // =========================
-        // CREATE (GET)
-        // =========================
+        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             LoadRolesDropdown();
             return View();
         }
 
-        // =========================
-        // CREATE (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            int roleId,
-            string fullName,
-            string email,
-            string phoneNumber,
-            string password,
-            IFormFile? profileImage)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Create(int roleId, string fullName, string email,string phoneNumber,string password,IFormFile? profileImage)
         {
             ValidateUserInput(roleId, fullName, email, phoneNumber, password);
 
@@ -141,9 +126,7 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // EDIT (GET)
-        // =========================
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -158,18 +141,10 @@ namespace Homeix.Controllers
             return View(user);
         }
 
-        // =========================
-        // EDIT (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            int roleId,
-            string fullName,
-            string email,
-            string phoneNumber,
-            IFormFile? profileImage)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Edit(int id,int roleId,string fullName,string email,string phoneNumber,IFormFile? profileImage)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound();
@@ -197,10 +172,8 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // DELETE
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -216,6 +189,7 @@ namespace Homeix.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -229,9 +203,6 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // HELPERS
-        // =========================
         private void LoadRolesDropdown(int? selectedRoleId = null)
         {
             ViewData["RoleId"] = new SelectList(
@@ -242,12 +213,7 @@ namespace Homeix.Controllers
             );
         }
 
-        private void ValidateUserInput(
-            int roleId,
-            string fullName,
-            string email,
-            string phoneNumber,
-            string password)
+        private void ValidateUserInput(int roleId,string fullName,string email,string phoneNumber,string password)
         {
             if (roleId <= 0)
                 ModelState.AddModelError("RoleId", "Role is required.");
@@ -264,11 +230,7 @@ namespace Homeix.Controllers
             if (!IsStrongPassword(password, out var error))
                 ModelState.AddModelError("Password", error);
         }
-
-        /* =========================
-   PUBLIC PROFILE (IMPORTANT)
-========================== */
-
+        [Authorize]
         public async Task<IActionResult> PublicProfile(int id)
         {
             var user = await _context.Users

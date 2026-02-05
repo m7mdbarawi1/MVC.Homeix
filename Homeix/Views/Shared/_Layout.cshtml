@@ -114,11 +114,17 @@
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="CustomerPosts" asp-action="MyPosts">My Posts</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="SubscriptionPlans" asp-action="Explore">Explore Plans</a>
+                                </li>
                             }
                             else if (roleName == "worker")
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="WorkerPosts" asp-action="MyPosts">My Posts</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="SubscriptionPlans" asp-action="Explore">Explore Plans</a>
                                 </li>
                             }
                         }
@@ -165,8 +171,8 @@
                                         <li>
                                             <a class="dropdown-item"
                                                asp-controller="Subscriptions"
-                                               asp-action="Index">
-                                                Subscription
+                                               asp-action="MySubscriptions">
+                                                My Subscriptions
                                             </a>
                                         </li>
                                     }
@@ -175,8 +181,8 @@
                                         <li>
                                             <a class="dropdown-item"
                                                asp-controller="Subscriptions"
-                                               asp-action="Index">
-                                                Subscription
+                                               asp-action="MySubscriptions">
+                                                My Subscriptions
                                             </a>
                                         </li>
                                         <li>

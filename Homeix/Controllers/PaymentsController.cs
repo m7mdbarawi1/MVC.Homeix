@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
@@ -13,7 +14,7 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         public PaymentsController(HOMEIXDbContext context) { _context = context; }
-
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var payments = await _context.Payments
@@ -24,7 +25,7 @@ namespace Homeix.Controllers
 
             return View(payments);
         }
-
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var payments = await _context.Payments
@@ -52,7 +53,7 @@ namespace Homeix.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "PaymentsReport.csv");
         }
-
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -66,7 +67,7 @@ namespace Homeix.Controllers
             if (payment == null) return NotFound();
             return View(payment);
         }
-
+        [Authorize]
         public IActionResult Create()
         {
             LoadDropdowns();
@@ -75,6 +76,7 @@ namespace Homeix.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(Payment payment)
         {
             if (!ModelState.IsValid)
@@ -87,7 +89,7 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -101,6 +103,7 @@ namespace Homeix.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, Payment payment)
         {
             if (id != payment.PaymentId) return NotFound();
@@ -115,7 +118,7 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -131,6 +134,7 @@ namespace Homeix.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var payment = await _context.Payments.FindAsync(id);

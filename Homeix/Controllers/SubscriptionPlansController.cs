@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
@@ -15,18 +16,14 @@ namespace Homeix.Controllers
         {
             _context = context;
         }
-
-        // =========================
-        // ADMIN: INDEX
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.SubscriptionPlans.ToListAsync());
         }
 
-        // =========================
-        // ADMIN: DOWNLOAD REPORT
-        // =========================
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var plans = await _context.SubscriptionPlans.ToListAsync();
@@ -50,9 +47,7 @@ namespace Homeix.Controllers
             return File(bytes, "text/csv", "SubscriptionPlansReport.csv");
         }
 
-        // =========================
-        // PUBLIC: DETAILS
-        // =========================
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -67,22 +62,16 @@ namespace Homeix.Controllers
             return View(plan);
         }
 
-        // =========================
-        // ADMIN: CREATE (GET)
-        // =========================
+        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // =========================
-        // ADMIN: CREATE (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("PlanName,Price,DurationDays,IsActive,MaxPostsPerMonth")]
-            SubscriptionPlan subscriptionPlan)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Create([Bind("PlanName,Price,DurationDays,IsActive,MaxPostsPerMonth")]SubscriptionPlan subscriptionPlan)
         {
             if (!ModelState.IsValid)
                 return View(subscriptionPlan);
@@ -92,10 +81,8 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // ADMIN: EDIT (GET)
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -108,15 +95,10 @@ namespace Homeix.Controllers
             return View(plan);
         }
 
-        // =========================
-        // ADMIN: EDIT (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("PlanId,PlanName,Price,DurationDays,IsActive,MaxPostsPerMonth")]
-            SubscriptionPlan subscriptionPlan)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Edit(int id,[Bind("PlanId,PlanName,Price,DurationDays,IsActive,MaxPostsPerMonth")] SubscriptionPlan subscriptionPlan)
         {
             if (id != subscriptionPlan.PlanId)
                 return NotFound();
@@ -129,10 +111,8 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // ADMIN: DELETE (GET)
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,11 +127,9 @@ namespace Homeix.Controllers
             return View(plan);
         }
 
-        // =========================
-        // ADMIN: DELETE (POST)
-        // =========================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var plan = await _context.SubscriptionPlans.FindAsync(id);
@@ -164,10 +142,8 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // =========================
-        // PUBLIC: EXPLORE
-        // =========================
+        
+        [Authorize]
         public async Task<IActionResult> Explore()
         {
             var activePlans = await _context.SubscriptionPlans

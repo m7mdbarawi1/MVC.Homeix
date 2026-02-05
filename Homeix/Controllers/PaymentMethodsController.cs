@@ -5,14 +5,20 @@ using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
     public class PaymentMethodsController : Controller
     {
         private readonly HOMEIXDbContext _context;
+        
         public PaymentMethodsController(HOMEIXDbContext context) {_context = context;}
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index() {return View(await _context.PaymentMethods.ToListAsync());}
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var methods = await _context.PaymentMethods.OrderBy(m => m.MethodName).ToListAsync();
@@ -22,6 +28,8 @@ namespace Homeix.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "PaymentMethodsReport.csv");
         }
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -29,7 +37,11 @@ namespace Homeix.Controllers
             if (paymentMethod == null) return NotFound();
             return View(paymentMethod);
         }
+        
+        [Authorize(Roles = "admin")]
         public IActionResult Create() {return View();}
+        
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MethodName")] PaymentMethod paymentMethod)
@@ -39,6 +51,8 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -46,6 +60,8 @@ namespace Homeix.Controllers
             if (paymentMethod == null) return NotFound();
             return View(paymentMethod);
         }
+        
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PaymentMethodId,MethodName")] PaymentMethod paymentMethod)
@@ -56,6 +72,8 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -63,6 +81,8 @@ namespace Homeix.Controllers
             if (paymentMethod == null) return NotFound();
             return View(paymentMethod);
         }
+        
+        [Authorize(Roles = "admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

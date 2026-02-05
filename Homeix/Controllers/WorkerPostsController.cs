@@ -19,18 +19,12 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         private readonly ILogger<WorkerPostsController> _logger;
-
-        public WorkerPostsController(
-            HOMEIXDbContext context,
-            ILogger<WorkerPostsController> logger)
+        public WorkerPostsController(HOMEIXDbContext context,ILogger<WorkerPostsController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        // =========================
-        // INDEX (ADMIN)
-        // =========================
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
@@ -43,10 +37,8 @@ namespace Homeix.Controllers
 
             return View(posts);
         }
-
-        // =========================
-        // DETAILS
-        // =========================
+        
+        [Authorize(Roles = "worker,admin")]
         public async Task<IActionResult> Details(int id)
         {
             var post = await _context.WorkerPosts
@@ -59,26 +51,18 @@ namespace Homeix.Controllers
             if (post == null) return NotFound();
             return View(post);
         }
-
-        // =========================
-        // CREATE (GET)
-        // =========================
-        [Authorize(Roles = "worker,admin")]
+        
+        [Authorize(Roles = "worker")]
         public IActionResult Create()
         {
             LoadCategories();
             return View();
         }
-
-        // =========================
-        // CREATE (POST)
-        // =========================
+        
         [HttpPost]
-        [Authorize(Roles = "worker,admin")]
+        [Authorize(Roles = "worker")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            WorkerPost workerPost,
-            List<IFormFile>? mediaFiles)
+        public async Task<IActionResult> Create(WorkerPost workerPost,List<IFormFile>? mediaFiles)
         {
             int userId = GetUserId();
 
@@ -112,10 +96,7 @@ namespace Homeix.Controllers
 
             return RedirectToAction(nameof(MyPosts));
         }
-
-        // =========================
-        // MY POSTS
-        // =========================
+        
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> MyPosts()
         {
@@ -130,11 +111,8 @@ namespace Homeix.Controllers
 
             return View(posts);
         }
-
-        // =========================
-        // EDIT (GET)
-        // =========================
-        [Authorize(Roles = "worker,admin")]
+        
+        [Authorize(Roles = "worker")]
         public async Task<IActionResult> Edit(int id)
         {
             var post = await _context.WorkerPosts
@@ -149,18 +127,11 @@ namespace Homeix.Controllers
             LoadCategories(post);
             return View(post);
         }
-
-        // =========================
-        // EDIT (POST)
-        // =========================
+        
         [HttpPost]
-        [Authorize(Roles = "worker,admin")]
+        [Authorize(Roles = "worker")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            WorkerPost workerPost,
-            List<IFormFile>? newMediaFiles,
-            int[]? deleteMediaIds)
+        public async Task<IActionResult> Edit(int id, WorkerPost workerPost, List<IFormFile>? newMediaFiles, int[]? deleteMediaIds)
         {
             var existing = await _context.WorkerPosts
                 .Include(w => w.Media)
@@ -216,10 +187,7 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(MyPosts));
         }
-
-        // =========================
-        // DELETE (GET)
-        // =========================
+        
         [Authorize(Roles = "worker,admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -233,10 +201,7 @@ namespace Homeix.Controllers
 
             return View(post);
         }
-
-        // =========================
-        // DELETE (POST)
-        // =========================
+        
         [HttpPost, ActionName("Delete")]
         [Authorize(Roles = "worker,admin")]
         [ValidateAntiForgeryToken]
@@ -258,19 +223,19 @@ namespace Homeix.Controllers
             _context.WorkerPosts.Remove(post);
             await _context.SaveChangesAsync();
 
+            if (User.IsInRole("admin"))
+                return RedirectToAction(nameof(Index));
+
             return RedirectToAction(nameof(MyPosts));
         }
-
-        // =========================
-        // HELPERS
-        // =========================
+        
         private int GetUserId()
         {
             var claim = User.FindFirst("UserId");
             if (claim == null) throw new UnauthorizedAccessException();
             return int.Parse(claim.Value);
         }
-
+        
         private void LoadCategories(WorkerPost? post = null)
         {
             ViewData["PostCategoryId"] = new SelectList(
@@ -280,12 +245,12 @@ namespace Homeix.Controllers
                 post?.PostCategoryId
             );
         }
-
+        
         private static readonly string[] AllowedImageExtensions =
         {
             ".jpg", ".jpeg", ".png", ".gif", ".webp"
         };
-
+        
         private static async Task<string> SaveWorkerPostMediaAsync(IFormFile file)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -306,7 +271,7 @@ namespace Homeix.Controllers
 
             return "/uploads/worker-posts/" + fileName;
         }
-
+        
         private static void DeletePhysicalFile(string? relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath)) return;
@@ -319,10 +284,7 @@ namespace Homeix.Controllers
             if (System.IO.File.Exists(path))
                 System.IO.File.Delete(path);
         }
-
-        // =========================
-        // DOWNLOAD REPORT (ADMIN)
-        // =========================
+        
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {

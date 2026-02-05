@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
@@ -14,11 +15,15 @@ namespace Homeix.Controllers
     {
         private readonly HOMEIXDbContext _context;
         public MessagesController(HOMEIXDbContext context) { _context = context;}
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var messages = await _context.Messages.Include(m => m.Conversation).Include(m => m.SenderUser).ToListAsync();
             return View(messages);
         }
+
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var messages = await _context.Messages.Include(m => m.Conversation).Include(m => m.SenderUser).OrderByDescending(m => m.SentAt).ToListAsync();
@@ -31,6 +36,8 @@ namespace Homeix.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "MessagesReport.csv");
         }
+        
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -38,11 +45,15 @@ namespace Homeix.Controllers
             if (message == null) return NotFound();
             return View(message);
         }
+        
+        [Authorize]
         public IActionResult Create()
         {
             ReloadDropdowns();
             return View();
         }
+        
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ConversationId,SenderUserId,MessageText")] Message message)
@@ -57,6 +68,8 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -65,6 +78,8 @@ namespace Homeix.Controllers
             ReloadDropdowns(message);
             return View(message);
         }
+
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit( int id, [Bind("MessageId,ConversationId,SenderUserId,MessageText")] Message message)
@@ -82,6 +97,8 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -89,6 +106,8 @@ namespace Homeix.Controllers
             if (message == null) return NotFound();
             return View(message);
         }
+
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

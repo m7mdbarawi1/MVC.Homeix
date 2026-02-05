@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Homeix.Data;
 using Homeix.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homeix.Controllers
 {
@@ -17,11 +18,8 @@ namespace Homeix.Controllers
         {
             _context = context;
         }
-
-        /* =========================
-           LIST & REPORTS (ADMIN)
-        ========================== */
-
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var ratings = await _context.Ratings
@@ -32,7 +30,8 @@ namespace Homeix.Controllers
 
             return View(ratings);
         }
-
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var ratings = await _context.Ratings
@@ -63,10 +62,7 @@ namespace Homeix.Controllers
             );
         }
 
-        /* =========================
-           DETAILS
-        ========================== */
-
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -81,11 +77,8 @@ namespace Homeix.Controllers
             return View(rating);
         }
 
-        /* =========================
-           CREATE
-        ========================== */
-
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Create(int? ratedUserId)
         {
             if (ratedUserId.HasValue)
@@ -106,8 +99,8 @@ namespace Homeix.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("RatedUserId,RatingValue,Review")] Rating rating)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("RatedUserId,RatingValue,Review")] Rating rating)
         {
             int raterId = int.Parse(User.FindFirstValue("UserId") ?? "0");
 
@@ -137,14 +130,11 @@ namespace Homeix.Controllers
             await _context.SaveChangesAsync();
 
             // ✅ ALWAYS GO TO DASHBOARD (LIKE LOGIN)
-            return RedirectToAction("HomeRedirect", "Account");
+            return RedirectToAction("PublicProfile", "Users");
         }
 
-        /* =========================
-           EDIT
-        ========================== */
-
         [HttpGet]
+        [Authorize(Roles = "worker,customer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -161,9 +151,8 @@ namespace Homeix.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("RatingId,RatedUserId,RatingValue,Review")] Rating rating)
+        [Authorize(Roles = "worker,customer")]
+        public async Task<IActionResult> Edit(int id,[Bind("RatingId,RatedUserId,RatingValue,Review")] Rating rating)
         {
             var existing = await _context.Ratings
                 .AsNoTracking()
@@ -189,11 +178,8 @@ namespace Homeix.Controllers
             return RedirectToAction("HomeRedirect", "Account");
         }
 
-        /* =========================
-           DELETE
-        ========================== */
-
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -209,6 +195,7 @@ namespace Homeix.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var rating = await _context.Ratings.FindAsync(id);
@@ -217,13 +204,8 @@ namespace Homeix.Controllers
             _context.Ratings.Remove(rating);
             await _context.SaveChangesAsync();
 
-            // ✅ DASHBOARD
-            return RedirectToAction("HomeRedirect", "Account");
+            return RedirectToAction(nameof(Index));
         }
-
-        /* =========================
-           SEARCH USERS
-        ========================== */
 
         [HttpGet]
         public async Task<IActionResult> SearchUsers(string term)

@@ -8,7 +8,6 @@ using Homeix.Models;
 
 namespace Homeix.Controllers
 {
-    [Authorize(AuthenticationSchemes = "HomeixAuth")]
     public class WorkerApprovalsController : Controller
     {
         private readonly HOMEIXDbContext _context;
@@ -17,10 +16,8 @@ namespace Homeix.Controllers
         {
             _context = context;
         }
-
-        // =========================
-        // INDEX
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var approvals = await _context.WorkerApprovals
@@ -30,10 +27,8 @@ namespace Homeix.Controllers
 
             return View(approvals);
         }
-
-        // =========================
-        // DOWNLOAD CSV REPORT
-        // =========================
+        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var approvals = await _context.WorkerApprovals
@@ -59,10 +54,8 @@ namespace Homeix.Controllers
                 "WorkerApprovalsReport.csv"
             );
         }
-
-        // =========================
-        // DETAILS
-        // =========================
+        
+        [Authorize(Roles = "customer,admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -75,20 +68,16 @@ namespace Homeix.Controllers
 
             return View(approval);
         }
-
-        // =========================
-        // CREATE (GET)
-        // =========================
+        
+        [Authorize(Roles = "customer")]
         public IActionResult Create()
         {
             return View();
         }
-
-        // =========================
-        // CREATE (POST) — USER ID IMPLICIT
-        // =========================
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> Create([Bind("Notes")] WorkerApproval workerApproval)
         {
             var userIdClaim = User.FindFirst("UserId");
@@ -113,12 +102,10 @@ namespace Homeix.Controllers
             _context.WorkerApprovals.Add(workerApproval);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyRequests));
         }
-
-        // =========================
-        // EDIT (GET)
-        // =========================
+        
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -131,15 +118,11 @@ namespace Homeix.Controllers
 
             return View(approval);
         }
-
-        // =========================
-        // EDIT (POST)
-        // =========================
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("ApprovalId,Notes")] WorkerApproval workerApproval)
+        [Authorize(Roles = "customer")]
+        public async Task<IActionResult> Edit(int id,[Bind("ApprovalId,Notes")] WorkerApproval workerApproval)
         {
             if (id != workerApproval.ApprovalId)
                 return NotFound();
@@ -159,12 +142,10 @@ namespace Homeix.Controllers
             _context.Update(workerApproval);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyRequests));
         }
-
-        // =========================
-        // DELETE (GET)
-        // =========================
+        
+        [Authorize(Roles = "customer,admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -177,12 +158,10 @@ namespace Homeix.Controllers
 
             return View(approval);
         }
-
-        // =========================
-        // DELETE (POST)
-        // =========================
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "customer,admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var approval = await _context.WorkerApprovals.FindAsync(id);
@@ -193,10 +172,13 @@ namespace Homeix.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
-        }
+            if (User.IsInRole("admin"))
+                return RedirectToAction(nameof(Index));
 
-        [Authorize(AuthenticationSchemes = "HomeixAuth")]
+            return RedirectToAction(nameof(MyRequests));
+        }
+        
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> MyRequests()
         {
             var userIdClaim = User.FindFirst("UserId");
@@ -213,6 +195,5 @@ namespace Homeix.Controllers
 
             return View(myRequests);
         }
-
     }
 }
