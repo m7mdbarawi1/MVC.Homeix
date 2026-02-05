@@ -58,40 +58,77 @@ namespace Homeix.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string fullName, string email, string phone, string password, int roleId)
+        public async Task<IActionResult> Register(
+            string fullName,
+            string email,
+            string phone,
+            string password,
+            IFormFile? ProfileImage)
         {
+            // 🔒 HARD-CODE CUSTOMER ROLE
+            var customerRole = await _context.UserRoles
+                .FirstOrDefaultAsync(r => r.RoleName == "customer");
+
+            if (customerRole == null)
+            {
+                ViewBag.Error = "Customer role is not configured.";
+                return View();
+            }
+
             if (!IsStrongPassword(password, out var passError))
             {
                 ViewBag.Error = passError;
-                ViewBag.Roles = _context.UserRoles.ToList();
                 return View();
             }
+
             if (string.IsNullOrWhiteSpace(fullName) ||
                 string.IsNullOrWhiteSpace(email) ||
                 string.IsNullOrWhiteSpace(password))
             {
                 ViewBag.Error = "All fields are required.";
-                ViewBag.Roles = _context.UserRoles.ToList();
                 return View();
             }
+
             if (_context.Users.Any(u => u.Email == email))
             {
                 ViewBag.Error = "This email is already registered.";
-                ViewBag.Roles = _context.UserRoles.ToList();
                 return View();
             }
-            var role = await _context.UserRoles.FindAsync(roleId);
-            if (role == null)
+
+            string? imagePath = null;
+
+            // ✅ HANDLE IMAGE UPLOAD
+            if (ProfileImage != null && ProfileImage.Length > 0)
             {
-                ViewBag.Error = "Invalid role.";
-                ViewBag.Roles = _context.UserRoles.ToList();
-                return View();
+                string folder = Path.Combine(_env.WebRootPath, "uploads/profile");
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                var ext = Path.GetExtension(ProfileImage.FileName);
+                string fileName = $"{Guid.NewGuid()}{ext}";
+                string path = Path.Combine(folder, fileName);
+
+                using var stream = new FileStream(path, FileMode.Create);
+                await ProfileImage.CopyToAsync(stream);
+
+                imagePath = "/uploads/profile/" + fileName;
             }
-            var user = new User{FullName = fullName, Email = email, PhoneNumber = phone ?? "", RoleId = roleId, PasswordHash = HashPassword(password), ProfilePicture = null};
+
+            var user = new User
+            {
+                FullName = fullName,
+                Email = email,
+                PhoneNumber = phone ?? "",
+                RoleId = customerRole.RoleId,   // ✅ ALWAYS CUSTOMER
+                PasswordHash = HashPassword(password),
+                ProfilePicture = imagePath
+            };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
             return RedirectToAction("Login");
         }
+
         public async Task<IActionResult> MyProfile()
         {
             var idClaim = User.FindFirst("UserId");
@@ -126,7 +163,7 @@ namespace Homeix.Controllers
                 string path = Path.Combine(folder, fileName);
                 using var stream = new FileStream(path, FileMode.Create);
                 await ProfileImage.CopyToAsync(stream);
-                dbUser.ProfilePicture = fileName;
+                dbUser.ProfilePicture = "/uploads/profile/" + fileName;
             }
             await _context.SaveChangesAsync();
             await HttpContext.SignOutAsync("HomeixAuth");

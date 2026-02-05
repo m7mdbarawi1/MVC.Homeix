@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +21,9 @@ namespace Homeix.Controllers
             _context = context;
         }
 
-        /* =========================
-           INDEX
-        ========================== */
-
+        // =========================
+        // INDEX
+        // =========================
         public async Task<IActionResult> Index()
         {
             var users = await _context.Users
@@ -32,15 +34,19 @@ namespace Homeix.Controllers
             return View(users);
         }
 
+        // =========================
+        // DOWNLOAD REPORT (CSV)
+        // =========================
         public async Task<IActionResult> DownloadReport()
         {
             var users = await _context.Users
                 .Include(u => u.Role)
                 .AsNoTracking()
+                .OrderBy(u => u.FullName)
                 .ToListAsync();
 
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine("UserId,FullName,Email,PhoneNumber,Role");
+            var sb = new StringBuilder();
+            sb.AppendLine("UserId,FullName,Email,PhoneNumber,Role,HasProfileImage");
 
             foreach (var u in users)
             {
@@ -49,21 +55,21 @@ namespace Homeix.Controllers
                     $"\"{u.FullName}\"," +
                     $"\"{u.Email}\"," +
                     $"\"{u.PhoneNumber}\"," +
-                    $"\"{u.Role?.RoleName}\""
+                    $"\"{u.Role?.RoleName}\"," +
+                    $"{(!string.IsNullOrWhiteSpace(u.ProfilePicture))}"
                 );
             }
 
             return File(
-                System.Text.Encoding.UTF8.GetBytes(sb.ToString()),
+                Encoding.UTF8.GetBytes(sb.ToString()),
                 "text/csv",
                 "UsersReport.csv"
             );
         }
 
-        /* =========================
-           DETAILS (ADMIN / INTERNAL)
-        ========================== */
-
+        // =========================
+        // DETAILS
+        // =========================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -76,20 +82,21 @@ namespace Homeix.Controllers
                 .FirstOrDefaultAsync(u => u.UserId == id);
 
             if (user == null) return NotFound();
-
             return View(user);
         }
 
-        /* =========================
-           CREATE
-        ========================== */
-
+        // =========================
+        // CREATE (GET)
+        // =========================
         public IActionResult Create()
         {
             LoadRolesDropdown();
             return View();
         }
 
+        // =========================
+        // CREATE (POST)
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -97,22 +104,10 @@ namespace Homeix.Controllers
             string fullName,
             string email,
             string phoneNumber,
-            string password)
+            string password,
+            IFormFile? profileImage)
         {
-            if (string.IsNullOrWhiteSpace(fullName))
-                ModelState.AddModelError("FullName", "Full name is required.");
-
-            if (string.IsNullOrWhiteSpace(email))
-                ModelState.AddModelError("Email", "Email is required.");
-
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                ModelState.AddModelError("PhoneNumber", "Phone number is required.");
-
-            if (string.IsNullOrWhiteSpace(password))
-                ModelState.AddModelError("Password", "Password is required.");
-
-            if (!IsStrongPassword(password, out var passError))
-                ModelState.AddModelError("Password", passError);
+            ValidateUserInput(roleId, fullName, email, phoneNumber, password);
 
             if (await _context.Users.AnyAsync(u => u.Email == email))
                 ModelState.AddModelError("Email", "Email already exists.");
@@ -123,6 +118,13 @@ namespace Homeix.Controllers
                 return View();
             }
 
+            string? imagePath = null;
+
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                imagePath = await SaveProfileImageAsync(profileImage);
+            }
+
             var user = new User
             {
                 RoleId = roleId,
@@ -130,7 +132,7 @@ namespace Homeix.Controllers
                 Email = email,
                 PhoneNumber = phoneNumber,
                 PasswordHash = HashPassword(password),
-                ProfilePicture = null
+                ProfilePicture = imagePath
             };
 
             _context.Users.Add(user);
@@ -139,21 +141,26 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        /* =========================
-           EDIT
-        ========================== */
-
+        // =========================
+        // EDIT (GET)
+        // =========================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
             if (user == null) return NotFound();
 
             LoadRolesDropdown(user.RoleId);
             return View(user);
         }
 
+        // =========================
+        // EDIT (POST)
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -161,19 +168,11 @@ namespace Homeix.Controllers
             int roleId,
             string fullName,
             string email,
-            string phoneNumber)
+            string phoneNumber,
+            IFormFile? profileImage)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound();
-
-            if (string.IsNullOrWhiteSpace(fullName))
-                ModelState.AddModelError("FullName", "Full name is required.");
-
-            if (string.IsNullOrWhiteSpace(email))
-                ModelState.AddModelError("Email", "Email is required.");
-
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                ModelState.AddModelError("PhoneNumber", "Phone number is required.");
 
             if (await _context.Users.AnyAsync(u => u.Email == email && u.UserId != id))
                 ModelState.AddModelError("Email", "Email already exists.");
@@ -182,6 +181,12 @@ namespace Homeix.Controllers
             {
                 LoadRolesDropdown(roleId);
                 return View(user);
+            }
+
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                DeletePhysicalFile(user.ProfilePicture);
+                user.ProfilePicture = await SaveProfileImageAsync(profileImage);
             }
 
             user.RoleId = roleId;
@@ -193,10 +198,9 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        /* =========================
-           DELETE
-        ========================== */
-
+        // =========================
+        // DELETE
+        // =========================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -207,7 +211,6 @@ namespace Homeix.Controllers
                 .FirstOrDefaultAsync(u => u.UserId == id);
 
             if (user == null) return NotFound();
-
             return View(user);
         }
 
@@ -218,6 +221,7 @@ namespace Homeix.Controllers
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
+                DeletePhysicalFile(user.ProfilePicture);
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }
@@ -225,9 +229,45 @@ namespace Homeix.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // HELPERS
+        // =========================
+        private void LoadRolesDropdown(int? selectedRoleId = null)
+        {
+            ViewData["RoleId"] = new SelectList(
+                _context.UserRoles.AsNoTracking().OrderBy(r => r.RoleName),
+                "RoleId",
+                "RoleName",
+                selectedRoleId
+            );
+        }
+
+        private void ValidateUserInput(
+            int roleId,
+            string fullName,
+            string email,
+            string phoneNumber,
+            string password)
+        {
+            if (roleId <= 0)
+                ModelState.AddModelError("RoleId", "Role is required.");
+
+            if (string.IsNullOrWhiteSpace(fullName))
+                ModelState.AddModelError("FullName", "Full name is required.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                ModelState.AddModelError("Email", "Email is required.");
+
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                ModelState.AddModelError("PhoneNumber", "Phone number is required.");
+
+            if (!IsStrongPassword(password, out var error))
+                ModelState.AddModelError("Password", error);
+        }
+
         /* =========================
-           PUBLIC PROFILE (IMPORTANT)
-        ========================== */
+   PUBLIC PROFILE (IMPORTANT)
+========================== */
 
         public async Task<IActionResult> PublicProfile(int id)
         {
@@ -244,53 +284,61 @@ namespace Homeix.Controllers
             return View(user);
         }
 
-        /* =========================
-           HELPERS
-        ========================== */
-
-        private void LoadRolesDropdown(int? selectedRoleId = null)
-        {
-            ViewData["RoleId"] = new SelectList(
-                _context.UserRoles
-                    .AsNoTracking()
-                    .OrderBy(r => r.RoleName),
-                "RoleId",
-                "RoleName",
-                selectedRoleId
-            );
-        }
-
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        private static readonly string[] AllowedImageExtensions =
+        {
+            ".jpg", ".jpeg", ".png", ".gif", ".webp"
+        };
+
+        private static async Task<string> SaveProfileImageAsync(IFormFile file)
+        {
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!AllowedImageExtensions.Contains(ext))
+                throw new InvalidOperationException("Invalid image type.");
+
+            var uploadDir = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot", "uploads", "profile");
+
+            Directory.CreateDirectory(uploadDir);
+
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var fullPath = Path.Combine(uploadDir, fileName);
+
+            using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return "/uploads/profile/" + fileName;
+        }
+
+        private static void DeletePhysicalFile(string? relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath)) return;
+            if (relativePath.StartsWith("/images/")) return;
+
+            var path = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                relativePath.TrimStart('/'));
+
+            if (System.IO.File.Exists(path))
+                System.IO.File.Delete(path);
         }
 
         private bool IsStrongPassword(string password, out string error)
         {
             error = "";
 
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                error = "Password is required.";
-                return false;
-            }
-
-            if (password.Length < 8)
-            {
-                error = "Password must be at least 8 characters.";
-                return false;
-            }
-
-            bool hasUpper = password.Any(char.IsUpper);
-            bool hasLower = password.Any(char.IsLower);
-            bool hasDigit = password.Any(char.IsDigit);
-            bool hasSpecial = password.Any(ch =>
-                "!@#$%^&*()_+-=[]{};':\",.<>/?\\|`~".Contains(ch));
-
-            if (!hasUpper) { error = "Password must contain at least 1 uppercase letter."; return false; }
-            if (!hasLower) { error = "Password must contain at least 1 lowercase letter."; return false; }
-            if (!hasDigit) { error = "Password must contain at least 1 number."; return false; }
-            if (!hasSpecial) { error = "Password must contain at least 1 special character."; return false; }
+            if (password.Length < 8) { error = "Password must be at least 8 characters."; return false; }
+            if (!password.Any(char.IsUpper)) { error = "Password must contain an uppercase letter."; return false; }
+            if (!password.Any(char.IsLower)) { error = "Password must contain a lowercase letter."; return false; }
+            if (!password.Any(char.IsDigit)) { error = "Password must contain a number."; return false; }
+            if (!password.Any(ch => "!@#$%^&*()_+-=[]{};':\",.<>/?\\|`~".Contains(ch)))
+            { error = "Password must contain a special character."; return false; }
 
             return true;
         }

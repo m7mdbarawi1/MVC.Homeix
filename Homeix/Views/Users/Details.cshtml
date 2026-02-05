@@ -2,83 +2,117 @@
 
 @{
     ViewData["Title"] = "User Details";
+
+    // IMPORTANT:
+    // ProfilePicture already stores "/uploads/profile/filename.jpg"
+    var profileImage = string.IsNullOrWhiteSpace(Model.ProfilePicture)
+        ? Url.Content("~/images/default-user.png")
+        : Url.Content(Model.ProfilePicture);
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4 mb-5">
 
-    <!-- ================= HEADER ================= -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="fw-bold">User Details</h1>
-        </div>
+    <!-- ================= IMAGE SECTION ================= -->
+    <div class="card shadow-sm mb-4 overflow-hidden">
+
+        <img src="@profileImage"
+             class="d-block w-100 img-fluid bg-light"
+             style="max-height:420px; object-fit:contain;"
+             alt="@Model.FullName" />
+
     </div>
 
-    <!-- ================= DETAILS CARD ================= -->
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+    <!-- ================= DETAILS SECTION ================= -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-            <div class="card shadow-sm">
+            <!-- NAME -->
+            <h3 class="fw-bold mb-1">@Model.FullName</h3>
 
-                <!-- CARD HEADER -->
-                <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+            <!-- META LINE -->
+            <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-3">
+
+                @if (!string.IsNullOrWhiteSpace(Model.Role?.RoleName))
+                {
+                    <span class="badge bg-primary">
+                        <i class="bi bi-person-badge"></i> @Model.Role.RoleName
+                    </span>
+                }
+
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-envelope"></i> @Model.Email
+                </span>
+
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-telephone"></i> @Model.PhoneNumber
+                </span>
+
+            </div>
+
+            <hr />
+
+            <!-- PROFILE SUMMARY -->
+            <div class="mb-3">
+                <div class="text-muted small">User Information</div>
+
+                <div class="mt-2">
+                    <div class="d-flex align-items-center gap-3">
+
+                        <img src="@profileImage"
+                             class="rounded-circle flex-shrink-0"
+                             width="48"
+                             height="48"
+                             alt="@Model.FullName"
+                             style="object-fit:cover;" />
+
+                        <div>
+                            <div class="fw-semibold">@Model.FullName</div>
+                            <div class="text-muted small">@Model.Role?.RoleName</div>
+                        </div>
+
+                    </div>
                 </div>
+            </div>
 
-                <!-- CARD BODY -->
-                <div class="card-body">
-                    <dl class="row mb-0">
+            <hr />
 
-                        <!-- FULL NAME -->
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.FullName)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.FullName)
-                        </dd>
+            <!-- CONTACT DETAILS -->
+            <div class="fw-bold mb-2">Contact Details</div>
 
-                        <!-- EMAIL -->
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Email)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Email)
-                        </dd>
+            <p class="text-muted mb-1">
+                <i class="bi bi-envelope me-2"></i>
+                @Model.Email
+            </p>
 
-                        <!-- PHONE -->
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.PhoneNumber)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PhoneNumber)
-                        </dd>
+            <p class="text-muted mb-0">
+                <i class="bi bi-telephone me-2"></i>
+                @Model.PhoneNumber
+            </p>
 
-                        <!-- PROFILE PICTURE -->
-                        <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.ProfilePicture)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.ProfilePicture)
-                        </dd>
+        </div>
 
-                        <!-- ROLE -->
-                        <dt class="col-sm-4 fw-bold">
-                            Role
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Model.Role?.RoleName
-                        </dd>
+        <!-- ================= ACTIONS ================= -->
+        <div class="card-footer d-flex justify-content-between flex-wrap gap-2">
 
-                    </dl>
-                </div>
+            <button type="button"
+                    class="btn btn-secondary btn-sm"
+                    onclick="history.back()">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
 
-                <!-- CARD FOOTER -->
-                <div class="card-footer text-end">
-                    <button type="button"
-                            class="btn btn-secondary btn-sm"
-                            onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </button>
-                </div>
+            <div class="d-flex gap-2">
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.UserId"
+                   class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </a>
+
+                <a asp-action="Delete"
+                   asp-route-id="@Model.UserId"
+                   class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
 
             </div>
 

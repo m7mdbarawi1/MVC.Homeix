@@ -2,81 +2,90 @@
 
 @{
     ViewData["Title"] = "Delete User";
+
+    // ProfilePicture already stores "/uploads/profile/filename.jpg"
+    var profileImage = string.IsNullOrWhiteSpace(Model.ProfilePicture)
+        ? Url.Content("~/images/default-user.png")
+        : Url.Content(Model.ProfilePicture);
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4 mb-5">
 
     <!-- ================= HEADER ================= -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="text-danger">Delete User</h1>
-            <p class="text-muted">Are you sure you want to delete this user?</p>
-        </div>
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-danger">Delete User</h1>
+        <p class="text-muted">
+            Are you sure you want to permanently delete this user?
+        </p>
     </div>
 
-    <!-- ================= CONFIRMATION CARD ================= -->
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
-            <div class="card shadow-sm border-danger">
+    <!-- ================= PROFILE IMAGE ================= -->
+    <div class="card shadow-sm mb-4 overflow-hidden border-danger">
+        <img src="@profileImage"
+             class="d-block w-100 img-fluid bg-light"
+             style="max-height:420px; object-fit:contain;"
+             alt="@Model.FullName" />
+    </div>
 
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Confirm Deletion</h5>
-                </div>
+    <!-- ================= DETAILS CARD ================= -->
+    <div class="card shadow-sm border-danger">
+        <div class="card-body">
 
-                <div class="card-body">
-                    <dl class="row mb-0">
+            <!-- NAME -->
+            <h4 class="fw-bold mb-1">@Model.FullName</h4>
 
-                        <!-- FULL NAME -->
-                        <dt class="col-sm-4 fw-bold">Full Name</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.FullName)
-                        </dd>
+            <!-- META -->
+            <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-3">
 
-                        <!-- EMAIL -->
-                        <dt class="col-sm-4 fw-bold">Email</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Email)
-                        </dd>
+                @if (!string.IsNullOrWhiteSpace(Model.Role?.RoleName))
+                {
+                    <span class="badge bg-primary">
+                        <i class="bi bi-person-badge"></i>
+                        @Model.Role.RoleName
+                    </span>
+                }
 
-                        <!-- PHONE -->
-                        <dt class="col-sm-4 fw-bold">Phone Number</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.PhoneNumber)
-                        </dd>
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-envelope"></i> @Model.Email
+                </span>
 
-                        <!-- PROFILE PICTURE -->
-                        <dt class="col-sm-4 fw-bold">Profile Picture</dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.ProfilePicture)
-                        </dd>
-
-                        <!-- ROLE -->
-                        <dt class="col-sm-4 fw-bold">Role</dt>
-                        <dd class="col-sm-8">
-                            @Model.Role?.RoleName
-                        </dd>
-
-                    </dl>
-                </div>
-
-                <!-- ================= ACTIONS ================= -->
-                <div class="card-footer d-flex justify-content-end gap-2">
-                    <form asp-action="Delete" method="post" class="d-inline">
-                        <input type="hidden" asp-for="UserId" />
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i> Delete
-                        </button>
-                    </form>
-
-                    <!-- UNIVERSAL BACK BUTTON -->
-                    <button type="button"
-                            class="btn btn-secondary btn-sm"
-                            onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </button>
-                </div>
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-telephone"></i> @Model.PhoneNumber
+                </span>
 
             </div>
+
+            <hr />
+
+            <!-- WARNING -->
+            <div class="alert alert-danger mb-0">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                This action <strong>cannot be undone</strong>.
+                All related data may be permanently removed.
+            </div>
+
+        </div>
+
+        <!-- ================= ACTIONS ================= -->
+        <div class="card-footer d-flex justify-content-between flex-wrap gap-2">
+
+            <button type="button"
+                    class="btn btn-secondary btn-sm"
+                    onclick="history.back()">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+
+            <form asp-action="Delete"
+                  method="post"
+                  class="d-inline">
+                <input type="hidden" asp-for="UserId" />
+                <button type="submit"
+                        class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash"></i> Confirm Delete
+                </button>
+            </form>
+
         </div>
     </div>
+
 </div>

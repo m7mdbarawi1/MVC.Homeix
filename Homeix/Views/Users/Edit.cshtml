@@ -2,109 +2,152 @@
 
 @{
     ViewData["Title"] = "Edit User";
+
+    // IMPORTANT:
+    // ProfilePicture already stores "/uploads/profile/filename.jpg"
+    var profileImage = string.IsNullOrWhiteSpace(Model.ProfilePicture)
+        ? Url.Content("~/images/default-user.png")
+        : Url.Content(Model.ProfilePicture);
 }
 
-<div class="container-fluid mt-4">
+<div class="container mt-4 mb-5">
 
-    <!-- ================= HEADER ================= -->
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1>Edit User</h1>
-        </div>
+    <!-- ================= IMAGE SECTION ================= -->
+    <div class="card shadow-sm mb-4 overflow-hidden">
+
+        <label for="ProfileImageInput" style="cursor:pointer;">
+            <img id="profilePreview"
+                 src="@profileImage"
+                 class="d-block w-100 img-fluid bg-light"
+                 style="max-height:420px; object-fit:contain;"
+                 title="Click to change profile picture" />
+        </label>
+
     </div>
 
-    <!-- ================= FORM ================= -->
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
+    <!-- ================= DETAILS / EDIT SECTION ================= -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-                    <form asp-action="Edit" method="post">
-                        @Html.AntiForgeryToken()
+            <form asp-action="Edit"
+                  method="post"
+                  enctype="multipart/form-data">
 
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger mb-3"></div>
+                @Html.AntiForgeryToken()
 
-                        <!-- USER ID -->
-                        <input type="hidden" asp-for="UserId" />
+                <!-- REQUIRED -->
+                <input type="hidden" asp-for="UserId" />
 
-                        <!-- ROLE -->
-                        <div class="mb-3">
-                            <label class="form-label">Role</label>
-                            <select asp-for="RoleId"
-                                    class="form-select"
-                                    asp-items="ViewBag.RoleId">
-                            </select>
-                            <span asp-validation-for="RoleId"
-                                  class="text-danger"></span>
-                        </div>
+                <!-- IMAGE INPUT -->
+                <input type="file"
+                       id="ProfileImageInput"
+                       name="profileImage"
+                       accept="image/*"
+                       hidden />
 
-                        <!-- FULL NAME -->
-                        <div class="mb-3">
-                            <label asp-for="FullName"
-                                   class="form-label"></label>
-                            <input asp-for="FullName"
-                                   class="form-control" />
-                            <span asp-validation-for="FullName"
-                                  class="text-danger"></span>
-                        </div>
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
 
-                        <!-- EMAIL -->
-                        <div class="mb-3">
-                            <label asp-for="Email"
-                                   class="form-label"></label>
-                            <input asp-for="Email"
-                                   type="email"
-                                   class="form-control" />
-                            <span asp-validation-for="Email"
-                                  class="text-danger"></span>
-                        </div>
+                <!-- NAME -->
+                <h3 class="fw-bold mb-1">@Model.FullName</h3>
 
-                        <!-- PHONE -->
-                        <div class="mb-3">
-                            <label asp-for="PhoneNumber"
-                                   class="form-label"></label>
-                            <input asp-for="PhoneNumber"
-                                   class="form-control" />
-                            <span asp-validation-for="PhoneNumber"
-                                  class="text-danger"></span>
-                        </div>
+                <!-- META LINE -->
+                <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-4">
 
-                        <!-- PROFILE PICTURE (STRING PATH) -->
-                        <div class="mb-3">
-                            <label asp-for="ProfilePicture"
-                                   class="form-label"></label>
-                            <input asp-for="ProfilePicture"
-                                   class="form-control" />
-                            <span asp-validation-for="ProfilePicture"
-                                  class="text-danger"></span>
-                        </div>
+                    <span class="badge bg-primary">
+                        <i class="bi bi-person-badge"></i>
+                        @(Model.Role?.RoleName ?? "No Role")
+                    </span>
 
-                        <!-- ACTIONS -->
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <button type="submit"
-                                    class="btn btn-primary btn-sm">
-                                <i class="bi bi-check-circle"></i> Save
-                            </button>
+                    <span class="d-flex align-items-center gap-1">
+                        <i class="bi bi-envelope"></i> @Model.Email
+                    </span>
 
-                            <!-- UNIVERSAL BACK BUTTON -->
-                            <button type="button"
-                                    class="btn btn-secondary btn-sm"
-                                    onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
-                            </button>
-                        </div>
-
-                    </form>
+                    <span class="d-flex align-items-center gap-1">
+                        <i class="bi bi-telephone"></i> @Model.PhoneNumber
+                    </span>
 
                 </div>
-            </div>
+
+                <hr />
+
+                <!-- ROLE -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Role</label>
+                    <select asp-for="RoleId"
+                            class="form-select"
+                            asp-items="ViewBag.RoleId">
+                    </select>
+                    <span asp-validation-for="RoleId" class="text-danger"></span>
+                </div>
+
+                <!-- FULL NAME -->
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label fw-semibold"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <!-- PHONE -->
+                <div class="mb-4">
+                    <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <hr />
+
+                <!-- ACTIONS -->
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Save Changes
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            onclick="history.back()">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
     </div>
+
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const input = document.getElementById("ProfileImageInput");
+            const preview = document.getElementById("profilePreview");
+
+            preview.addEventListener("click", () => input.click());
+
+            input.addEventListener("change", e => {
+                const file = e.target.files[0];
+                if (!file || !file.type.startsWith("image")) return;
+
+                const reader = new FileReader();
+                reader.onload = ev => preview.src = ev.target.result;
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
 }

@@ -18,7 +18,8 @@
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body p-4">
 
-                    <form asp-action="Register" method="post">
+                    <!-- IMPORTANT: enctype added -->
+                    <form asp-action="Register" method="post" enctype="multipart/form-data">
 
                         @Html.AntiForgeryToken()
 
@@ -32,10 +33,28 @@
                             </div>
                         }
 
+                        <!-- ================= PROFILE IMAGE ================= -->
+                        <div class="text-center mb-4">
+                            <label for="ProfileImageInput" style="cursor:pointer;">
+                                <img id="profilePreview"
+                                     src="~/images/default-user.png"
+                                     class="rounded-circle shadow-sm"
+                                     style="width:120px; height:120px; object-fit:cover;"
+                                     title="Click to upload profile picture" />
+                            </label>
+
+                            <input type="file"
+                                   id="ProfileImageInput"
+                                   name="ProfileImage"
+                                   accept="image/*"
+                                   hidden />
+                        </div>
+
                         <!-- Full Name -->
                         <div class="mb-3">
                             <label asp-for="FullName" class="form-label fw-semibold"></label>
-                            <input asp-for="FullName" class="form-control"
+                            <input asp-for="FullName"
+                                   class="form-control"
                                    placeholder="Enter full name"
                                    pattern="^[A-Za-z .]+$"
                                    title="Only English letters, spaces, and periods are allowed." />
@@ -45,7 +64,9 @@
                         <!-- Email -->
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label fw-semibold"></label>
-                            <input asp-for="Email" type="email" class="form-control"
+                            <input asp-for="Email"
+                                   type="email"
+                                   class="form-control"
                                    placeholder="example@mail.com" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
@@ -53,28 +74,26 @@
                         <!-- Phone Number -->
                         <div class="mb-3">
                             <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
-                            <input asp-for="PhoneNumber" class="form-control"
+                            <input asp-for="PhoneNumber"
+                                   class="form-control"
                                    placeholder="10-digit phone number"
                                    pattern="^\d{10}$"
                                    title="Phone number must be exactly 10 digits." />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
-                        <!-- Password (not part of model → name only) -->
+                        <!-- Password -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Password</label>
-                            <input name="Password" type="password" class="form-control"
-                                   minlength="8" required
+                            <input name="Password"
+                                   type="password"
+                                   class="form-control"
+                                   minlength="8"
+                                   required
                                    placeholder="Enter a secure password" />
-                            <div class="form-text">Password must be at least 8 characters.</div>
-                        </div>
-
-                        <!-- Role Selection -->
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Role</label>
-                            <select name="RoleId" class="form-select"
-                                    asp-items="@(new SelectList(ViewBag.Roles, "RoleId", "RoleName"))">
-                            </select>
+                            <div class="form-text">
+                                Password must be at least 8 characters.
+                            </div>
                         </div>
 
                         <!-- Register Button -->
@@ -87,7 +106,9 @@
                         <!-- Login Link -->
                         <p class="text-center mt-3 mb-0">
                             Already have an account?
-                            <a asp-controller="Account" asp-action="Login" class="fw-semibold">Login here</a>.
+                            <a asp-controller="Account"
+                               asp-action="Login"
+                               class="fw-semibold">Login here</a>.
                         </p>
 
                     </form>
@@ -104,24 +125,34 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
+            const imageInput = document.getElementById('ProfileImageInput');
+            const preview = document.getElementById('profilePreview');
+
+            preview.addEventListener('click', () => imageInput.click());
+
+            imageInput.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (!file || !file.type.startsWith('image')) return;
+
+                const reader = new FileReader();
+                reader.onload = ev => preview.src = ev.target.result;
+                reader.readAsDataURL(file);
+            });
+
             const nameInput = document.getElementById('FullName');
             const phoneInput = document.getElementById('PhoneNumber');
 
-            const regexName = /[^A-Za-z .]/g;
-            const regexDigits = /\D/g;
-
             if (nameInput) {
                 nameInput.addEventListener('input', e => {
-                    e.target.value = e.target.value.replace(regexName, '');
+                    e.target.value = e.target.value.replace(/[^A-Za-z .]/g, '');
                 });
             }
 
             if (phoneInput) {
                 phoneInput.addEventListener('input', e => {
-                    e.target.value = e.target.value.replace(regexDigits, '');
+                    e.target.value = e.target.value.replace(/\D/g, '');
                 });
             }
-
         });
     </script>
 }
