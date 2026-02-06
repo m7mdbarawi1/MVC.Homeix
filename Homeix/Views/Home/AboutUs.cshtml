@@ -1,14 +1,17 @@
-﻿@{
-    ViewData["Title"] = "About Us & Privacy Policy";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["PageTitle"];
 }
 
 <div class="container mt-5 mb-5">
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">About Homeix</h1>
+        <h1 class="fw-bold">@Localizer["AboutHomeixTitle"]</h1>
         <p class="text-muted">
-            Platform information, privacy policy, and project details
+            @Localizer["AboutHomeixSubtitle"]
         </p>
     </div>
 
@@ -20,87 +23,93 @@
 
                     <!-- ================= ABOUT US ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">About the Platform</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["AboutPlatform"]
+                        </label>
                         <p class="form-control-plaintext text-muted">
-                            <strong>Homeix</strong> is a digital platform that connects users
-                            with verified professionals through a secure and structured workflow.
-                            The platform provides service discovery, in-app communication,
-                            and trust-based interactions in a modern web environment.
+                            @Localizer["AboutPlatformText"]
                         </p>
                     </div>
 
                     <!-- ================= VALUES ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Core Values</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["CoreValues"]
+                        </label>
                         <ul class="text-muted mb-0">
-                            <li>Verified professionals</li>
-                            <li>Secure data handling</li>
-                            <li>Transparent communication</li>
-                            <li>User-centered experience</li>
-                            <li>Modern and scalable architecture</li>
+                            <li>@Localizer["ValueVerified"]</li>
+                            <li>@Localizer["ValueSecureData"]</li>
+                            <li>@Localizer["ValueTransparency"]</li>
+                            <li>@Localizer["ValueUserCentric"]</li>
+                            <li>@Localizer["ValueScalable"]</li>
                         </ul>
                     </div>
 
                     <!-- ================= PRIVACY ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Privacy Policy</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["PrivacyPolicy"]
+                        </label>
                         <p class="form-control-plaintext text-muted">
-                            Homeix respects user privacy and is committed to protecting
-                            personal information. Data collected is used only to provide
-                            platform functionality, improve services, and ensure secure
-                            communication between users.
+                            @Localizer["PrivacyText"]
                         </p>
                     </div>
 
                     <!-- ================= DATA USAGE ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Data Usage</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["DataUsage"]
+                        </label>
                         <ul class="text-muted mb-0">
-                            <li>User account and profile management</li>
-                            <li>Subscription and post handling</li>
-                            <li>In-app messaging and notifications</li>
-                            <li>Security monitoring and misuse prevention</li>
+                            <li>@Localizer["DataUsageAccount"]</li>
+                            <li>@Localizer["DataUsageSubscription"]</li>
+                            <li>@Localizer["DataUsageMessaging"]</li>
+                            <li>@Localizer["DataUsageSecurity"]</li>
                         </ul>
                     </div>
 
                     <!-- ================= SECURITY ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Security</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["Security"]
+                        </label>
                         <p class="form-control-plaintext text-muted">
-                            Appropriate technical and organizational measures are implemented
-                            to protect data from unauthorized access, loss, or misuse.
-                            Access to sensitive data is restricted to authorized operations only.
+                            @Localizer["SecurityText"]
                         </p>
                     </div>
 
                     <!-- ================= CREATED BY ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Created By</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["CreatedBy"]
+                        </label>
 
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <strong>Eng. Razan Al Quraan</strong>
-                                <div class="text-muted small">Supervisor</div>
+                                <div class="text-muted small">
+                                    @Localizer["Supervisor"]
+                                </div>
                             </li>
 
                             <li class="list-group-item">
                                 <strong>Mohammad Al Barawi</strong>
                                 <div class="text-muted small">
-                                    Team Leader • Full-Stack Developer
+                                    @Localizer["TeamLeader"]
                                 </div>
                             </li>
 
                             <li class="list-group-item">
                                 <strong>Abdullah Salhab</strong>
                                 <div class="text-muted small">
-                                    Full-Stack Developer
+                                    @Localizer["FullStackDeveloper"]
                                 </div>
                             </li>
 
                             <li class="list-group-item">
                                 <strong>Soundus Abu Salim</strong>
                                 <div class="text-muted small">
-                                    Full-Stack Developer
+                                    @Localizer["FullStackDeveloper"]
                                 </div>
                             </li>
                         </ul>
@@ -108,21 +117,26 @@
 
                     <!-- ================= GRADUATION INFO ================= -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Academic Information</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["AcademicInformation"]
+                        </label>
                         <p class="form-control-plaintext text-muted mb-1">
-                            This project is submitted as a <strong>Graduation Project</strong>.
+                            @Localizer["GraduationProject"]
                         </p>
                         <p class="form-control-plaintext text-muted mb-1">
-                            <strong>Date:</strong> 07 / 02 / 2026
+                            <strong>@Localizer["Date"]:</strong> 07 / 02 / 2026
                         </p>
                         <p class="form-control-plaintext text-muted">
-                            <strong>University:</strong> Al Hussein Technical University
+                            <strong>@Localizer["University"]:</strong>
+                            Al Hussein Technical University
                         </p>
                     </div>
 
                     <!-- ================= CONTACT ================= -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Contact</label>
+                        <label class="form-label fw-semibold">
+                            @Localizer["Contact"]
+                        </label>
                         <p class="text-muted mb-1">
                             <i class="bi bi-envelope me-2"></i>
                             <a href="mailto:homeix.jo@gmail.com"
@@ -140,7 +154,7 @@
 
                 <!-- FOOTER -->
                 <div class="card-footer text-center text-muted small">
-                    © 2025–2026 Homeix • Graduation Project
+                    @Localizer["FooterText"]
                 </div>
 
             </div>

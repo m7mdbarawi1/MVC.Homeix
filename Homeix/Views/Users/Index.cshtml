@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<Homeix.Models.User>
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = Localizer["UsersTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -13,13 +16,14 @@
 
             <div class="d-flex gap-2">
                 <a asp-action="Create" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-circle"></i> Create New
+                    <i class="bi bi-plus-circle"></i>
+                    @Localizer["CreateNew"]
                 </a>
 
                 <a asp-action="DownloadReport"
                    class="btn btn-secondary d-inline-flex align-items-center gap-2">
                     <i class="bi bi-download"></i>
-                    Download Report
+                    @Localizer["DownloadReport"]
                 </a>
             </div>
         </div>
@@ -33,7 +37,7 @@
                     <input type="text"
                            id="searchInput"
                            class="form-control"
-                           placeholder="Search users..." />
+                           placeholder="@Localizer["SearchUsers"]" />
                 </div>
             </div>
         </div>
@@ -52,10 +56,10 @@
                                     <th>@Html.DisplayNameFor(model => model.FullName)</th>
                                     <th>@Html.DisplayNameFor(model => model.Email)</th>
                                     <th>@Html.DisplayNameFor(model => model.PhoneNumber)</th>
-                                    <th>Password</th>
+                                    <th>@Localizer["Password"]</th>
                                     <th>@Html.DisplayNameFor(model => model.ProfilePicture)</th>
-                                    <th>Role</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>@Localizer["Role"]</th>
+                                    <th class="text-center">@Localizer["Actions"]</th>
                                 </tr>
                             </thead>
 
@@ -77,13 +81,13 @@
                                             <!-- PROFILE PICTURE -->
                                             <td>
                                                 @(string.IsNullOrWhiteSpace(item.ProfilePicture)
-                                                    ? "—"
+                                                    ? Localizer["None"].Value
                                                     : item.ProfilePicture)
                                             </td>
 
                                             <!-- ROLE -->
                                             <td>
-                                                @(item.Role?.RoleName ?? "—")
+                                                @(item.Role?.RoleName ?? Localizer["None"].Value)
                                             </td>
 
                                             <!-- ACTIONS -->
@@ -92,19 +96,22 @@
                                                     <a asp-action="Edit"
                                                        asp-route-id="@item.UserId"
                                                        class="btn btn-secondary btn-sm">
-                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                        <i class="bi bi-pencil-square"></i>
+                                                        @Localizer["Edit"]
                                                     </a>
 
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.UserId"
                                                        class="btn btn-accent btn-sm">
-                                                        <i class="bi bi-info-circle"></i> Details
+                                                        <i class="bi bi-info-circle"></i>
+                                                        @Localizer["Details"]
                                                     </a>
 
                                                     <a asp-action="Delete"
                                                        asp-route-id="@item.UserId"
                                                        class="btn btn-danger btn-sm">
-                                                        <i class="bi bi-trash"></i> Delete
+                                                        <i class="bi bi-trash"></i>
+                                                        @Localizer["Delete"]
                                                     </a>
                                                 </div>
                                             </td>
@@ -115,7 +122,7 @@
                                 {
                                     <tr>
                                         <td colspan="7" class="text-center text-muted">
-                                            No users found
+                                            @Localizer["NoUsersFound"]
                                         </td>
                                     </tr>
                                 }

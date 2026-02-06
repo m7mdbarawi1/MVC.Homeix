@@ -18,25 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Views\Account\" />
-    <Folder Include="Resources\Views\Advertisements\" />
-    <Folder Include="Resources\Views\Conversations\" />
-    <Folder Include="Resources\Views\CustomerPosts\" />
-    <Folder Include="Resources\Views\Dashboard\" />
-    <Folder Include="Resources\Views\FavoritePosts\" />
-    <Folder Include="Resources\Views\Home\" />
-    <Folder Include="Resources\Views\JobProgresses\" />
-    <Folder Include="Resources\Views\Messages\" />
-    <Folder Include="Resources\Views\WorkerPosts\" />
-    <Folder Include="Resources\Views\WorkerApprovals\" />
-    <Folder Include="Resources\Views\Users\" />
-    <Folder Include="Resources\Views\UserRoles\" />
-    <Folder Include="Resources\Views\Subscriptions\" />
-    <Folder Include="Resources\Views\SubscriptionPlans\" />
-    <Folder Include="Resources\Views\Shared\" />
-    <Folder Include="Resources\Views\Ratings\" />
-    <Folder Include="Resources\Views\PaymentMethods\" />
-    <Folder Include="Resources\Views\Offers\" />
     <Folder Include="wwwroot\uploads\profile\" />
   </ItemGroup>
 

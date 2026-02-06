@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.PaymentMethod
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Create Payment Method";
+    ViewData["Title"] = Localizer["CreatePaymentMethodTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,10 +13,10 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title mb-1 fw-bold">
-                Create Payment Method
+                @Localizer["CreatePaymentMethodTitle"]
             </h1>
             <p class="text-muted mb-0">
-                Add a new payment method to the system.
+                @Localizer["CreatePaymentMethodSubtitle"]
             </p>
         </div>
     </div>
@@ -35,11 +38,13 @@
                         <!-- METHOD NAME -->
                         <div class="mb-3">
                             <label asp-for="MethodName"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["PaymentMethodName"]
+                            </label>
 
                             <input asp-for="MethodName"
                                    class="form-control"
-                                   placeholder="Enter payment method name" />
+                                   placeholder="@Localizer["PaymentMethodNamePlaceholder"]" />
 
                             <span asp-validation-for="MethodName"
                                   class="text-danger"></span>
@@ -51,14 +56,14 @@
                             <button type="submit"
                                     class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1">
                                 <i class="bi bi-check-circle"></i>
-                                Create
+                                @Localizer["CreateButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1"
                                     onclick="history.back()">
                                 <i class="bi bi-arrow-left"></i>
-                                Back
+                                @Localizer["BackButton"]
                             </button>
 
                         </div>

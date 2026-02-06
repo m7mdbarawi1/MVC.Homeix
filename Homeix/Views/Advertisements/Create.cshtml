@@ -1,16 +1,19 @@
 ﻿@model Homeix.Models.Advertisement
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Create Advertisement";
+    ViewData["Title"] = Localizer["CreateAdvertisement"];
 }
 
 <div class="container mt-4">
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">Create Advertisement</h1>
+        <h1 class="fw-bold">
+            @Localizer["CreateAdvertisement"]
+        </h1>
         <p class="text-muted">
-            Fill in the details below to publish a new advertisement
+            @Localizer["CreateAdvertisementDescription"]
         </p>
     </div>
 
@@ -32,7 +35,9 @@
                         <!-- TITLE -->
                         <div class="mb-3">
                             <label asp-for="Title"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["Title"]
+                            </label>
                             <input asp-for="Title"
                                    class="form-control" />
                             <span asp-validation-for="Title"
@@ -42,7 +47,7 @@
                         <!-- IMAGE (DRAG & DROP) -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Advertisement Image
+                                @Localizer["AdvertisementImage"]
                             </label>
 
                             <div id="dropZone"
@@ -50,7 +55,7 @@
                                  style="cursor:pointer;">
 
                                 <p class="text-muted mb-2">
-                                    Drag & drop image here or click to select
+                                    @Localizer["ImageUploadHint"]
                                 </p>
 
                                 <input asp-for="ImageFile"
@@ -67,7 +72,9 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="StartDate"
-                                       class="form-label fw-semibold"></label>
+                                       class="form-label fw-semibold">
+                                    @Localizer["StartDate"]
+                                </label>
                                 <input asp-for="StartDate"
                                        type="date"
                                        class="form-control" />
@@ -77,7 +84,9 @@
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="EndDate"
-                                       class="form-label fw-semibold"></label>
+                                       class="form-label fw-semibold">
+                                    @Localizer["EndDate"]
+                                </label>
                                 <input asp-for="EndDate"
                                        type="date"
                                        class="form-control" />
@@ -91,7 +100,7 @@
                             <input class="form-check-input"
                                    asp-for="IsActive" />
                             <label class="form-check-label fw-semibold">
-                                Active
+                                @Localizer["Active"]
                             </label>
                         </div>
 
@@ -100,14 +109,14 @@
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
                                 <i class="bi bi-check-circle"></i>
-                                Create Advertisement
+                                @Localizer["CreateAdvertisement"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
                                 <i class="bi bi-arrow-left"></i>
-                                Back
+                                @Localizer["Back"]
                             </button>
                         </div>
 

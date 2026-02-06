@@ -51,13 +51,15 @@
                 </div>
 
                 <div class="col">
-                    <input id="minPrice" type="number"
+                    <input id="minPrice"
+                           type="number"
                            class="form-control"
                            placeholder="@Localizer["MinPrice"]" />
                 </div>
 
                 <div class="col">
-                    <input id="maxPrice" type="number"
+                    <input id="maxPrice"
+                           type="number"
                            class="form-control"
                            placeholder="@Localizer["MaxPrice"]" />
                 </div>
@@ -108,7 +110,6 @@
                      data-favorite="@isFavorite.ToString().ToLowerInvariant()">
 
                     <!-- ❤️ FAVORITE BUTTON -->
-                    <!-- 🔑 FIX: prevent navigation at ALL levels -->
                     <div class="position-absolute top-0 end-0 p-2"
                          onclick="event.stopPropagation(); event.preventDefault();">
                         <form asp-controller="FavoriteWorkerPosts"

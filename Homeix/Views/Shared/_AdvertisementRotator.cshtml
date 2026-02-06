@@ -1,124 +1,128 @@
 ﻿@model List<Homeix.Models.Advertisement>
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @if (Model != null && Model.Any())
 {
     var ad = Model.First();
 
-        <div class="modal fade"
-             id="adModal"
-             tabindex="-1"
-             aria-hidden="true">
+    <div class="modal fade"
+         id="adModal"
+         tabindex="-1"
+         aria-hidden="true">
 
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
 
-                    <!-- ================= HEADER ================= -->
-                    <div class="modal-header border-0 d-flex justify-content-between align-items-center">
-                        <span class="badge bg-warning text-dark px-3 py-2">
-                            Advertisement
-                        </span>
+                <!-- ================= HEADER ================= -->
+                <div class="modal-header border-0 d-flex justify-content-between align-items-center">
+                    <span class="badge bg-warning text-dark px-3 py-2">
+                        @Localizer["AdvertisementBadge"]
+                    </span>
 
-                        <!-- CLOSE -->
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close advertisement"></button>
-                    </div>
+                    <!-- CLOSE -->
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="@Localizer["CloseAdvertisementAria"]">
+                    </button>
+                </div>
 
-                    <!-- ================= BODY ================= -->
-                    <div class="modal-body text-center px-4 pb-4">
+                <!-- ================= BODY ================= -->
+                <div class="modal-body text-center px-4 pb-4">
 
                     @if (!string.IsNullOrWhiteSpace(ad.ImagePath))
                     {
-                                <img src="@ad.ImagePath"
-                                     class="img-fluid rounded-3 mb-4"
-                                     style="max-height:420px; object-fit:contain;"
-                                     alt="Sponsored advertisement" />
+                        <img src="@ad.ImagePath"
+                             class="img-fluid rounded-3 mb-4"
+                             style="max-height:420px; object-fit:contain;"
+                             alt="@Localizer["AdvertisementImageAlt"]" />
                     }
                     else
                     {
-                                <div class="text-muted mb-4">
-                                    No advertisement image available
-                                </div>
+                        <div class="text-muted mb-4">
+                            @Localizer["NoAdvertisementImage"]
+                        </div>
                     }
 
-                        <div class="d-inline-block px-4 py-2 rounded-pill bg-light text-dark fw-semibold">
-                            Closing in <span id="adCountdown">5</span> seconds
-                        </div>
-
+                    <div class="d-inline-block px-4 py-2 rounded-pill bg-light text-dark fw-semibold">
+                        @Localizer["ClosingInText"]
+                        <span id="adCountdown">5</span>
+                        @Localizer["SecondsText"]
                     </div>
 
                 </div>
+
             </div>
         </div>
+    </div>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-                const modalElement = document.getElementById("adModal");
-                if (!modalElement || modalElement.dataset.initialized) return;
+            const modalElement = document.getElementById("adModal");
+            if (!modalElement || modalElement.dataset.initialized) return;
 
-                modalElement.dataset.initialized = "true";
+            modalElement.dataset.initialized = "true";
 
-                const modal = new bootstrap.Modal(modalElement, {
-                    backdrop: false,
-                    keyboard: true
-                });
+            const modal = new bootstrap.Modal(modalElement, {
+                backdrop: false,
+                keyboard: true
+            });
 
-                const showIntervalSeconds = 20;
-                const autoCloseSeconds = 5;
+            const showIntervalSeconds = 20;
+            const autoCloseSeconds = 5;
 
-                let countdownTimer = null;
-                let reopenTimer = null;
-                let destroyed = false;
+            let countdownTimer = null;
+            let reopenTimer = null;
+            let destroyed = false;
 
-                function clearTimers() {
-                    if (countdownTimer) clearInterval(countdownTimer);
-                    if (reopenTimer) clearTimeout(reopenTimer);
-                    countdownTimer = null;
-                    reopenTimer = null;
-                }
+            function clearTimers() {
+                if (countdownTimer) clearInterval(countdownTimer);
+                if (reopenTimer) clearTimeout(reopenTimer);
+                countdownTimer = null;
+                reopenTimer = null;
+            }
 
-                function showAd() {
-                    if (destroyed) return;
+            function showAd() {
+                if (destroyed) return;
 
-                    modal.show();
+                modal.show();
 
-                    let seconds = autoCloseSeconds;
-                    const counter = document.getElementById("adCountdown");
+                let seconds = autoCloseSeconds;
+                const counter = document.getElementById("adCountdown");
+                if (counter) counter.textContent = seconds;
+
+                clearTimers();
+
+                countdownTimer = setInterval(() => {
+                    seconds--;
+
                     if (counter) counter.textContent = seconds;
 
-                    clearTimers();
+                    if (seconds <= 0) {
+                        clearTimers();
+                        modal.hide();
+                    }
+                }, 1000);
+            }
 
-                    countdownTimer = setInterval(() => {
-                        seconds--;
+            modalElement.addEventListener("hidden.bs.modal", function () {
+                clearTimers();
 
-                        if (counter) counter.textContent = seconds;
+                if (destroyed) return;
 
-                        if (seconds <= 0) {
-                            clearTimers();
-                            modal.hide();
-                        }
-                    }, 1000);
-                }
-
-                modalElement.addEventListener("hidden.bs.modal", () => {
-                    clearTimers();
-
-                    if (destroyed) return;
-
-                    reopenTimer = setTimeout(() => {
-                        showAd();
-                    }, showIntervalSeconds * 1000);
-                });
-
-                window.addEventListener("beforeunload", () => {
-                    destroyed = true;
-                    clearTimers();
-                });
-
-                // 🚀 First display
-                showAd();
+                reopenTimer = setTimeout(showAd, showIntervalSeconds * 1000);
             });
-        </script>
+
+            window.addEventListener("beforeunload", function () {
+                destroyed = true;
+                clearTimers();
+            });
+
+            // 🚀 First display
+            showAd();
+        });
+    </script>
 }

@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.WorkerApproval
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Worker Approval Details";
+    ViewData["Title"] = Localizer["WorkerApprovalDetailsTitle"];
     var returnUrl = Context.Request.Query["returnUrl"].ToString();
 }
 
@@ -11,7 +14,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="fw-bold page-title">
-                Worker Approval Details
+                @Localizer["WorkerApprovalDetailsTitle"]
             </h1>
         </div>
     </div>
@@ -24,7 +27,9 @@
 
                 <!-- CARD HEADER -->
                 <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">
+                        @Localizer["Details"]
+                    </h5>
                 </div>
 
                 <!-- CARD BODY -->
@@ -33,7 +38,7 @@
 
                         <!-- WORKER -->
                         <dt class="col-sm-4 fw-bold">
-                            Customer
+                            @Localizer["Customer"]
                         </dt>
                         <dd class="col-sm-8">
                             @Model?.User?.FullName
@@ -41,12 +46,12 @@
 
                         <!-- NOTES -->
                         <dt class="col-sm-4 fw-bold">
-                            Notes
+                            @Localizer["Notes"]
                         </dt>
                         <dd class="col-sm-8">
                             @(
                                 string.IsNullOrWhiteSpace(Model?.Notes)
-                                ? "—"
+                                ? Localizer["NoNotes"].Value
                                 : Model!.Notes
                                 )
                         </dd>
@@ -59,7 +64,8 @@
                     <button type="button"
                             class="btn btn-secondary btn-sm"
                             onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi bi-arrow-left"></i>
+                        @Localizer["Back"]
                     </button>
                 </div>
 

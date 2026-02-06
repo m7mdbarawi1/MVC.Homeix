@@ -1,7 +1,8 @@
 ﻿@model Homeix.Models.User
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = Localizer["Register"];
 }
 
 <div class="container-fluid page-wrapper mt-5 pt-4">
@@ -9,7 +10,9 @@
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title fw-bold">Create Account</h1>
+            <h1 class="page-title fw-bold">
+                @Localizer["CreateAccount"]
+            </h1>
         </div>
     </div>
 
@@ -40,7 +43,7 @@
                                      src="~/images/default-user.png"
                                      class="rounded-circle shadow-sm"
                                      style="width:120px; height:120px; object-fit:cover;"
-                                     title="Click to upload profile picture" />
+                                     title="@Localizer["UploadProfilePicture"]" />
                             </label>
 
                             <input type="file"
@@ -52,63 +55,74 @@
 
                         <!-- Full Name -->
                         <div class="mb-3">
-                            <label asp-for="FullName" class="form-label fw-semibold"></label>
+                            <label asp-for="FullName" class="form-label fw-semibold">
+                                @Localizer["FullName"]
+                            </label>
                             <input asp-for="FullName"
                                    class="form-control"
-                                   placeholder="Enter full name"
+                                   placeholder="@Localizer["EnterFullName"]"
                                    pattern="^[A-Za-z .]+$"
-                                   title="Only English letters, spaces, and periods are allowed." />
+                                   title="@Localizer["FullNameRule"]" />
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
                         <!-- Email -->
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <label asp-for="Email" class="form-label fw-semibold">
+                                @Localizer["Email"]
+                            </label>
                             <input asp-for="Email"
                                    type="email"
                                    class="form-control"
-                                   placeholder="example@mail.com" />
+                                   placeholder="@Localizer["EmailPlaceholder"]" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <!-- Phone Number -->
                         <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold">
+                                @Localizer["PhoneNumber"]
+                            </label>
                             <input asp-for="PhoneNumber"
                                    class="form-control"
-                                   placeholder="10-digit phone number"
+                                   placeholder="@Localizer["PhonePlaceholder"]"
                                    pattern="^\d{10}$"
-                                   title="Phone number must be exactly 10 digits." />
+                                   title="@Localizer["PhoneRule"]" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
                         <!-- Password -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Password</label>
+                            <label class="form-label fw-semibold">
+                                @Localizer["Password"]
+                            </label>
                             <input name="Password"
                                    type="password"
                                    class="form-control"
                                    minlength="8"
                                    required
-                                   placeholder="Enter a secure password" />
+                                   placeholder="@Localizer["PasswordPlaceholder"]" />
                             <div class="form-text">
-                                Password must be at least 8 characters.
+                                @Localizer["PasswordRule"]
                             </div>
                         </div>
 
                         <!-- Register Button -->
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary fw-semibold">
-                                <i class="bi bi-person-plus"></i> Register
+                                <i class="bi bi-person-plus"></i>
+                                @Localizer["Register"]
                             </button>
                         </div>
 
                         <!-- Login Link -->
                         <p class="text-center mt-3 mb-0">
-                            Already have an account?
+                            @Localizer["AlreadyHaveAccount"]
                             <a asp-controller="Account"
                                asp-action="Login"
-                               class="fw-semibold">Login here</a>.
+                               class="fw-semibold">
+                                @Localizer["LoginHere"]
+                            </a>.
                         </p>
 
                     </form>

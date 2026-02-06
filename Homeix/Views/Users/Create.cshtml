@@ -1,15 +1,22 @@
 ﻿@model Homeix.Models.User
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Create User";
+    ViewData["Title"] = Localizer["CreateUserTitle"];
 }
 
 <div class="container mt-4 mb-5">
 
     <!-- ================= HEADER ================= -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">Create User</h1>
-        <p class="text-muted">Add a new user to the system</p>
+        <h1 class="fw-bold">
+            @Localizer["CreateUserTitle"]
+        </h1>
+        <p class="text-muted">
+            @Localizer["CreateUserSubtitle"]
+        </p>
     </div>
 
     <!-- ================= FORM CARD ================= -->
@@ -30,11 +37,15 @@
 
                         <!-- ROLE -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Role</label>
+                            <label class="form-label fw-semibold">
+                                @Localizer["Role"]
+                            </label>
                             <select asp-for="RoleId"
                                     class="form-select"
                                     asp-items="ViewBag.RoleId">
-                                <option value="">-- Select Role --</option>
+                                <option value="">
+                                    @Localizer["SelectRole"]
+                                </option>
                             </select>
                             <span asp-validation-for="RoleId"
                                   class="text-danger"></span>
@@ -73,21 +84,26 @@
 
                         <!-- PASSWORD -->
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Password</label>
+                            <label class="form-label fw-semibold">
+                                @Localizer["Password"]
+                            </label>
                             <input name="password"
                                    type="password"
                                    class="form-control"
                                    minlength="8"
                                    required />
                             <div class="form-text">
-                                Minimum 8 characters, strong password required
+                                @Localizer["PasswordHint"]
                             </div>
                         </div>
 
-                        <!-- PROFILE IMAGE (SAME STYLE AS POSTS) -->
+                        <!-- PROFILE IMAGE -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Profile Picture <span class="text-muted">(optional)</span>
+                                @Localizer["ProfilePicture"]
+                                <span class="text-muted">
+                                    (@Localizer["Optional"])
+                                </span>
                             </label>
 
                             <div id="dropZone"
@@ -95,7 +111,7 @@
                                  style="cursor:pointer;">
 
                                 <p class="text-muted mb-2">
-                                    Drag & drop image here or click to select
+                                    @Localizer["ImageUploadHint"]
                                 </p>
 
                                 <input type="file"
@@ -115,14 +131,14 @@
                             <button type="submit"
                                     class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i>
-                                Create User
+                                @Localizer["CreateUserButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary"
                                     onclick="history.back()">
                                 <i class="bi bi-arrow-left"></i>
-                                Back
+                                @Localizer["Back"]
                             </button>
 
                         </div>

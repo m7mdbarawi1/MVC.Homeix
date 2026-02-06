@@ -1,7 +1,8 @@
 ﻿@model Homeix.Models.CustomerPost
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Delete Customer Post";
+    ViewData["Title"] = Localizer["DeleteCustomerPost"];
 }
 
 <div class="container mt-4">
@@ -9,10 +10,10 @@
     <!-- ================= PAGE HEADER ================= -->
     <div class="text-center mb-4">
         <h1 class="text-danger fw-bold">
-            Delete Customer Post
+            @Localizer["DeleteCustomerPost"]
         </h1>
         <p class="text-muted mb-0">
-            Are you sure you want to permanently delete this post?
+            @Localizer["DeleteCustomerPostWarning"]
         </p>
     </div>
 
@@ -26,7 +27,7 @@
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0 d-inline-flex align-items-center gap-2">
                         <i class="bi bi-exclamation-triangle"></i>
-                        Confirm Deletion
+                        @Localizer["ConfirmDeletion"]
                     </h5>
                 </div>
 
@@ -34,33 +35,47 @@
                 <div class="card-body">
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-semibold">Title</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Title"]
+                        </dt>
                         <dd class="col-sm-8">@Model.Title</dd>
 
-                        <dt class="col-sm-4 fw-semibold">Description</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Description"]
+                        </dt>
                         <dd class="col-sm-8">@Model.Description</dd>
 
-                        <dt class="col-sm-4 fw-semibold">Location</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Location"]
+                        </dt>
                         <dd class="col-sm-8">@Model.Location</dd>
 
-                        <dt class="col-sm-4 fw-semibold">Price Range</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["PriceRange"]
+                        </dt>
                         <dd class="col-sm-8">
                             @(Model.PriceRangeMin.HasValue || Model.PriceRangeMax.HasValue
                                 ? $"{Model.PriceRangeMin} - {Model.PriceRangeMax} JD"
-                                : "Not specified")
+                                : Localizer["NotSpecified"])
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Category</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Category"]
+                        </dt>
                         <dd class="col-sm-8">
                             @(Model.PostCategory?.CategoryName ?? "—")
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Created At</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["CreatedAt"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Posted By</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["PostedBy"]
+                        </dt>
                         <dd class="col-sm-8">
                             @(Model.User?.FullName ?? "—")
                         </dd>
@@ -74,7 +89,6 @@
                     <form asp-action="Delete" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
 
-                        <!-- MUST match DeleteConfirmed(int id) -->
                         <input type="hidden"
                                name="id"
                                value="@Model.CustomerPostId" />
@@ -82,7 +96,7 @@
                         <button type="submit"
                                 class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1">
                             <i class="bi bi-trash"></i>
-                            Delete
+                            @Localizer["Delete"]
                         </button>
                     </form>
 
@@ -90,7 +104,7 @@
                             class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1"
                             onclick="history.back()">
                         <i class="bi bi-arrow-left"></i>
-                        Back
+                        @Localizer["Back"]
                     </button>
 
                 </div>

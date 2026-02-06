@@ -1,103 +1,95 @@
-﻿@{
-    ViewData["Title"] = "Admin Dashboard";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["AdminDashboardTitle"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="container-fluid px-4 py-3 vh-100 d-flex flex-column overflow-hidden">
+<div class="container-fluid px-3 px-lg-5 py-4">
 
-    <!-- HEADER -->
-    <div class="mb-3">
-        <h2 class="fw-bold mb-1">
-            <i class="bi bi-speedometer2 me-2 text-primary"></i>
-            Admin Dashboard
+    <!-- ================= HEADER ================= -->
+    <div class="mb-4 mb-lg-5">
+        <h2 class="fw-bold mb-1 d-flex align-items-center">
+            <i class="bi bi-speedometer2 me-2" style="color: var(--gold);"></i>
+            @Localizer["AdminDashboardTitle"]
         </h2>
-        <p class="text-muted mb-0">Platform analytics overview</p>
+        <p class="text-muted mb-0 fs-6">
+            @Localizer["DashboardSubtitle"]
+        </p>
     </div>
 
-    <!-- DASHBOARD CONTENT -->
-    <div class="flex-grow-1 d-flex flex-column gap-4">
+    <!-- ================= DASHBOARD GRID ================= -->
+    <div class="row g-4 g-lg-5">
 
-        <!-- TOP ROW -->
-        <div class="row g-4 flex-grow-1">
-
-            <!-- USERS BY ROLE -->
-            <div class="col-xl-4 col-md-6">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="text-muted fw-bold mb-3">Users by Role</h6>
-                        <div class="flex-grow-1">
-                            <canvas id="usersChart"></canvas>
-                        </div>
+        <!-- USERS BY ROLE -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="fw-bold text-uppercase small opacity-75 mb-3">
+                        @Localizer["UsersByRole"]
+                    </h6>
+                    <div class="chart-box chart-sm chart-desktop">
+                        <canvas id="usersChart"></canvas>
                     </div>
                 </div>
             </div>
-
-            <!-- POSTS DISTRIBUTION -->
-            <div class="col-xl-4 col-md-6">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="text-muted fw-bold mb-3">Posts Distribution</h6>
-                        <div class="flex-grow-1">
-                            <canvas id="postsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- JOB STATUS -->
-            <div class="col-xl-4 col-md-12">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="text-muted fw-bold mb-3">Job Status</h6>
-                        <div class="flex-grow-1">
-                            <canvas id="jobsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- BOTTOM ROW -->
-        <div class="row g-4 flex-grow-1">
-
-            <!-- MONTHLY REVENUE -->
-            <div class="col-xl-8 col-md-12">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="text-muted fw-bold mb-3">Monthly Revenue (JD)</h6>
-                        <div class="flex-grow-1">
-                            <canvas id="paymentsChart"></canvas>
-                        </div>
+        <!-- POSTS DISTRIBUTION -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="fw-bold text-uppercase small opacity-75 mb-3">
+                        @Localizer["PostsDistribution"]
+                    </h6>
+                    <div class="chart-box chart-sm chart-desktop">
+                        <canvas id="postsChart"></canvas>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- RATINGS -->
-            <div class="col-xl-4 col-md-12">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
+        <!-- RATINGS -->
+        <div class="col-12 col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
 
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="text-muted fw-bold mb-0">Ratings Overview</h6>
-                            <span class="badge bg-warning text-dark">
-                                ⭐ @ViewBag.AverageRating / 5
-                            </span>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-uppercase small opacity-75 mb-0">
+                            @Localizer["RatingsOverview"]
+                        </h6>
+                        <span class="badge bg-warning">
+                            ⭐ @ViewBag.AverageRating / 5
+                        </span>
+                    </div>
 
-                        <small class="text-muted mb-2">
-                            Distribution of user ratings
-                        </small>
+                    <small class="text-muted mb-3">
+                        @Localizer["RatingsSubtitle"]
+                    </small>
 
-                        <div class="flex-grow-1">
-                            <canvas id="ratingsChart"></canvas>
-                        </div>
+                    <div class="chart-box chart-sm chart-desktop">
+                        <canvas id="ratingsChart"></canvas>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- DAILY REVENUE -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="fw-bold text-uppercase small opacity-75 mb-3">
+                        @Localizer["DailyRevenue"]
+                    </h6>
+                    <div class="chart-box chart-lg chart-lg-desktop">
+                        <canvas id="paymentsChart"></canvas>
                     </div>
                 </div>
             </div>
-
         </div>
 
     </div>
@@ -105,104 +97,126 @@
 
 @section Scripts {
     <script>
-        const baseOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        };
+        document.addEventListener("DOMContentLoaded", () => {
 
-        // USERS BY ROLE
-        new Chart(document.getElementById('usersChart'), {
-            type: 'bar',
-            data: {
-                labels: @Html.Raw(ViewBag.UsersByRoleLabels ?? "[]"),
-                datasets: [{
-                    data: @Html.Raw(ViewBag.UsersByRoleCounts ?? "[]"),
-                    backgroundColor: '#0d6efd'
-                }]
-            },
-            options: baseOptions
-        });
+            const css = getComputedStyle(document.documentElement);
 
-        // POSTS
-        new Chart(document.getElementById('postsChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Customer Posts', 'Worker Posts'],
-                datasets: [{
-                    data: [@ViewBag.CustomerPostsCount, @ViewBag.WorkerPostsCount],
-                    backgroundColor: ['#0dcaf0', '#ffc107']
-                }]
-            },
-            options: baseOptions
-        });
+            const COLORS = {
+                primary: css.getPropertyValue('--primary').trim(),
+                primaryLight: css.getPropertyValue('--primary-light').trim(),
+                blue: css.getPropertyValue('--blue').trim(),
+                gold: css.getPropertyValue('--gold').trim(),
+                success: '#198754',
+                danger: '#dc3545',
+                text: css.getPropertyValue(
+                    document.documentElement.classList.contains('dark-theme')
+                        ? '--dark-text'
+                        : '--light-text'
+                ).trim()
+            };
 
-        // JOB STATUS
-        new Chart(document.getElementById('jobsChart'), {
-            type: 'pie',
-            data: {
-                labels: @Html.Raw(ViewBag.JobStatusLabels ?? "[]"),
-                datasets: [{
-                    data: @Html.Raw(ViewBag.JobStatusCounts ?? "[]"),
-                    backgroundColor: ['#0dcaf0', '#0d6efd', '#198754', '#dc3545']
-                }]
-            },
-            options: baseOptions
-        });
-
-        // PAYMENTS
-        new Chart(document.getElementById('paymentsChart'), {
-            type: 'line',
-            data: {
-                labels: @Html.Raw(ViewBag.PaymentMonths ?? "[]"),
-                datasets: [{
-                    data: @Html.Raw(ViewBag.PaymentTotals ?? "[]"),
-                    borderColor: '#6610f2',
-                    backgroundColor: 'rgba(102,16,242,0.15)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: baseOptions
-        });
-
-        // RATINGS
-        new Chart(document.getElementById('ratingsChart'), {
-            type: 'bar',
-            data: {
-                labels: ['⭐ 5', '⭐ 4', '⭐ 3', '⭐ 2', '⭐ 1'],
-                datasets: [{
-                    data: @Html.Raw(ViewBag.RatingCounts ?? "[]"),
-                    backgroundColor: [
-                        '#198754',
-                        '#20c997',
-                        '#ffc107',
-                        '#fd7e14',
-                        '#dc3545'
-                    ],
-                    borderRadius: 6
-                }]
-            },
-            options: {
+            const baseOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
-                indexAxis: 'y',
                 plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.raw} ratings`
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: COLORS.text,
+                            font: { weight: '500' }
                         }
                     }
                 },
                 scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: { precision: 0 }
-                    }
+                    x: { ticks: { color: COLORS.text } },
+                    y: { ticks: { color: COLORS.text } }
                 }
+            };
+
+            // USERS BY ROLE
+            if (usersChart) {
+                new Chart(usersChart, {
+                    type: 'bar',
+                    data: {
+                        labels: @Html.Raw(ViewBag.UsersByRoleLabels ?? "[]"),
+                        datasets: [{
+                            data: @Html.Raw(ViewBag.UsersByRoleCounts ?? "[]"),
+                            backgroundColor: COLORS.primary,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: baseOptions
+                });
+            }
+
+            // POSTS DISTRIBUTION
+            if (postsChart) {
+                new Chart(postsChart, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            '@Localizer["CustomerPosts"]',
+                            '@Localizer["WorkerPosts"]'
+                        ],
+                        datasets: [{
+                            data: [@ViewBag.CustomerPostsCount, @ViewBag.WorkerPostsCount],
+                            backgroundColor: [COLORS.blue, COLORS.gold],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: baseOptions
+                });
+            }
+
+            // DAILY REVENUE
+            if (paymentsChart) {
+                new Chart(paymentsChart, {
+                    type: 'line',
+                    data: {
+                        labels: @Html.Raw(ViewBag.PaymentDays ?? "[]"),
+                        datasets: [{
+                            data: @Html.Raw(ViewBag.PaymentTotals ?? "[]"),
+                            borderColor: COLORS.gold,
+                            backgroundColor: 'rgba(255,215,0,0.15)',
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: baseOptions
+                });
+            }
+
+            // RATINGS
+            if (ratingsChart) {
+                new Chart(ratingsChart, {
+                    type: 'bar',
+                    data: {
+                        labels: ['⭐ 5', '⭐ 4', '⭐ 3', '⭐ 2', '⭐ 1'],
+                        datasets: [{
+                            data: @Html.Raw(ViewBag.RatingCounts ?? "[]"),
+                            backgroundColor: [
+                                COLORS.success,
+                                '#20c997',
+                                COLORS.gold,
+                                '#fd7e14',
+                                COLORS.danger
+                            ],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, ticks: { color: COLORS.text } },
+                            y: { ticks: { color: COLORS.text } }
+                        }
+                    }
+                });
             }
         });
     </script>

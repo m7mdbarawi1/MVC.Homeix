@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.Subscription
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Delete Subscription";
+    ViewData["Title"] = Localizer["DeleteSubscriptionTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -9,9 +12,11 @@
     <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="text-danger page-title">Delete Subscription</h1>
+            <h1 class="text-danger page-title">
+                @Localizer["DeleteSubscriptionTitle"]
+            </h1>
             <p class="text-muted mb-0">
-                This action is irreversible. Please confirm carefully.
+                @Localizer["DeleteSubscriptionWarning"]
             </p>
         </div>
     </div>
@@ -24,37 +29,49 @@
 
                 <!-- CARD HEADER -->
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Confirm Subscription Deletion</h5>
+                    <h5 class="mb-0">
+                        @Localizer["ConfirmSubscriptionDeletion"]
+                    </h5>
                 </div>
 
                 <!-- CARD BODY -->
                 <div class="card-body">
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">User</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["User"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.User?.FullName
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Plan</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["Plan"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.Plan?.PlanName
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Start Date</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["StartDate"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.StartDate.ToString("yyyy-MM-dd")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">End Date</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["EndDate"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.EndDate.ToString("yyyy-MM-dd")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Status</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["Status"]
+                        </dt>
                         <dd class="col-sm-8">
                             <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">
-                                @Model.Status
+                                @Localizer[Model.Status]
                             </span>
                         </dd>
 
@@ -63,7 +80,7 @@
                     <!-- WARNING -->
                     <div class="alert alert-warning mt-4 mb-0">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        Deleting this subscription will permanently remove it and its related data.
+                        @Localizer["DeleteSubscriptionPermanentWarning"]
                     </div>
                 </div>
 
@@ -78,7 +95,7 @@
                         <button type="submit"
                                 class="btn btn-danger d-inline-flex align-items-center gap-2">
                             <i class="bi bi-trash"></i>
-                            Delete Permanently
+                            @Localizer["DeletePermanently"]
                         </button>
                     </form>
 
@@ -86,7 +103,7 @@
                             class="btn btn-secondary d-inline-flex align-items-center gap-2"
                             onclick="history.back()">
                         <i class="bi bi-arrow-left"></i>
-                        Cancel
+                        @Localizer["Cancel"]
                     </button>
 
                 </div>

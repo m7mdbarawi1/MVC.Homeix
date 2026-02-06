@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.Rating
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Rating Details";
+    ViewData["Title"] = Localizer["RatingDetailsTitle"].Value;
 }
 
 <div class="container-fluid mt-4">
@@ -10,10 +13,10 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                Rating Details
+                @Localizer["RatingDetailsTitle"]
             </h1>
             <p class="text-muted mb-0">
-                View rating information
+                @Localizer["RatingDetailsSubtitle"]
             </p>
         </div>
     </div>
@@ -26,7 +29,9 @@
 
                 <!-- CARD HEADER -->
                 <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">
+                        @Localizer["Details"]
+                    </h5>
                 </div>
 
                 <!-- CARD BODY -->
@@ -34,7 +39,9 @@
                     <dl class="row mb-0">
 
                         <!-- RATING -->
-                        <dt class="col-sm-4 fw-bold">Rating</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["RatingLabel"]
+                        </dt>
                         <dd class="col-sm-8 text-warning fs-5">
                             @for (int i = 1; i <= 5; i++)
                             {
@@ -46,33 +53,47 @@
                         </dd>
 
                         <!-- REVIEW -->
-                        <dt class="col-sm-4 fw-bold">Review</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["ReviewLabel"]
+                        </dt>
                         <dd class="col-sm-8">
-                            @(string.IsNullOrWhiteSpace(Model.Review)
-                                ? "—"
-                                : Model.Review)
+                            @(
+                                string.IsNullOrWhiteSpace(Model.Review)
+                                ? Localizer["EmptyValue"].Value
+                                : Model.Review
+                                )
                         </dd>
 
                         <!-- CREATED AT -->
-                        <dt class="col-sm-4 fw-bold">Created At</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["CreatedAtLabel"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.CreatedAt.ToString("yyyy-MM-dd")
                         </dd>
 
                         <!-- RATED USER -->
-                        <dt class="col-sm-4 fw-bold">Rated User</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["RatedUserLabel"]
+                        </dt>
                         <dd class="col-sm-8">
-                            @(Model.RatedUser?.FullName
+                            @(
+                                Model.RatedUser?.FullName
                                 ?? Model.RatedUser?.UserId.ToString()
-                                ?? "—")
+                                ?? Localizer["EmptyValue"].Value
+                                )
                         </dd>
 
                         <!-- RATED BY -->
-                        <dt class="col-sm-4 fw-bold">Rated By</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["RatedByLabel"]
+                        </dt>
                         <dd class="col-sm-8">
-                            @(Model.RaterUser?.FullName
+                            @(
+                                Model.RaterUser?.FullName
                                 ?? Model.RaterUser?.UserId.ToString()
-                                ?? "—")
+                                ?? Localizer["EmptyValue"].Value
+                                )
                         </dd>
 
                     </dl>
@@ -83,7 +104,8 @@
                     <button type="button"
                             class="btn btn-secondary btn-sm"
                             onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi bi-arrow-left"></i>
+                        @Localizer["BackButton"]
                     </button>
                 </div>
 

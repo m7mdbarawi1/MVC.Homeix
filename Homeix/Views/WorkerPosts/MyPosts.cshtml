@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<Homeix.Models.WorkerPost>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "My Worker Posts";
+    ViewData["Title"] = Localizer["MyWorkerPostsTitle"];
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
 
@@ -12,7 +14,8 @@
         <h1 class="fw-bold">@ViewData["Title"]</h1>
 
         <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i> Create New Post
+            <i class="bi bi-plus-circle me-1"></i>
+            @Localizer["CreateNewPost"]
         </a>
     </div>
 
@@ -24,12 +27,14 @@
                 <div class="col-md-6">
                     <input id="searchInput"
                            class="form-control"
-                           placeholder="Search by title..." />
+                           placeholder="@Localizer["SearchByTitle"]" />
                 </div>
 
                 <div class="col-md-6">
                     <select id="categoryFilter" class="form-select">
-                        <option value="">All Categories</option>
+                        <option value="">
+                            @Localizer["AllCategories"]
+                        </option>
                         @foreach (var cat in Model
                         .Select(p => p.PostCategory?.CategoryName)
                         .Where(c => !string.IsNullOrWhiteSpace(c))
@@ -50,7 +55,7 @@
         @if (!Model.Any())
         {
             <div class="text-center text-muted py-5">
-                You have not created any posts yet.
+                @Localizer["NoWorkerPostsYet"]
             </div>
         }
 
@@ -78,7 +83,7 @@
                             <h5 class="fw-bold mb-1">@post.Title</h5>
 
                             <p class="mb-1 text-muted">
-                                <strong>Category:</strong>
+                                <strong>@Localizer["Category"]:</strong>
                                 @post.PostCategory?.CategoryName
                             </p>
 
@@ -87,7 +92,8 @@
                             </p>
 
                             <p class="mb-0 text-muted small">
-                                Created: @post.CreatedAt.ToString("yyyy-MM-dd")
+                                @Localizer["CreatedAt"]:
+                                @post.CreatedAt.ToString("yyyy-MM-dd")
                             </p>
 
                         </div>
@@ -101,19 +107,22 @@
                                asp-route-id="@post.WorkerPostId"
                                asp-route-returnUrl="@returnUrl"
                                class="btn btn-accent btn-sm">
-                                <i class="bi bi-info-circle"></i> Details
+                                <i class="bi bi-info-circle"></i>
+                                @Localizer["Details"]
                             </a>
 
                             <a asp-action="Edit"
                                asp-route-id="@post.WorkerPostId"
                                class="btn btn-secondary btn-sm">
-                                <i class="bi bi-pencil-square"></i> Edit
+                                <i class="bi bi-pencil-square"></i>
+                                @Localizer["Edit"]
                             </a>
 
                             <a asp-action="Delete"
                                asp-route-id="@post.WorkerPostId"
                                class="btn btn-danger btn-sm">
-                                <i class="bi bi-trash"></i> Delete
+                                <i class="bi bi-trash"></i>
+                                @Localizer["Delete"]
                             </a>
 
                         </div>

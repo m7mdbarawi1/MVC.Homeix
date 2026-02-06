@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.Payment
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Payment Details";
+    ViewData["Title"] = Localizer["PaymentDetailsTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,7 +13,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                Payment Details
+                @Localizer["PaymentDetailsTitle"]
             </h1>
         </div>
     </div>
@@ -23,7 +26,9 @@
 
                 <!-- CARD HEADER -->
                 <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">
+                        @Localizer["Details"]
+                    </h5>
                 </div>
 
                 <!-- CARD BODY -->
@@ -31,41 +36,41 @@
                     <dl class="row mb-0">
 
                         <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.Amount)
+                            @Localizer["AmountLabel"]
                         </dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.Amount)
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            @Html.DisplayNameFor(model => model.PaymentDate)
+                            @Localizer["PaymentDateLabel"]
                         </dt>
                         <dd class="col-sm-8">
                             @Model.PaymentDate.ToString("yyyy-MM-dd HH:mm")
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            Payment Method
+                            @Localizer["PaymentMethodLabel"]
                         </dt>
                         <dd class="col-sm-8">
                             @Model.PaymentMethod?.MethodName
                             <span class="text-muted">
-                                (ID: @Model.PaymentMethodId)
+                                (@Localizer["IdLabel"]: @Model.PaymentMethodId)
                             </span>
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            Subscription
+                            @Localizer["SubscriptionLabel"]
                         </dt>
                         <dd class="col-sm-8">
-                            Subscription ID: @Model.SubscriptionId
+                            @Localizer["SubscriptionIdLabel"]: @Model.SubscriptionId
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">
-                            User
+                            @Localizer["UserLabel"]
                         </dt>
                         <dd class="col-sm-8">
-                            User ID: @Model.UserId
+                            @Localizer["UserIdLabel"]: @Model.UserId
                         </dd>
 
                     </dl>
@@ -77,7 +82,7 @@
                             class="btn btn-secondary btn-sm"
                             onclick="history.back()">
                         <i class="bi bi-arrow-left"></i>
-                        Back
+                        @Localizer["BackButton"]
                     </button>
                 </div>
 

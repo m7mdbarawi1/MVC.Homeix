@@ -1,16 +1,19 @@
 ﻿@model Homeix.Models.WorkerPost
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Create Worker Post";
+    ViewData["Title"] = Localizer["CreateWorkerPostTitle"];
 }
 
 <div class="container mt-4">
 
     <!-- ================= PAGE HEADER ================= -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">Create Worker Post</h1>
+        <h1 class="fw-bold">@Localizer["CreateWorkerPostTitle"]</h1>
         <p class="text-muted mb-0">
-            Showcase your service to attract potential customers
+            @Localizer["CreateWorkerPostSubtitle"]
         </p>
     </div>
 
@@ -37,7 +40,9 @@
                             <select asp-for="PostCategoryId"
                                     class="form-select"
                                     asp-items="ViewBag.PostCategoryId">
-                                <option value="">-- Select Category --</option>
+                                <option value="">
+                                    @Localizer["SelectCategory"]
+                                </option>
                             </select>
 
                             <span asp-validation-for="PostCategoryId"
@@ -51,7 +56,7 @@
 
                             <input asp-for="Title"
                                    class="form-control"
-                                   placeholder="e.g. Professional Plumbing Services" />
+                                   placeholder="@Localizer["TitlePlaceholder"]" />
 
                             <span asp-validation-for="Title"
                                   class="text-danger"></span>
@@ -65,7 +70,7 @@
                             <textarea asp-for="Description"
                                       rows="4"
                                       class="form-control"
-                                      placeholder="Describe your service, experience, and what you offer..."></textarea>
+                                      placeholder="@Localizer["DescriptionPlaceholder"]"></textarea>
 
                             <span asp-validation-for="Description"
                                   class="text-danger"></span>
@@ -78,7 +83,7 @@
 
                             <input asp-for="Location"
                                    class="form-control"
-                                   placeholder="e.g. Amman, Jordan" />
+                                   placeholder="@Localizer["LocationPlaceholder"]" />
 
                             <span asp-validation-for="Location"
                                   class="text-danger"></span>
@@ -118,7 +123,8 @@
                         <!-- ================= MEDIA UPLOAD ================= -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Upload Images <span class="text-muted">(optional)</span>
+                                @Localizer["UploadImages"]
+                                <span class="text-muted">(@Localizer["Optional"])</span>
                             </label>
 
                             <div id="dropZone"
@@ -126,7 +132,7 @@
                                  style="cursor:pointer;">
 
                                 <p class="text-muted mb-2">
-                                    Drag & drop images here or click to select
+                                    @Localizer["UploadImagesHint"]
                                 </p>
 
                                 <input type="file"
@@ -147,14 +153,14 @@
                             <button type="submit"
                                     class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1">
                                 <i class="bi bi-check-circle"></i>
-                                Create Post
+                                @Localizer["CreatePost"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1"
                                     onclick="history.back()">
                                 <i class="bi bi-arrow-left"></i>
-                                Back
+                                @Localizer["Back"]
                             </button>
 
                         </div>

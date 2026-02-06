@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.PostCategory
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Edit Post Category";
+    ViewData["Title"] = Localizer["EditPostCategoryTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,7 +13,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                Edit Post Category
+                @Localizer["EditPostCategoryTitle"]
             </h1>
         </div>
     </div>
@@ -34,7 +37,9 @@
                         <!-- CATEGORY NAME -->
                         <div class="mb-3">
                             <label asp-for="CategoryName"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["CategoryNameLabel"]
+                            </label>
 
                             <input asp-for="CategoryName"
                                    class="form-control" />
@@ -49,13 +54,14 @@
                             <button type="submit"
                                     class="btn btn-primary d-inline-flex align-items-center gap-2">
                                 <i class="bi bi-check-circle"></i>
-                                Save
+                                @Localizer["SaveButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                @Localizer["BackButton"]
                             </button>
 
                         </div>

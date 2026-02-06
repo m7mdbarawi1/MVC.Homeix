@@ -1,23 +1,23 @@
 ﻿@model Homeix.Models.Subscription
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Create Subscription";
+    ViewData["Title"] = Localizer["CreateSubscriptionTitle"];
 }
 
 <!-- ================= NON-BLOCKING MODAL FIX ================= -->
 <style>
-    /* Do NOT lock the page */
     body.modal-open {
         overflow: auto !important;
         padding-right: 0 !important;
     }
 
-    /* Allow clicks through modal background */
     .modal {
         pointer-events: none;
     }
 
-    /* Only modal dialog is clickable */
     .modal-dialog {
         pointer-events: auto;
     }
@@ -27,7 +27,7 @@
 
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Create Subscription</h1>
+            <h1 class="page-title">@Localizer["CreateSubscriptionTitle"]</h1>
         </div>
     </div>
 
@@ -43,7 +43,7 @@
 
                         <!-- USER -->
                         <div class="mb-3">
-                            <label class="form-label">User</label>
+                            <label class="form-label">@Localizer["User"]</label>
                             <input class="form-control" value="@User.Identity?.Name" readonly />
                         </div>
 
@@ -51,7 +51,7 @@
                         <div class="mb-3">
                             <label asp-for="PlanId" class="form-label"></label>
                             <select asp-for="PlanId" class="form-select" id="planSelect">
-                                <option value="">-- Select Plan --</option>
+                                <option value="">@Localizer["SelectPlan"]</option>
 
                                 @foreach (var plan in (IEnumerable<Homeix.Models.SubscriptionPlan>)ViewBag.Plans)
                                 {
@@ -68,23 +68,23 @@
 
                         <!-- DATE PREVIEW -->
                         <div class="mb-3">
-                            <label class="form-label">Start Date</label>
+                            <label class="form-label">@Localizer["StartDate"]</label>
                             <input class="form-control" id="previewStart" readonly />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">End Date</label>
+                            <label class="form-label">@Localizer["EndDate"]</label>
                             <input class="form-control" id="previewEnd" readonly />
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="button" class="btn btn-primary" id="openModalBtn">
                                 <i class="bi bi-credit-card"></i>
-                                Subscribe
+                                @Localizer["Subscribe"]
                             </button>
 
                             <button type="button" class="btn btn-secondary" onclick="history.back()">
-                                Back
+                                @Localizer["Back"]
                             </button>
                         </div>
                     </form>
@@ -105,21 +105,21 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Subscription</h5>
+                <h5 class="modal-title">@Localizer["ConfirmSubscription"]</h5>
                 <button type="button"
                         class="btn-close"
                         data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
-                <p><strong>Plan:</strong> <span id="mPlan"></span></p>
-                <p><strong>Price:</strong> <span id="mPrice"></span> JOD</p>
-                <p><strong>Duration:</strong> <span id="mDuration"></span> days</p>
-                <p><strong>Start:</strong> <span id="mStart"></span></p>
-                <p><strong>End:</strong> <span id="mEnd"></span></p>
+                <p><strong>@Localizer["Plan"]:</strong> <span id="mPlan"></span></p>
+                <p><strong>@Localizer["Price"]:</strong> <span id="mPrice"></span> JOD</p>
+                <p><strong>@Localizer["Duration"]:</strong> <span id="mDuration"></span> @Localizer["Days"]</p>
+                <p><strong>@Localizer["Start"]:</strong> <span id="mStart"></span></p>
+                <p><strong>@Localizer["End"]:</strong> <span id="mEnd"></span></p>
 
                 <div class="alert alert-info mt-3">
-                    Your current subscription (if any) will be replaced.
+                    @Localizer["SubscriptionReplaceWarning"]
                 </div>
             </div>
 
@@ -127,13 +127,13 @@
                 <button type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal">
-                    Back
+                    @Localizer["Back"]
                 </button>
 
                 <button type="submit"
                         class="btn btn-success"
                         form="subscriptionForm">
-                    Confirm & Pay
+                    @Localizer["ConfirmAndPay"]
                 </button>
             </div>
 
@@ -174,7 +174,7 @@
 
                 const opt = planSelect.options[planSelect.selectedIndex];
                 if (!opt || !opt.dataset.name) {
-                    alert("Please select a plan.");
+                    alert("@Localizer["SelectPlanAlert"]");
                     return;
                 }
 

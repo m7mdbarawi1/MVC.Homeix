@@ -1,10 +1,15 @@
 ﻿@model Homeix.Models.Rating
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Create Rating";
+    ViewData["Title"] = Localizer["CreateRatingTitle"].Value;
 
     bool hasPreselectedUser = Model.RatedUserId > 0;
-    string ratedUserName = ViewBag.RatedUserName as string ?? "User";
+    string ratedUserName =
+        ViewBag.RatedUserName as string
+        ?? Localizer["DefaultUserName"].Value;
 }
 
 <div class="container-fluid mt-4">
@@ -13,10 +18,15 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                @(hasPreselectedUser ? $"Rate {ratedUserName}" : "Rate a User")
+                @(hasPreselectedUser
+                    ? string.Format(
+                    Localizer["RateSpecificUser"].Value,
+                    ratedUserName
+                    )
+                    : Localizer["RateUserTitle"])
             </h1>
             <p class="text-muted mb-0">
-                Share your experience to help others make better decisions
+                @Localizer["RateSubtitle"]
             </p>
         </div>
     </div>
@@ -34,57 +44,57 @@
                         <!-- ================= GLOBAL ERRORS ================= -->
                         @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey(""))
                         {
-                                <div class="alert alert-danger">
+                            <div class="alert alert-danger">
                                 @foreach (var err in ViewData.ModelState[""].Errors)
                                 {
-                                            <div>@err.ErrorMessage</div>
+                                    <div>@err.ErrorMessage</div>
                                 }
-                                </div>
+                            </div>
                         }
 
                         <!-- ================= USER TO RATE ================= -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                User to Rate
+                                @Localizer["UserToRateLabel"]
                             </label>
 
                             @if (hasPreselectedUser)
                             {
-                                    <input type="text"
-                                           class="form-control"
-                                           value="@ratedUserName"
-                                           readonly />
+                                <input type="text"
+                                       class="form-control"
+                                       value="@ratedUserName"
+                                       readonly />
 
-                                    <input type="hidden" asp-for="RatedUserId" />
+                                <input type="hidden" asp-for="RatedUserId" />
                             }
                             else
                             {
-                                    <input type="text"
-                                           id="userSearch"
-                                           class="form-control"
-                                           placeholder="Search user by name..." />
+                                <input type="text"
+                                       id="userSearch"
+                                       class="form-control"
+                                       placeholder="@Localizer["SearchUserPlaceholder"]" />
 
-                                    <input type="hidden" asp-for="RatedUserId" />
-                                    <span asp-validation-for="RatedUserId"
-                                          class="text-danger"></span>
+                                <input type="hidden" asp-for="RatedUserId" />
+                                <span asp-validation-for="RatedUserId"
+                                      class="text-danger"></span>
 
-                                    <div id="searchResults"
-                                         class="list-group mt-2 shadow-sm"></div>
+                                <div id="searchResults"
+                                     class="list-group mt-2 shadow-sm"></div>
                             }
                         </div>
 
                         <!-- ================= STAR RATING ================= -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Rating
+                                @Localizer["RatingLabel"]
                             </label>
 
                             <div class="fs-3 text-warning user-select-none">
                                 @for (int i = 1; i <= 5; i++)
                                 {
-                                        <i class="bi bi-star star me-1"
-                                           data-value="@i"
-                                           style="cursor:pointer;"></i>
+                                    <i class="bi bi-star star me-1"
+                                       data-value="@i"
+                                       style="cursor:pointer;"></i>
                                 }
                             </div>
 
@@ -96,24 +106,28 @@
                         <!-- ================= REVIEW ================= -->
                         <div class="mb-4">
                             <label asp-for="Review"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["ReviewLabel"]
+                            </label>
                             <textarea asp-for="Review"
                                       class="form-control"
                                       rows="3"
-                                      placeholder="Optional review..."></textarea>
+                                      placeholder="@Localizer["ReviewPlaceholder"]"></textarea>
                         </div>
 
                         <!-- ================= ACTIONS ================= -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
-                                <i class="bi bi-check-circle"></i> Submit Rating
+                                <i class="bi bi-check-circle"></i>
+                                @Localizer["SubmitRatingButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                @Localizer["BackButton"]
                             </button>
                         </div>
 
@@ -127,52 +141,52 @@
 </div>
 
 @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 
-        <script>
-            // ⭐ STAR SELECTION
-            document.querySelectorAll(".star").forEach(star => {
-                star.addEventListener("click", () => {
-                    const value = star.dataset.value;
-                    document.querySelector("input[name='RatingValue']").value = value;
+    <script>
+        // ⭐ STAR SELECTION
+        document.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", () => {
+                const value = star.dataset.value;
+                document.querySelector("input[name='RatingValue']").value = value;
 
-                    document.querySelectorAll(".star").forEach(s => {
-                        s.classList.toggle("bi-star-fill", s.dataset.value <= value);
-                        s.classList.toggle("bi-star", s.dataset.value > value);
-                    });
+                document.querySelectorAll(".star").forEach(s => {
+                    s.classList.toggle("bi-star-fill", s.dataset.value <= value);
+                    s.classList.toggle("bi-star", s.dataset.value > value);
                 });
             });
+        });
 
-            // 🔍 USER SEARCH
-            const searchInput = document.getElementById("userSearch");
-            const results = document.getElementById("searchResults");
-            const hiddenUserId = document.querySelector("input[name='RatedUserId']");
+        // 🔍 USER SEARCH
+        const searchInput = document.getElementById("userSearch");
+        const results = document.getElementById("searchResults");
+        const hiddenUserId = document.querySelector("input[name='RatedUserId']");
 
-            if (searchInput) {
-                searchInput.addEventListener("input", async () => {
-                    const term = searchInput.value.trim();
-                    results.innerHTML = "";
+        if (searchInput) {
+            searchInput.addEventListener("input", async () => {
+                const term = searchInput.value.trim();
+                results.innerHTML = "";
 
-                    if (term.length < 2) return;
+                if (term.length < 2) return;
 
-                    const res = await fetch(`/Ratings/SearchUsers?term=${encodeURIComponent(term)}`);
-                    const users = await res.json();
+                const res = await fetch(`/Ratings/SearchUsers?term=${encodeURIComponent(term)}`);
+                const users = await res.json();
 
-                    users.forEach(u => {
-                        const item = document.createElement("button");
-                        item.type = "button";
-                        item.className = "list-group-item list-group-item-action";
-                        item.textContent = u.fullName;
+                users.forEach(u => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "list-group-item list-group-item-action";
+                    item.textContent = u.fullName;
 
-                        item.onclick = () => {
-                            searchInput.value = u.fullName;
-                            hiddenUserId.value = u.userId;
-                            results.innerHTML = "";
-                        };
+                    item.onclick = () => {
+                        searchInput.value = u.fullName;
+                        hiddenUserId.value = u.userId;
+                        results.innerHTML = "";
+                    };
 
-                        results.appendChild(item);
-                    });
+                    results.appendChild(item);
                 });
-            }
-        </script>
+            });
+        }
+    </script>
 }

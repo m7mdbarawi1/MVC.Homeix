@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.User
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Delete User";
+    ViewData["Title"] = Localizer["DeleteUserTitle"];
 
     // ProfilePicture already stores "/uploads/profile/filename.jpg"
     var profileImage = string.IsNullOrWhiteSpace(Model.ProfilePicture)
@@ -13,9 +16,11 @@
 
     <!-- ================= HEADER ================= -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-danger">Delete User</h1>
+        <h1 class="fw-bold text-danger">
+            @Localizer["DeleteUserTitle"]
+        </h1>
         <p class="text-muted">
-            Are you sure you want to permanently delete this user?
+            @Localizer["DeleteUserSubtitle"]
         </p>
     </div>
 
@@ -32,7 +37,9 @@
         <div class="card-body">
 
             <!-- NAME -->
-            <h4 class="fw-bold mb-1">@Model.FullName</h4>
+            <h4 class="fw-bold mb-1">
+                @Model.FullName
+            </h4>
 
             <!-- META -->
             <div class="text-muted small d-flex align-items-center flex-wrap gap-3 mb-3">
@@ -46,11 +53,13 @@
                 }
 
                 <span class="d-flex align-items-center gap-1">
-                    <i class="bi bi-envelope"></i> @Model.Email
+                    <i class="bi bi-envelope"></i>
+                    @Model.Email
                 </span>
 
                 <span class="d-flex align-items-center gap-1">
-                    <i class="bi bi-telephone"></i> @Model.PhoneNumber
+                    <i class="bi bi-telephone"></i>
+                    @Model.PhoneNumber
                 </span>
 
             </div>
@@ -60,8 +69,7 @@
             <!-- WARNING -->
             <div class="alert alert-danger mb-0">
                 <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                This action <strong>cannot be undone</strong>.
-                All related data may be permanently removed.
+                @Localizer["DeleteWarning"]
             </div>
 
         </div>
@@ -72,7 +80,8 @@
             <button type="button"
                     class="btn btn-secondary btn-sm"
                     onclick="history.back()">
-                <i class="bi bi-arrow-left"></i> Back
+                <i class="bi bi-arrow-left"></i>
+                @Localizer["Back"]
             </button>
 
             <form asp-action="Delete"
@@ -81,7 +90,8 @@
                 <input type="hidden" asp-for="UserId" />
                 <button type="submit"
                         class="btn btn-danger btn-sm">
-                    <i class="bi bi-trash"></i> Confirm Delete
+                    <i class="bi bi-trash"></i>
+                    @Localizer["ConfirmDelete"]
                 </button>
             </form>
 

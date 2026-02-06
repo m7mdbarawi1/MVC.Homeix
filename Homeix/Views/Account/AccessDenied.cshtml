@@ -1,5 +1,8 @@
-﻿@{
-    ViewData["Title"] = "Forgot Password";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["AccessDeniedTitle"];
 }
 
 <div class="container-fluid page-wrapper mt-5 pt-4">
@@ -7,77 +10,53 @@
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title fw-bold">Forgot Password</h1>
+            <h1 class="page-title fw-bold text-danger">
+                <i class="bi bi-shield-lock"></i>
+                @Localizer["AccessDeniedTitle"]
+            </h1>
             <p class="text-muted mt-2">
-                Enter your email address and we’ll send you a link to reset your password.
+                @Localizer["AccessDeniedSubtitle"]
             </p>
         </div>
     </div>
 
-    <!-- Centered Forgot Password Form -->
+    <!-- Centered Card -->
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body p-4">
+                <div class="card-body p-4 text-center">
 
-                    <form method="post" asp-controller="Account" asp-action="ForgotPassword">
-                        @Html.AntiForgeryToken()
+                    <!-- Icon -->
+                    <div class="mb-3 text-danger fs-1">
+                        <i class="bi bi-exclamation-octagon"></i>
+                    </div>
 
-                        <!-- Validation Summary -->
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <!-- Message -->
+                    <p class="mb-4 text-muted">
+                        @Localizer["AccessDeniedMessage"]
+                    </p>
 
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">Email</label>
-                            <input id="email"
-                                   name="email"
-                                   type="email"
-                                   class="form-control"
-                                   placeholder="Enter your registered email"
-                                   required />
-                        </div>
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-center gap-2">
 
-                        <!-- Success Message -->
-                        @if (ViewBag.Success != null)
-                        {
-                            <div class="alert alert-success py-2">
-                                <i class="bi bi-check-circle"></i> @ViewBag.Success
-                            </div>
-                        }
+                        <button type="button"
+                                class="btn btn-secondary"
+                                onclick="history.back()">
+                            <i class="bi bi-arrow-left"></i>
+                            @Localizer["GoBack"]
+                        </button>
 
-                        <!-- Error Message -->
-                        @if (ViewBag.Error != null)
-                        {
-                            <div class="alert alert-danger py-2">
-                                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
-                            </div>
-                        }
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="btn btn-primary">
+                            <i class="bi bi-house"></i>
+                            @Localizer["GoHome"]
+                        </a>
 
-                        <!-- Submit Button -->
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary fw-semibold">
-                                <i class="bi bi-envelope"></i> Send Reset Link
-                            </button>
-                        </div>
-
-                        <!-- Back to Login -->
-                        <p class="text-center mt-3 mb-0">
-                            Remember your password?
-                            <a asp-controller="Account"
-                               asp-action="Login"
-                               class="fw-semibold text-decoration-none">
-                                Back to Login
-                            </a>
-                        </p>
-
-                    </form>
+                    </div>
 
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
-}

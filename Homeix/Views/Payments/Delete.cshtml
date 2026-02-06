@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.Payment
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Delete Payment";
+    ViewData["Title"] = Localizer["DeletePaymentTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,10 +13,10 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title text-danger fw-bold">
-                Delete Payment
+                @Localizer["DeletePaymentTitle"]
             </h1>
             <p class="text-muted mb-0">
-                Are you sure you want to delete this payment?
+                @Localizer["DeletePaymentConfirmation"]
             </p>
         </div>
     </div>
@@ -26,39 +29,51 @@
 
                 <!-- CARD HEADER -->
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Confirm Deletion</h5>
+                    <h5 class="mb-0">
+                        @Localizer["ConfirmDeletion"]
+                    </h5>
                 </div>
 
                 <!-- CARD BODY -->
                 <div class="card-body">
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-bold">Amount</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["AmountLabel"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.Amount)
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Payment Date</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["PaymentDateLabel"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.PaymentDate.ToString("yyyy-MM-dd HH:mm")
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Payment Method</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["PaymentMethodLabel"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.PaymentMethod?.MethodName
                             <span class="text-muted">
-                                (ID: @Model.PaymentMethodId)
+                                (@Localizer["IdLabel"]: @Model.PaymentMethodId)
                             </span>
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">Subscription</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["SubscriptionLabel"]
+                        </dt>
                         <dd class="col-sm-8">
-                            Subscription ID: @Model.SubscriptionId
+                            @Localizer["SubscriptionIdLabel"]: @Model.SubscriptionId
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">User</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["UserLabel"]
+                        </dt>
                         <dd class="col-sm-8">
-                            User ID: @Model.UserId
+                            @Localizer["UserIdLabel"]: @Model.UserId
                         </dd>
 
                     </dl>
@@ -69,10 +84,11 @@
 
                     <form asp-action="Delete" method="post" class="d-inline">
                         <input type="hidden" asp-for="PaymentId" />
+
                         <button type="submit"
                                 class="btn btn-danger btn-sm">
                             <i class="bi bi-trash"></i>
-                            Delete
+                            @Localizer["DeleteButton"]
                         </button>
                     </form>
 
@@ -80,7 +96,7 @@
                             class="btn btn-secondary btn-sm"
                             onclick="history.back()">
                         <i class="bi bi-arrow-left"></i>
-                        Back
+                        @Localizer["BackButton"]
                     </button>
 
                 </div>

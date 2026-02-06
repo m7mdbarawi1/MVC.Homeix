@@ -1,28 +1,32 @@
 ﻿@model IEnumerable<Homeix.Models.Rating>
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Ratings";
+    ViewData["Title"] = Localizer["RatingsTitle"].Value;
 }
 
 <div class="container-fluid mt-4">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <h1 class="mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <h1 class="mb-3 mb-md-0">
+                @Localizer["RatingsTitle"]
+            </h1>
 
             <div class="d-flex gap-2">
-
                 <a asp-action="DownloadReport"
                    class="btn btn-secondary d-inline-flex align-items-center gap-2">
                     <i class="bi bi-download"></i>
-                    Download Report
+                    @Localizer["DownloadReport"]
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Search -->
+    <!-- ================= SEARCH ================= -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -30,13 +34,13 @@
                     <input type="text"
                            id="searchInput"
                            class="form-control"
-                           placeholder="Search ratings..." />
+                           placeholder="@Localizer["SearchRatingsPlaceholder"]" />
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Table -->
+    <!-- ================= TABLE ================= -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -46,12 +50,14 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Rating</th>
-                                    <th>Review</th>
-                                    <th>Created</th>
-                                    <th>Rated User</th>
-                                    <th>Rater User</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>@Localizer["RatingLabel"]</th>
+                                    <th>@Localizer["ReviewLabel"]</th>
+                                    <th>@Localizer["CreatedAtLabel"]</th>
+                                    <th>@Localizer["RatedUserLabel"]</th>
+                                    <th>@Localizer["RatedByLabel"]</th>
+                                    <th class="text-center">
+                                        @Localizer["ActionsLabel"]
+                                    </th>
                                 </tr>
                             </thead>
 
@@ -68,28 +74,46 @@
                                             </td>
 
                                             <td class="text-truncate" style="max-width:300px;">
-                                                @item.Review
+                                                @(string.IsNullOrWhiteSpace(item.Review)
+                                                    ? Localizer["EmptyValue"].Value
+                                                    : item.Review)
                                             </td>
 
-                                            <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                            <td>
+                                                @item.CreatedAt.ToString("yyyy-MM-dd")
+                                            </td>
 
-                                            <!-- SAME STYLE AS WorkerPosts -->
-                                            <td>@item.RatedUser?.FullName</td>
-                                            <td>@item.RaterUser?.FullName</td>
+                                            <td>
+                                                @(
+                                                    item.RatedUser?.FullName
+                                                    ?? Localizer["EmptyValue"].Value
+                                                    )
+                                            </td>
+
+                                            <td>
+                                                @(
+                                                    item.RaterUser?.FullName
+                                                    ?? Localizer["EmptyValue"].Value
+                                                    )
+                                            </td>
 
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
+
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.RatingId"
                                                        class="btn btn-accent btn-sm">
-                                                        <i class="bi bi-info-circle"></i> Details
+                                                        <i class="bi bi-info-circle"></i>
+                                                        @Localizer["DetailsButton"]
                                                     </a>
 
                                                     <a asp-action="Delete"
                                                        asp-route-id="@item.RatingId"
                                                        class="btn btn-danger btn-sm">
-                                                        <i class="bi bi-trash"></i> Delete
+                                                        <i class="bi bi-trash"></i>
+                                                        @Localizer["DeleteButton"]
                                                     </a>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -100,7 +124,7 @@
                                     <tr>
                                         <td colspan="6" class="text-center p-4">
                                             <div class="alert alert-secondary mb-0">
-                                                No ratings found.
+                                                @Localizer["NoRatingsFound"]
                                             </div>
                                         </td>
                                     </tr>
@@ -126,9 +150,10 @@
             searchInput.addEventListener("input", function () {
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
-                    row.style.display = row.textContent.toLowerCase().includes(term)
-                        ? ""
-                        : "none";
+                    row.style.display =
+                        row.textContent.toLowerCase().includes(term)
+                            ? ""
+                            : "none";
                 });
             });
         });

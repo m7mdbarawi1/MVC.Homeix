@@ -26,7 +26,9 @@ builder.Services.AddAuthentication("HomeixAuth").AddCookie("HomeixAuth", options
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 builder.Services.AddAuthorization();
-builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+builder.Services
+    .AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.SubFolder);
 builder.Services.AddLocalization(options =>{options.ResourcesPath = "Resources";});
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {

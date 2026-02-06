@@ -1,14 +1,19 @@
 ﻿@model Homeix.Models.UserRole
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Edit User Role";
+    ViewData["Title"] = Localizer["EditUserRoleTitle"];
 }
 
 <div class="container-fluid mt-4">
 
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1>Edit User Role</h1>
+            <h1>
+                @Localizer["EditUserRoleTitle"]
+            </h1>
         </div>
     </div>
 
@@ -25,7 +30,9 @@
 
                         <div class="mb-3">
                             <label asp-for="RoleName"
-                                   class="form-label"></label>
+                                   class="form-label">
+                                @Localizer["RoleName"]
+                            </label>
                             <input asp-for="RoleName"
                                    class="form-control" />
                             <span asp-validation-for="RoleName"
@@ -35,14 +42,16 @@
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="submit"
                                     class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Save
+                                <i class="bi bi-check-circle"></i>
+                                @Localizer["Save"]
                             </button>
 
                             <!-- UNIVERSAL BACK BUTTON -->
                             <button type="button"
                                     class="btn btn-secondary"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                @Localizer["Back"]
                             </button>
                         </div>
 

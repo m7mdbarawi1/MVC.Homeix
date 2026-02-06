@@ -22,6 +22,39 @@
     --homeix-nav-height: 70px;
 }
 
+/* ================= DESKTOP DASHBOARD ENHANCEMENTS ================= */
+
+.chart-box {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.chart-sm {
+    min-height: 260px;
+}
+
+.chart-lg {
+    min-height: 320px;
+}
+
+/* Desktop boosts */
+@media (min-width: 1200px) {
+    .chart-desktop {
+        min-height: 300px;
+    }
+
+    .chart-lg-desktop {
+        min-height: 420px;
+    }
+
+    .container-fluid {
+        max-width: 1600px;
+    }
+}
+
+
+
 html {
     background: var(--light-bg);
     color: var(--light-text);

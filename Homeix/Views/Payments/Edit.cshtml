@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.Payment
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Edit Payment";
+    ViewData["Title"] = Localizer["EditPaymentTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,7 +13,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                Edit Payment
+                @Localizer["EditPaymentTitle"]
             </h1>
         </div>
     </div>
@@ -33,7 +36,9 @@
                         <!-- USER -->
                         <div class="mb-3">
                             <label asp-for="UserId"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["UserLabel"]
+                            </label>
 
                             <select asp-for="UserId"
                                     class="form-select"
@@ -46,7 +51,9 @@
                         <!-- SUBSCRIPTION -->
                         <div class="mb-3">
                             <label asp-for="SubscriptionId"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["SubscriptionLabel"]
+                            </label>
 
                             <select asp-for="SubscriptionId"
                                     class="form-select"
@@ -59,7 +66,9 @@
                         <!-- PAYMENT METHOD -->
                         <div class="mb-3">
                             <label asp-for="PaymentMethodId"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["PaymentMethodLabel"]
+                            </label>
 
                             <select asp-for="PaymentMethodId"
                                     class="form-select"
@@ -72,7 +81,9 @@
                         <!-- AMOUNT -->
                         <div class="mb-3">
                             <label asp-for="Amount"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["AmountLabel"]
+                            </label>
 
                             <input asp-for="Amount"
                                    type="number"
@@ -87,7 +98,9 @@
                         <!-- PAYMENT DATE -->
                         <div class="mb-4">
                             <label asp-for="PaymentDate"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["PaymentDateLabel"]
+                            </label>
 
                             <input asp-for="PaymentDate"
                                    type="datetime-local"
@@ -103,14 +116,14 @@
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
                                 <i class="bi bi-check-circle"></i>
-                                Save
+                                @Localizer["SaveButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
                                 <i class="bi bi-arrow-left"></i>
-                                Back
+                                @Localizer["BackButton"]
                             </button>
 
                         </div>

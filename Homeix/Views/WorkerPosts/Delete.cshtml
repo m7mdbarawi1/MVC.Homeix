@@ -1,16 +1,21 @@
 ﻿@model Homeix.Models.WorkerPost
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Delete Worker Post";
+    ViewData["Title"] = Localizer["DeleteWorkerPostTitle"];
 }
 
 <div class="container mt-4">
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="text-danger fw-bold">Delete Worker Post</h1>
+        <h1 class="text-danger fw-bold">
+            @Localizer["DeleteWorkerPostTitle"]
+        </h1>
         <p class="text-muted">
-            This action cannot be undone. Please confirm.
+            @Localizer["DeleteWorkerPostWarning"]
         </p>
     </div>
 
@@ -22,7 +27,7 @@
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">
                         <i class="bi bi-exclamation-triangle"></i>
-                        Confirm Deletion
+                        @Localizer["ConfirmDeletion"]
                     </h5>
                 </div>
 
@@ -30,35 +35,49 @@
 
                     <dl class="row mb-0">
 
-                        <dt class="col-sm-4 fw-semibold">Title</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Title"]
+                        </dt>
                         <dd class="col-sm-8">@Model.Title</dd>
 
-                        <dt class="col-sm-4 fw-semibold">Description</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Description"]
+                        </dt>
                         <dd class="col-sm-8">
                             <div class="text-muted" style="white-space:pre-line;">
                                 @Model.Description
                             </div>
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Location</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Location"]
+                        </dt>
                         <dd class="col-sm-8">@Model.Location</dd>
 
-                        <dt class="col-sm-4 fw-semibold">Price Range</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["PriceRange"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.PriceRangeMin JD – @Model.PriceRangeMax JD
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Category</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Category"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.PostCategory?.CategoryName
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Worker</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["Worker"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.User?.FullName
                         </dd>
 
-                        <dt class="col-sm-4 fw-semibold">Created At</dt>
+                        <dt class="col-sm-4 fw-semibold">
+                            @Localizer["CreatedAt"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.CreatedAt.ToString("yyyy-MM-dd")
                         </dd>
@@ -72,15 +91,18 @@
 
                     <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="WorkerPostId" />
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i> Delete
+                        <button type="submit"
+                                class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                            @Localizer["Delete"]
                         </button>
                     </form>
 
                     <button type="button"
                             class="btn btn-secondary btn-sm"
                             onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi bi-arrow-left"></i>
+                        @Localizer["Back"]
                     </button>
 
                 </div>

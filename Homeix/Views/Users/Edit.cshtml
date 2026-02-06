@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.User
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Edit User";
+    ViewData["Title"] = Localizer["EditUserTitle"];
 
     // IMPORTANT:
     // ProfilePicture already stores "/uploads/profile/filename.jpg"
@@ -20,7 +23,7 @@
                  src="@profileImage"
                  class="d-block w-100 img-fluid bg-light"
                  style="max-height:420px; object-fit:contain;"
-                 title="Click to change profile picture" />
+                 title="@Localizer["ClickToChangePicture"]" />
         </label>
 
     </div>
@@ -56,15 +59,17 @@
 
                     <span class="badge bg-primary">
                         <i class="bi bi-person-badge"></i>
-                        @(Model.Role?.RoleName ?? "No Role")
+                        @(Model.Role?.RoleName ?? Localizer["NoRole"].Value)
                     </span>
 
                     <span class="d-flex align-items-center gap-1">
-                        <i class="bi bi-envelope"></i> @Model.Email
+                        <i class="bi bi-envelope"></i>
+                        @Model.Email
                     </span>
 
                     <span class="d-flex align-items-center gap-1">
-                        <i class="bi bi-telephone"></i> @Model.PhoneNumber
+                        <i class="bi bi-telephone"></i>
+                        @Model.PhoneNumber
                     </span>
 
                 </div>
@@ -73,7 +78,9 @@
 
                 <!-- ROLE -->
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Role</label>
+                    <label class="form-label fw-semibold">
+                        @Localizer["Role"]
+                    </label>
                     <select asp-for="RoleId"
                             class="form-select"
                             asp-items="ViewBag.RoleId">
@@ -111,13 +118,15 @@
 
                     <button type="submit"
                             class="btn btn-primary">
-                        <i class="bi bi-check-circle"></i> Save Changes
+                        <i class="bi bi-check-circle"></i>
+                        @Localizer["SaveChanges"]
                     </button>
 
                     <button type="button"
                             class="btn btn-secondary"
                             onclick="history.back()">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi bi-arrow-left"></i>
+                        @Localizer["Back"]
                     </button>
 
                 </div>

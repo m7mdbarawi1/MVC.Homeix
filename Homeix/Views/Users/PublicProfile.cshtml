@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.User
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "User Profile";
+    ViewData["Title"] = Localizer["UserProfileTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -9,7 +12,7 @@
     <!-- HEADER -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="fw-bold">User Profile</h1>
+            <h1 class="fw-bold">@Localizer["UserProfileTitle"]</h1>
         </div>
     </div>
 
@@ -32,18 +35,20 @@
                     <!-- USER INFO -->
                     <dl class="row mb-4">
 
-                        <dt class="col-sm-3 fw-bold">Full Name</dt>
+                        <dt class="col-sm-3 fw-bold">@Localizer["FullName"]</dt>
                         <dd class="col-sm-9">@Model.FullName</dd>
 
-                        <dt class="col-sm-3 fw-bold">Email</dt>
+                        <dt class="col-sm-3 fw-bold">@Localizer["Email"]</dt>
                         <dd class="col-sm-9">@Model.Email</dd>
 
-                        <dt class="col-sm-3 fw-bold">Phone</dt>
+                        <dt class="col-sm-3 fw-bold">@Localizer["Phone"]</dt>
                         <dd class="col-sm-9">
-                            @(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "—" : Model.PhoneNumber)
+                            @(string.IsNullOrWhiteSpace(Model.PhoneNumber)
+                                ? Localizer["None"].Value
+                                : Model.PhoneNumber)
                         </dd>
 
-                        <dt class="col-sm-3 fw-bold">Role</dt>
+                        <dt class="col-sm-3 fw-bold">@Localizer["Role"]</dt>
                         <dd class="col-sm-9">@Model.Role?.RoleName</dd>
 
                     </dl>
@@ -52,7 +57,7 @@
 
                     <!-- RATINGS & REVIEWS -->
                     <h5 class="fw-semibold mb-3">
-                        Ratings & Reviews
+                        @Localizer["RatingsAndReviews"]
                         <span class="text-muted">
                             (@(Model.RatingRatedUsers == null ? 0 : Model.RatingRatedUsers.Count))
                         </span>
@@ -61,45 +66,45 @@
                     @if (Model.RatingRatedUsers != null && Model.RatingRatedUsers.Any())
                     {
                         @foreach (var rating in Model.RatingRatedUsers
-                           .OrderByDescending(r => r.CreatedAt))
+                       .OrderByDescending(r => r.CreatedAt))
                         {
-                                    <div class="border-bottom pb-3 mb-3">
+                            <div class="border-bottom pb-3 mb-3">
 
-                                        <!-- RATER -->
-                                        <div class="fw-semibold">
+                                <!-- RATER -->
+                                <div class="fw-semibold">
                                     @rating.RaterUser?.FullName
-                                        </div>
+                                </div>
 
-                                        <!-- STARS -->
-                                        <div class="text-warning mb-1">
+                                <!-- STARS -->
+                                <div class="text-warning mb-1">
                                     @for (int i = 1; i <= 5; i++)
                                     {
-                                                    <i class="bi @(i <= rating.RatingValue
+                                        <i class="bi @(i <= rating.RatingValue
                                             ? "bi-star-fill"
                                             : "bi-star")"></i>
                                     }
-                                        </div>
+                                </div>
 
-                                        <!-- COMMENT -->
-                                        <div class="text-muted">
+                                <!-- COMMENT -->
+                                <div class="text-muted">
                                     @(string.IsNullOrWhiteSpace(rating.Review)
-                                            ? "No comment provided."
-                                            : rating.Review)
-                                        </div>
+                                        ? Localizer["NoCommentProvided"].Value
+                                        : rating.Review)
+                                </div>
 
-                                        <!-- DATE -->
-                                        <div class="text-secondary small mt-1">
+                                <!-- DATE -->
+                                <div class="text-secondary small mt-1">
                                     @rating.CreatedAt.ToString("dd MMM yyyy")
-                                        </div>
+                                </div>
 
-                                    </div>
+                            </div>
                         }
                     }
                     else
                     {
-                            <p class="text-muted mb-0">
-                                This user has not received any ratings yet.
-                            </p>
+                        <p class="text-muted mb-0">
+                            @Localizer["NoRatingsYet"]
+                        </p>
                     }
 
                 </div>
@@ -109,7 +114,8 @@
                     <button type="button"
                             onclick="history.back()"
                             class="btn btn-secondary btn-sm">
-                        <i class="bi bi-arrow-left"></i> Back
+                        <i class="bi bi-arrow-left"></i>
+                        @Localizer["Back"]
                     </button>
                 </div>
 

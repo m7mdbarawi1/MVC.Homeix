@@ -1,15 +1,17 @@
 ﻿@model Homeix.Models.WorkerPost
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Edit Worker Post";
+    ViewData["Title"] = Localizer["EditWorkerPostTitle"];
 }
 
 <div class="container mt-4">
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold">Edit Worker Post</h1>
-        <p class="text-muted">Update the details of your post</p>
+        <h1 class="fw-bold">@Localizer["EditWorkerPostTitle"]</h1>
+        <p class="text-muted">@Localizer["EditWorkerPostSubtitle"]</p>
     </div>
 
     <div class="row justify-content-center">
@@ -38,7 +40,7 @@
                             <select asp-for="PostCategoryId"
                                     class="form-select"
                                     asp-items="ViewBag.PostCategoryId">
-                                <option value="">-- Select Category --</option>
+                                <option value="">@Localizer["SelectCategory"]</option>
                             </select>
                             <span asp-validation-for="PostCategoryId" class="text-danger"></span>
                         </div>
@@ -89,7 +91,9 @@
                         @if (Model.Media != null && Model.Media.Any())
                         {
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Existing Images</label>
+                                <label class="form-label fw-semibold">
+                                    @Localizer["ExistingImages"]
+                                </label>
 
                                 <div class="row g-3">
                                     @foreach (var media in Model.Media)
@@ -108,7 +112,7 @@
 
                                                 <label class="form-check-label text-danger"
                                                        for="media_@media.MediaId">
-                                                    Delete
+                                                    @Localizer["Delete"]
                                                 </label>
                                             </div>
                                         </div>
@@ -120,7 +124,8 @@
                         <!-- ADD NEW IMAGES -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Add New Images <span class="text-muted">(optional)</span>
+                                @Localizer["AddNewImages"]
+                                <span class="text-muted">(@Localizer["Optional"])</span>
                             </label>
 
                             <div id="dropZone"
@@ -128,7 +133,7 @@
                                  style="cursor:pointer;">
 
                                 <p class="text-muted mb-2">
-                                    Drag & drop images here or click to select
+                                    @Localizer["DragDropImages"]
                                 </p>
 
                                 <input type="file"
@@ -145,13 +150,15 @@
                         <!-- ACTIONS -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Save Changes
+                                <i class="bi bi-check-circle"></i>
+                                @Localizer["SaveChanges"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                @Localizer["Back"]
                             </button>
                         </div>
 

@@ -1,7 +1,9 @@
 ﻿@model Homeix.Models.PaymentMethod
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Edit Payment Method";
+    ViewData["Title"] = Localizer["EditPaymentMethodTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,7 +12,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                Edit Payment Method
+                @Localizer["EditPaymentMethodTitle"]
             </h1>
         </div>
     </div>
@@ -25,6 +27,7 @@
                     <form asp-action="Edit" method="post">
                         @Html.AntiForgeryToken()
 
+                        <!-- VALIDATION -->
                         <div asp-validation-summary="ModelOnly"
                              class="alert alert-danger mb-3"></div>
 
@@ -34,11 +37,13 @@
                         <!-- METHOD NAME -->
                         <div class="mb-3">
                             <label asp-for="MethodName"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["MethodNameLabel"]
+                            </label>
 
                             <input asp-for="MethodName"
                                    class="form-control"
-                                   placeholder="Enter payment method name" />
+                                   placeholder="@Localizer["MethodNamePlaceholder"]" />
 
                             <span asp-validation-for="MethodName"
                                   class="text-danger"></span>
@@ -50,14 +55,14 @@
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
                                 <i class="bi bi-check-circle"></i>
-                                Save
+                                @Localizer["SaveButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
                                 <i class="bi bi-arrow-left"></i>
-                                Back
+                                @Localizer["BackButton"]
                             </button>
 
                         </div>

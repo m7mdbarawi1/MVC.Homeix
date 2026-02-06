@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.Subscription
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Subscription Details";
+    ViewData["Title"] = Localizer["SubscriptionDetailsTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -9,7 +12,9 @@
     <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="fw-bold page-title">Subscription Details</h1>
+            <h1 class="fw-bold page-title">
+                @Localizer["SubscriptionDetailsTitle"]
+            </h1>
         </div>
     </div>
 
@@ -21,7 +26,9 @@
 
                 <!-- CARD HEADER -->
                 <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">
+                        @Localizer["Details"]
+                    </h5>
                 </div>
 
                 <!-- CARD BODY -->
@@ -29,46 +36,60 @@
                     <dl class="row mb-0">
 
                         <!-- USER -->
-                        <dt class="col-sm-4 fw-bold">User</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["User"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.User?.FullName
                         </dd>
 
                         <!-- PLAN -->
-                        <dt class="col-sm-4 fw-bold">Plan</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["Plan"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.Plan?.PlanName
                         </dd>
 
                         <!-- PRICE -->
-                        <dt class="col-sm-4 fw-bold">Price</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["Price"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.Plan?.Price JOD
                         </dd>
 
                         <!-- DURATION -->
-                        <dt class="col-sm-4 fw-bold">Duration</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["Duration"]
+                        </dt>
                         <dd class="col-sm-8">
-                            @Model.Plan?.DurationDays days
+                            @Model.Plan?.DurationDays @Localizer["Days"]
                         </dd>
 
                         <!-- START DATE -->
-                        <dt class="col-sm-4 fw-bold">Start Date</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["StartDate"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.StartDate.ToString("yyyy-MM-dd")
                         </dd>
 
                         <!-- END DATE -->
-                        <dt class="col-sm-4 fw-bold">End Date</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["EndDate"]
+                        </dt>
                         <dd class="col-sm-8">
                             @Model.EndDate.ToString("yyyy-MM-dd")
                         </dd>
 
                         <!-- STATUS -->
-                        <dt class="col-sm-4 fw-bold">Status</dt>
+                        <dt class="col-sm-4 fw-bold">
+                            @Localizer["Status"]
+                        </dt>
                         <dd class="col-sm-8">
                             <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">
-                                @Model.Status
+                                @Localizer[Model.Status]
                             </span>
                         </dd>
 
@@ -81,7 +102,7 @@
                             class="btn btn-secondary d-inline-flex align-items-center gap-2"
                             onclick="history.back()">
                         <i class="bi bi-arrow-left"></i>
-                        Back
+                        @Localizer["Back"]
                     </button>
                 </div>
 

@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<Homeix.Models.PostCategory>
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Post Categories";
+    ViewData["Title"] = Localizer["PostCategoriesTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,20 +13,20 @@
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <h1 class="page-title fw-bold mb-3 mb-md-0">
-                @ViewData["Title"]
+                @Localizer["PostCategoriesTitle"]
             </h1>
 
             <div class="d-flex gap-2">
                 <a asp-action="Create"
                    class="btn btn-primary d-inline-flex align-items-center gap-2">
                     <i class="bi bi-plus-circle"></i>
-                    Create New
+                    @Localizer["CreateNewButton"]
                 </a>
 
                 <a asp-action="DownloadReport"
                    class="btn btn-secondary d-inline-flex align-items-center gap-2">
                     <i class="bi bi-download"></i>
-                    Download Report
+                    @Localizer["DownloadReportButton"]
                 </a>
             </div>
         </div>
@@ -37,7 +40,7 @@
                     <input type="text"
                            id="searchInput"
                            class="form-control"
-                           placeholder="Search categories..." />
+                           placeholder="@Localizer["SearchCategoriesPlaceholder"]" />
                 </div>
             </div>
         </div>
@@ -54,10 +57,10 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.CategoryName)
+                                        @Localizer["CategoryNameLabel"]
                                     </th>
                                     <th class="text-center">
-                                        Actions
+                                        @Localizer["ActionsLabel"]
                                     </th>
                                 </tr>
                             </thead>
@@ -79,21 +82,21 @@
                                                        asp-route-id="@item.PostCategoryId"
                                                        class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1">
                                                         <i class="bi bi-pencil-square"></i>
-                                                        Edit
+                                                        @Localizer["EditButton"]
                                                     </a>
 
                                                     <a asp-action="Details"
                                                        asp-route-id="@item.PostCategoryId"
                                                        class="btn btn-accent btn-sm d-inline-flex align-items-center gap-1">
                                                         <i class="bi bi-info-circle"></i>
-                                                        Details
+                                                        @Localizer["DetailsButton"]
                                                     </a>
 
                                                     <a asp-action="Delete"
                                                        asp-route-id="@item.PostCategoryId"
                                                        class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1">
                                                         <i class="bi bi-trash"></i>
-                                                        Delete
+                                                        @Localizer["DeleteButton"]
                                                     </a>
 
                                                 </div>
@@ -106,7 +109,7 @@
                                     <tr>
                                         <td colspan="2"
                                             class="text-center text-muted py-4">
-                                            No categories found
+                                            @Localizer["NoCategoriesFound"]
                                         </td>
                                     </tr>
                                 }

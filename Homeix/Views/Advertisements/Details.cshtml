@@ -1,4 +1,5 @@
 ﻿@model Homeix.Models.Advertisement
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @functions {
     string NormalizePath(string? path)
@@ -10,7 +11,7 @@
 }
 
 @{
-    ViewData["Title"] = "Advertisement Details";
+    ViewData["Title"] = Localizer["AdvertisementDetails"];
     var imagePath = NormalizePath(Model.ImagePath);
 }
 
@@ -43,7 +44,7 @@
 
                 <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
                     <i class="bi bi-bullseye"></i>
-                    @(Model.IsActive ? "Active" : "Inactive")
+                    @(Model.IsActive ? Localizer["Active"] : Localizer["Inactive"])
                 </span>
 
             </div>
@@ -59,7 +60,9 @@
                 </div>
 
                 <div>
-                    <div class="text-muted small">Created by</div>
+                    <div class="text-muted small">
+                        @Localizer["CreatedBy"]
+                    </div>
                     <div class="fw-semibold">
                         @Model.CreatedByUser?.FullName
                     </div>
@@ -75,7 +78,8 @@
             <button type="button"
                     class="btn btn-secondary btn-sm"
                     onclick="history.back()">
-                <i class="bi bi-arrow-left"></i> Back
+                <i class="bi bi-arrow-left"></i>
+                @Localizer["Back"]
             </button>
 
         </div>

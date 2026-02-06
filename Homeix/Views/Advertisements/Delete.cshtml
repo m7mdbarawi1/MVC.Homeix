@@ -1,4 +1,5 @@
 ﻿@model Homeix.Models.Advertisement
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @functions {
     string NormalizePath(string? path)
@@ -10,7 +11,7 @@
 }
 
 @{
-    ViewData["Title"] = "Delete Advertisement";
+    ViewData["Title"] = Localizer["DeleteAdvertisement"];
     var imagePath = NormalizePath(Model.ImagePath);
 }
 
@@ -18,9 +19,11 @@
 
     <!-- HEADER -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-danger">Delete Advertisement</h1>
+        <h1 class="fw-bold text-danger">
+            @Localizer["DeleteAdvertisement"]
+        </h1>
         <p class="text-muted">
-            Are you sure you want to permanently delete this advertisement?
+            @Localizer["DeleteAdvertisementConfirm"]
         </p>
     </div>
 
@@ -50,7 +53,7 @@
                 </span>
 
                 <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
-                    @(Model.IsActive ? "Active" : "Inactive")
+                    @(Model.IsActive ? Localizer["Active"] : Localizer["Inactive"])
                 </span>
 
             </div>
@@ -66,7 +69,9 @@
                 </div>
 
                 <div>
-                    <div class="text-muted small">Created by</div>
+                    <div class="text-muted small">
+                        @Localizer["CreatedBy"]
+                    </div>
                     <div class="fw-semibold">
                         @Model.CreatedByUser?.FullName
                     </div>
@@ -76,7 +81,7 @@
 
             <div class="alert alert-danger mb-0">
                 <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                This action <strong>cannot be undone</strong>.
+                @Localizer["DeleteWarning"]
             </div>
 
         </div>
@@ -87,13 +92,15 @@
             <button type="button"
                     class="btn btn-secondary btn-sm"
                     onclick="history.back()">
-                <i class="bi bi-arrow-left"></i> Back
+                <i class="bi bi-arrow-left"></i>
+                @Localizer["Back"]
             </button>
 
             <form asp-action="Delete" method="post" class="d-inline">
                 <input type="hidden" asp-for="AdId" />
                 <button type="submit" class="btn btn-danger btn-sm">
-                    <i class="bi bi-trash"></i> Confirm Delete
+                    <i class="bi bi-trash"></i>
+                    @Localizer["ConfirmDelete"]
                 </button>
             </form>
 

@@ -1,7 +1,10 @@
 ﻿@model Homeix.Models.PostCategory
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Create Post Category";
+    ViewData["Title"] = Localizer["CreatePostCategoryTitle"];
 }
 
 <div class="container-fluid mt-4">
@@ -10,10 +13,10 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title fw-bold">
-                Create Post Category
+                @Localizer["CreatePostCategoryTitle"]
             </h1>
             <p class="text-muted mb-0">
-                Add a new category to organize posts.
+                @Localizer["CreatePostCategorySubtitle"]
             </p>
         </div>
     </div>
@@ -34,11 +37,13 @@
                         <!-- CATEGORY NAME -->
                         <div class="mb-3">
                             <label asp-for="CategoryName"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["CategoryNameLabel"]
+                            </label>
 
                             <input asp-for="CategoryName"
                                    class="form-control"
-                                   placeholder="Enter category name..." />
+                                   placeholder="@Localizer["CategoryNamePlaceholder"]" />
 
                             <span asp-validation-for="CategoryName"
                                   class="text-danger"></span>
@@ -49,13 +54,15 @@
 
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
-                                <i class="bi bi-check-circle"></i> Create
+                                <i class="bi bi-check-circle"></i>
+                                @Localizer["CreateButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                @Localizer["BackButton"]
                             </button>
 
                         </div>

@@ -17,13 +17,19 @@ namespace Homeix.Controllers
             _context = context;
         }
 
+        // ========================= ADMIN DASHBOARD =========================
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> AdminDashboard()
         {
+            // -------- USERS BY ROLE --------
             var usersByRole = await _context.Users
                 .Include(u => u.Role)
                 .GroupBy(u => u.Role!.RoleName)
-                .Select(g => new { Role = g.Key, Count = g.Count() })
+                .Select(g => new
+                {
+                    Role = g.Key,
+                    Count = g.Count()
+                })
                 .ToListAsync();
 
             ViewBag.UsersByRoleLabels =
@@ -32,34 +38,39 @@ namespace Homeix.Controllers
             ViewBag.UsersByRoleCounts =
                 JsonSerializer.Serialize(usersByRole.Select(x => x.Count));
 
+            // -------- POSTS DISTRIBUTION --------
             ViewBag.CustomerPostsCount = await _context.CustomerPosts.CountAsync();
             ViewBag.WorkerPostsCount = await _context.WorkerPosts.CountAsync();
 
+            // -------- DAILY REVENUE (LAST 30 DAYS) --------
             var payments = await _context.Payments
-                .Where(p => p.PaymentDate >= DateTime.Now.AddMonths(-6))
-                .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+                .Where(p => p.PaymentDate.Date >= DateTime.Today.AddDays(-30))
+                .GroupBy(p => p.PaymentDate.Date)
                 .Select(g => new
                 {
-                    g.Key.Month,
+                    Date = g.Key,
                     Total = g.Sum(x => x.Amount)
                 })
-                .OrderBy(g => g.Month)
+                .OrderBy(g => g.Date)
                 .ToListAsync();
 
-            ViewBag.PaymentMonths = JsonSerializer.Serialize(
+            ViewBag.PaymentDays = JsonSerializer.Serialize(
                 payments.Select(p =>
-                    CultureInfo.CurrentCulture
-                        .DateTimeFormat
-                        .GetAbbreviatedMonthName(p.Month)
+                    p.Date.ToString("dd MMM", CultureInfo.CurrentCulture)
                 )
             );
 
             ViewBag.PaymentTotals =
                 JsonSerializer.Serialize(payments.Select(p => p.Total));
 
+            // -------- RATINGS DISTRIBUTION --------
             var ratings = await _context.Ratings
                 .GroupBy(r => r.RatingValue)
-                .Select(g => new { Rating = g.Key, Count = g.Count() })
+                .Select(g => new
+                {
+                    Rating = g.Key,
+                    Count = g.Count()
+                })
                 .OrderBy(g => g.Rating)
                 .ToListAsync();
 
@@ -72,6 +83,7 @@ namespace Homeix.Controllers
             return View();
         }
 
+        // ========================= CUSTOMER DASHBOARD =========================
         [Authorize(Roles = "customer")]
         public async Task<IActionResult> CustomerDashboard()
         {
@@ -95,6 +107,7 @@ namespace Homeix.Controllers
             return View(workerPosts);
         }
 
+        // ========================= WORKER DASHBOARD =========================
         [Authorize(Roles = "worker")]
         public async Task<IActionResult> WorkerDashboard()
         {
@@ -118,6 +131,7 @@ namespace Homeix.Controllers
             return View(customerPosts);
         }
 
+        // ========================= HELPERS =========================
         private int GetCurrentUserId()
         {
             var claim = User.FindFirst("UserId");

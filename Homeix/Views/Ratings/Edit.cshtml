@@ -1,8 +1,13 @@
 ﻿@model Homeix.Models.Rating
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Edit Rating";
-    string ratedUserName = ViewBag.RatedUserName as string ?? "User";
+    ViewData["Title"] = Localizer["EditRatingTitle"].Value;
+    string ratedUserName =
+        ViewBag.RatedUserName as string
+        ?? Localizer["DefaultUserName"].Value;
 }
 
 <div class="container-fluid mt-4">
@@ -10,11 +15,14 @@
     <!-- ================= HEADER ================= -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">
-                Edit Rating
+            <h1 class="page-title fw-bold">
+                @Localizer["EditRatingTitle"]
             </h1>
             <p class="text-muted mb-0">
-                Update your rating for <strong>@ratedUserName</strong>
+                @string.Format(
+                         Localizer["EditRatingSubtitle"].Value,
+                         ratedUserName
+                         )
             </p>
         </div>
     </div>
@@ -37,15 +45,15 @@
                         <!-- ================= STAR RATING ================= -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Rating
+                                @Localizer["RatingLabel"]
                             </label>
 
                             <div class="fs-2 text-warning">
                                 @for (int i = 1; i <= 5; i++)
                                 {
-                                        <i class="bi @(i <= Model.RatingValue ? "bi-star-fill" : "bi-star") star"
-                                           data-value="@i"
-                                           style="cursor:pointer;"></i>
+                                    <i class="bi @(i <= Model.RatingValue ? "bi-star-fill" : "bi-star") star"
+                                       data-value="@i"
+                                       style="cursor:pointer;"></i>
                                 }
                             </div>
 
@@ -55,12 +63,14 @@
                         <!-- ================= REVIEW ================= -->
                         <div class="mb-4">
                             <label asp-for="Review"
-                                   class="form-label fw-semibold"></label>
+                                   class="form-label fw-semibold">
+                                @Localizer["ReviewLabel"]
+                            </label>
 
                             <textarea asp-for="Review"
                                       class="form-control"
                                       rows="4"
-                                      placeholder="Write your review (optional)..."></textarea>
+                                      placeholder="@Localizer["ReviewPlaceholder"]"></textarea>
                         </div>
 
                         <!-- ================= ACTIONS ================= -->
@@ -68,13 +78,15 @@
 
                             <button type="submit"
                                     class="btn btn-primary btn-sm">
-                                <i class="bi bi-check-circle"></i> Save Changes
+                                <i class="bi bi-check-circle"></i>
+                                @Localizer["SaveChangesButton"]
                             </button>
 
                             <button type="button"
                                     class="btn btn-secondary btn-sm"
                                     onclick="history.back()">
-                                <i class="bi bi-arrow-left"></i> Back
+                                <i class="bi bi-arrow-left"></i>
+                                @Localizer["BackButton"]
                             </button>
 
                         </div>
@@ -88,19 +100,19 @@
 </div>
 
 @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 
-        <script>
-            document.querySelectorAll(".star").forEach(star => {
-                star.addEventListener("click", () => {
-                    const value = star.dataset.value;
-                    document.querySelector("input[name='RatingValue']").value = value;
+    <script>
+        document.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", () => {
+                const value = star.dataset.value;
+                document.querySelector("input[name='RatingValue']").value = value;
 
-                    document.querySelectorAll(".star").forEach(s => {
-                        s.classList.toggle("bi-star-fill", s.dataset.value <= value);
-                        s.classList.toggle("bi-star", s.dataset.value > value);
-                    });
+                document.querySelectorAll(".star").forEach(s => {
+                    s.classList.toggle("bi-star-fill", s.dataset.value <= value);
+                    s.classList.toggle("bi-star", s.dataset.value > value);
                 });
             });
-        </script>
+        });
+    </script>
 }
