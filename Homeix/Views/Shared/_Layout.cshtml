@@ -253,24 +253,34 @@
         @RenderBody()
     </main>
     <!-- FOOTER -->
-    <footer class="footer mt-auto">
+    <footer class="footer mt-auto bg-dark text-light">
         <div class="container py-4 small">
 
             <!-- MAIN CONTENT -->
-            <div class="row text-center gy-3">
+            <div class="row text-center gy-3 align-items-start">
 
                 <!-- HOMEIX -->
                 <div class="col-md-4">
                     <strong class="d-block mb-1">
                         @Localizer["AppName"]
                     </strong>
+
                     <div class="opacity-75 mb-2">
                         @Localizer["FooterTagline"]
                     </div>
+
                     <a asp-controller="Home"
                        asp-action="AboutUs"
-                       class="link-light text-decoration-none opacity-75">
+                       class="link-light text-decoration-none opacity-75 d-block mb-2">
                         @Localizer["AboutUs"]
+                    </a>
+
+                    <!-- APK DOWNLOAD -->
+                    <a href="~/downloads/mobile.apk"
+                       class="btn btn-outline-light btn-sm mt-2"
+                       download>
+                        <i class="bi bi-android2 me-1"></i>
+                        @Localizer["DownloadApp"]
                     </a>
                 </div>
 
@@ -279,11 +289,13 @@
                     <strong class="d-block mb-1">
                         @Localizer["Contact"]
                     </strong>
+
                     <div class="opacity-75">
                         <div>
                             <i class="bi bi-geo-alt me-2"></i>
                             @Localizer["Location"]
                         </div>
+
                         <div>
                             <i class="bi bi-envelope me-2"></i>
                             <a href="mailto:homeix.jo@gmail.com"
@@ -299,6 +311,7 @@
                     <strong class="d-block mb-1">
                         @Localizer["FollowUs"]
                     </strong>
+
                     <div class="opacity-75 d-flex justify-content-center gap-4">
                         <a class="link-light text-decoration-none fs-5"
                            href="https://www.linkedin.com"
@@ -306,10 +319,18 @@
                            rel="noopener">
                             <i class="bi bi-linkedin"></i>
                         </a>
-                        <a class="link-light text-decoration-none fs-5" href="#">
+
+                        <a class="link-light text-decoration-none fs-5"
+                           href="#"
+                           target="_blank"
+                           rel="noopener">
                             <i class="bi bi-facebook"></i>
                         </a>
-                        <a class="link-light text-decoration-none fs-5" href="#">
+
+                        <a class="link-light text-decoration-none fs-5"
+                           href="#"
+                           target="_blank"
+                           rel="noopener">
                             <i class="bi bi-instagram"></i>
                         </a>
                     </div>
@@ -320,12 +341,13 @@
             <!-- COPYRIGHT -->
             <div class="row mt-4">
                 <div class="col text-center opacity-75">
-                    © 2025 @Localizer["AppName"]
+                    © 2026 @Localizer["AppName"] · Graduation Project at HTU
                 </div>
             </div>
 
         </div>
     </footer>
+
 
     <!-- ===== Hidden culture forms (required for cookie switch) ===== -->
     <form id="langFormAR"

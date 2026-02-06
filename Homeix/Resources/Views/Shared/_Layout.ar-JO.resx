@@ -138,6 +138,9 @@
   <data name="CustomerPosts" xml:space="preserve">
     <value>منشورات العملاء</value>
   </data>
+  <data name="DownloadApp" xml:space="preserve">
+    <value>تحميل تطبيق الأندرويد</value>
+  </data>
   <data name="ExplorePlans" xml:space="preserve">
     <value>استكشاف الخطط</value>
   </data>

@@ -138,6 +138,9 @@
   <data name="CustomerPosts" xml:space="preserve">
     <value>Customer Posts</value>
   </data>
+  <data name="DownloadApp" xml:space="preserve">
+    <value>Download Android App</value>
+  </data>
   <data name="ExplorePlans" xml:space="preserve">
     <value>Explore Plans</value>
   </data>
