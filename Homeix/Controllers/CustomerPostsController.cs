@@ -206,6 +206,9 @@ namespace Homeix.Controllers
             _context.CustomerPosts.Remove(post);
             await _context.SaveChangesAsync();
 
+            if (User.IsInRole("admin"))
+                return RedirectToAction(nameof(Index));
+
             return RedirectToAction(nameof(MyPosts));
         }
 
