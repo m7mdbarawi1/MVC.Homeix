@@ -1,6 +1,7 @@
 ﻿@model Homeix.Models.WorkerPost
 @using System.Linq
 @using Microsoft.AspNetCore.Mvc.Localization
+@using System.Security.Claims
 @inject IViewLocalizer Localizer
 
 @functions {
@@ -21,6 +22,17 @@
 
     bool hasMedia = mediaList.Any();
     bool isAdmin = User.IsInRole("admin");
+
+    // ✅ CORRECT owner detection (matches your controller)
+    int? currentUserId = null;
+    var userIdClaim = User.FindFirst("UserId");
+
+    if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int parsedId))
+    {
+        currentUserId = parsedId;
+    }
+
+    bool isOwner = currentUserId.HasValue && currentUserId.Value == Model.UserId;
 }
 
 <div class="container mt-4 mb-5">
@@ -38,7 +50,7 @@
                     @for (int i = 0; i < mediaList.Count; i++)
                     {
                         <div class="carousel-item @(i == 0 ? "active" : "")">
-                            <img src="@mediaList[i].MediaPath"
+                            <img src="@NormalizePath(mediaList[i].MediaPath)"
                                  class="d-block w-100 img-fluid"
                                  style="max-height:520px; object-fit:contain;" />
                         </div>
@@ -62,7 +74,7 @@
         }
         else
         {
-            <img src="@(hasMedia ? mediaList.First().MediaPath : "/images/no-image.png")"
+            <img src="@(hasMedia ? NormalizePath(mediaList.First().MediaPath) : "/images/no-image.png")"
                  class="d-block w-100 img-fluid bg-light"
                  style="max-height:520px; object-fit:contain;" />
         }
@@ -132,6 +144,14 @@
                        class="fw-semibold text-decoration-none">
                         @Model.User?.FullName
                     </a>
+
+                    @if (isOwner)
+                    {
+                        <div class="small text-muted">
+                            <i class="bi bi-person-check"></i>
+                            @Localizer["ThisIsYourPost"]
+                        </div>
+                    }
                 </div>
 
             </div>
@@ -142,6 +162,7 @@
             <div class="fw-bold mb-2">
                 @Localizer["Description"]
             </div>
+
             <p class="text-muted" style="white-space:pre-line;">
                 @Model.Description
             </p>
@@ -160,7 +181,8 @@
 
             <div class="d-flex gap-2">
 
-                @if (!isAdmin)
+                @* ✅ Rate hidden for admin & owner *@
+                @if (!isAdmin && !isOwner)
                 {
                     <a asp-controller="Ratings"
                        asp-action="Create"
