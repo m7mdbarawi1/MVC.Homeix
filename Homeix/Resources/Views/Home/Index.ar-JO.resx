@@ -1,101 +1,150 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
 
-		Version 1.3
+  <data name="Home"><value>الرئيسية</value></data>
+  <data name="HeroBadgeText"><value>محترفون موثوقون • تفاصيل واضحة • سير عمل موثوق</value></data>
+  <data name="HeroMainTitle"><value>صلّح منزلك.</value></data>
+  <data name="HeroSubTitle"><value>أسرع. أأمن. أذكى.</value></data>
+  <data name="HeroDescription"><value>يربط هومكس العملاء بمحترفي خدمات المنازل المعتمدين من خلال منصة واحدة منظمة — حتى تتمكن من نشر احتياجاتك ومقارنة الخيارات والاختيار بثقة.</value></data>
 
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
+  <data name="GoToDashboard"><value>اذهب إلى لوحة التحكم</value></data>
+  <data name="CreateAccount"><value>إنشاء حساب</value></data>
+  <data name="Login"><value>تسجيل الدخول</value></data>
+  <data name="BrowseProfessionals"><value>تصفح المحترفين</value></data>
+  <data name="DownloadApp"><value>تحميل التطبيق</value></data>
 
-		Example:
+  <data name="StatTrusted"><value>موثوق</value></data>
+  <data name="StatTrustedDesc"><value>محترفون معتمدون</value></data>
+  <data name="StatClear"><value>واضح</value></data>
+  <data name="StatClearDesc"><value>التفاصيل، الصور، نطاق السعر</value></data>
+  <data name="StatOrganized"><value>منظم</value></data>
+  <data name="StatOrganizedDesc"><value>مكان واحد لإدارته</value></data>
 
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
+  <data name="FeatureProfiles"><value>ملفات شخصية يمكنك الوثوق بها</value></data>
+  <data name="FeatureRatings"><value>التقييمات والمراجعات</value></data>
+  <data name="FeatureSearch"><value>البحث والمفضلة</value></data>
 
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
+  <data name="WhyHomeixTitle"><value>لماذا هومكس؟</value></data>
+  <data name="WhyHomeixSubtitle"><value>مصمم لحل المشاكل الحقيقية: الثقة، التفاصيل غير الواضحة، والتواصل الصعب.</value></data>
 
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
+  <data name="ForCustomers"><value>للعملاء</value></data>
+  <data name="ForCustomersDesc"><value>ابحث عن مساعدة موثوقة بشكل أسرع. قارن الخيارات باستخدام الملفات الشخصية الحقيقية وتفاصيل الخدمة الواضحة وملاحظات المجتمع — حتى تختار بثقة.</value></data>
 
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
+  <data name="ForProfessionals"><value>للمحترفين</value></data>
+  <data name="ForProfessionalsDesc"><value>الوصول إلى عملاء حقيقيين في سوق منظم. قدم خدماتك بوضوح، وابنِ سمعتك بالمراجعات، وأدر عملك من مكان واحد.</value></data>
 
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
+  <data name="ApprovedProfessionalsTitle"><value>محترفون معتمدون</value></data>
+  <data name="ApprovedProfessionalsDesc"><value>يتقدم المحترفون قبل تقديم الخدمات، مما يساعد العملاء على الشعور بمزيد من الأمان عند الاختيار.</value></data>
 
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
+  <data name="ClearServiceDetailsTitle"><value>تفاصيل خدمة واضحة</value></data>
+  <data name="ClearServiceDetailsDesc"><value>تتضمن المنشورات معلومات مفيدة مثل الأوصاف والصور ونطاقات الأسعار — لذا فإن التوقعات أوضح.</value></data>
 
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
+  <data name="RatingsReviewsTitle"><value>التقييمات والمراجعات</value></data>
+  <data name="RatingsReviewsDesc"><value>السمعة مرئية للجميع، مما يشجع على جودة أفضل وسلوك أكثر مسؤولية.</value></data>
 
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
+  <data name="PublicProfilesTitle"><value>ملفات شخصية عامة</value></data>
+  <data name="PublicProfilesDesc"><value>اعرض معلومات الملف الشخصي والخدمات والمراجعات لاتخاذ قرارات أذكى قبل الاتصال بأي شخص.</value></data>
+
+  <data name="SearchFilteringTitle"><value>البحث والتصفية</value></data>
+  <data name="SearchFilteringDesc"><value>ابحث عما تحتاجه بشكل أسرع عن طريق التصفية حسب الفئة ونطاق السعر وتقييم المجتمع.</value></data>
+
+  <data name="FavoritesTitle"><value>المفضلة</value></data>
+  <data name="FavoritesDesc"><value>احفظ المنشورات التي تعجبك وارجع إليها لاحقًا دون البحث مرة أخرى.</value></data>
+
+  <data name="PhotosTitle"><value>صور توضح المزيد</value></data>
+  <data name="PhotosDesc"><value>تساعد الصور العملاء على شرح المشاكل بشكل أفضل وتساعد المحترفين على تقديم الخدمات بوضوح.</value></data>
+
+  <data name="HighlightedOffersTitle"><value>عروض مميزة</value></data>
+  <data name="HighlightedOffersDesc"><value>يساعد المحتوى المميز المستخدمين على اكتشاف العروض المهمة بشكل أسرع مع الحفاظ على تنظيم السوق.</value></data>
+
+  <data name="ResponsiveExperienceTitle"><value>تجربة متجاوبة</value></data>
+  <data name="ResponsiveExperienceDesc"><value>تجربة سلسة عبر سطح المكتب والجوال حتى يتمكن المستخدمون من إدارة العمل في أي مكان.</value></data>
+
+  <data name="TrustTransparencyTitle"><value>مبني على الثقة والشفافية</value></data>
+  <data name="TrustTransparencyDesc"><value>يقلل هومكس من عدم اليقين باستخدام سير عمل موثق ومعلومات منشور واضحة وملاحظات مجتمعية حقيقية — مما يحسن تجربة خدمة المنزل بالكامل للجميع.</value></data>
+
+  <data name="ExploreServices"><value>استكشف الخدمات</value></data>
+  <data name="PostRequest"><value>نشر طلب</value></data>
+
+  <data name="PopularServicesTitle"><value>الخدمات الشائعة</value></data>
+  <data name="PopularServicesSubtitle"><value>قم بالتمرير أو النقر للمعاينة — يتحرك الصف تلقائيًا.</value></data>
+
+  <data name="ServicePlumbing"><value>السباكة</value></data>
+  <data name="ServiceElectrical"><value>الكهرباء</value></data>
+  <data name="ServiceACCooling"><value>التكييف / التبريد</value></data>
+  <data name="ServicePainting"><value>الطلاء</value></data>
+  <data name="ServiceCleaning"><value>التنظيف</value></data>
+  <data name="ServiceRepairs"><value>الإصلاحات</value></data>
+  <data name="ServiceCarpentry"><value>النجارة</value></data>
+  <data name="ServiceMaintenance"><value>الصيانة</value></data>
+
+  <data name="TapToPreview"><value>انقر للمعاينة</value></data>
+
+  <data name="ChooseYourPathTitle"><value>اختر طريقك</value></data>
+  <data name="ChooseYourPathSubtitle"><value>عميل أو محترف — منصة واحدة.</value></data>
+
+  <data name="PathCustomer"><value>عميل</value></data>
+  <data name="PathCustomerDesc"><value>انشر احتياجاتك، قارن الخيارات، واختر بناءً على المراجعات الحقيقية.</value></data>
+
+  <data name="PathProfessional"><value>محترف</value></data>
+  <data name="PathProfessionalDesc"><value>تقدم بطلب، انشر الخدمات بوضوح، وابنِ سمعتك بالملاحظات الحقيقية.</value></data>
+
+  <data name="Create"><value>إنشاء</value></data>
+  <data name="Search"><value>بحث</value></data>
+  <data name="Apply"><value>تقدم بطلب</value></data>
+  <data name="BrowsePosts"><value>تصفح المنشورات</value></data>
+
+  <data name="DiscoverFaster"><value>اكتشف أسرع</value></data>
+  <data name="DiscoverFasterDesc"><value>استخدم الفلاتر لتضييق النتائج.</value></data>
+
+  <data name="ChooseConfidently"><value>اختر بثقة</value></data>
+  <data name="ChooseConfidentlyDesc"><value>الملفات الشخصية والمراجعات تساعد على القرار.</value></data>
+
+  <data name="SaveWhatYouLike"><value>احفظ ما تحب</value></data>
+  <data name="SaveWhatYouLikeDesc"><value>المفضلة تحافظ على تنظيم الأشياء.</value></data>
+
+  <data name="FAQTitle"><value>الأسئلة الشائعة</value></data>
+  <data name="FAQSubtitle"><value>إجابات سريعة للأسئلة الشائعة.</value></data>
+
+  <data name="FAQ1Question"><value>كيف أنشر طلبًا كعميل؟</value></data>
+  <data name="FAQ1Answer"><value>أنشئ حسابًا، ثم انشر طلبًا مع وصف واضح وموقع وصور ونطاق ميزانية.</value></data>
+
+  <data name="FAQ2Question"><value>كيف ينضم المحترفون إلى هومكس؟</value></data>
+  <data name="FAQ2Answer"><value>يقدم المحترفون طلبًا. بمجرد الموافقة، يمكنهم نشر الخدمات والظهور للعملاء في السوق.</value></data>
+
+  <data name="FAQ3Question"><value>كيف أختار الشخص المناسب؟</value></data>
+  <data name="FAQ3Answer"><value>استخدم الفلاتر، واعرض الملفات الشخصية، وتحقق من التقييمات والمراجعات لمقارنة الخيارات قبل اتخاذ القرار.</value></data>
+
+  <data name="FAQ4Question"><value>هل يمكنني حفظ المنشورات لمراجعتها لاحقًا؟</value></data>
+  <data name="FAQ4Answer"><value>نعم. يمكنك إضافة المنشورات إلى المفضلة حتى تتمكن من العودة إليها في أي وقت.</value></data>
+
+  <data name="CTATitle"><value>هل أنت مستعد للبدء؟</value></data>
+  <data name="CTASubtitle"><value>انضم إلى هومكس وأدر خدمات المنزل بمزيد من الثقة والوضوح والتحكم.</value></data>
+
+  <data name="OpenMyHomeix"><value>افتح هومكس الخاص بي</value></data>
+  <data name="BecomeProfessional"><value>كن محترفًا</value></data>
+
+  <data name="RolesTitle"><value>أدوار العميل والمحترف</value></data>
+<data name="RolesSubtitle"><value>تم تصميم هومكس لدعم طرفي عملية خدمات المنازل ضمن نظام واحد منظم وواضح.</value></data>
+
+<data name="CustomerTitle"><value>العميل</value></data>
+<data name="CustomerDesc"><value>يستخدم العملاء هومكس لطلب خدمات المنازل واستكشاف المحترفين المتاحين من خلال ملفات شخصية واضحة، ومنشورات منظمة، وتقييمات مجتمعية.</value></data>
+
+<data name="CustomerPoint1"><value>إنشاء طلبات خدمة مع أوصاف تفصيلية</value></data>
+<data name="CustomerPoint2"><value>مقارنة المحترفين باستخدام الملفات الشخصية والتقييمات</value></data>
+<data name="CustomerPoint3"><value>عرض الصور ونطاقات الأسعار والمراجعات</value></data>
+<data name="CustomerPoint4"><value>حفظ المنشورات للرجوع إليها لاحقًا</value></data>
+
+<data name="ProfessionalTitle"><value>المحترف</value></data>
+<data name="ProfessionalDesc"><value>يستخدم المحترفون هومكس لعرض خدماتهم ضمن سوق موثوق والتواصل مع العملاء الباحثين عن حلول موثوقة لخدمات المنازل.</value></data>
+
+<data name="ProfessionalPoint1"><value>التقدم للتحقق قبل تقديم الخدمات</value></data>
+<data name="ProfessionalPoint2"><value>نشر منشورات خدمات منظمة مع تفاصيل واضحة</value></data>
+<data name="ProfessionalPoint3"><value>بناء السمعة من خلال التقييمات والمراجعات</value></data>
+<data name="ProfessionalPoint4"><value>إدارة الخدمات والظهور من منصة واحدة</value></data>
+
 </root>

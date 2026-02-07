@@ -2,7 +2,7 @@
 @inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = Localizer["Home"];
     bool isAuth = User?.Identity?.IsAuthenticated ?? false;
 }
 
@@ -29,20 +29,19 @@
                 <div class="hero-badge-wrapper reveal">
                     <div class="hero-badge">
                         <i class="bi bi-shield-check"></i>
-                        <span>Verified professionals • Clear details • Trusted workflows</span>
+                        <span>@Localizer["HeroBadgeText"]</span>
                     </div>
                 </div>
 
                 <!-- Main Title -->
                 <h1 class="hero-title fw-bold reveal">
-                    Fix your home.<br class="d-none d-md-block" />
-                    <span class="hero-highlight">Faster. Safer. Smarter.</span>
+                    @Localizer["HeroMainTitle"]<br class="d-none d-md-block" />
+                    <span class="hero-highlight">@Localizer["HeroSubTitle"]</span>
                 </h1>
 
                 <!-- Subtitle -->
                 <p class="hero-subtitle lead reveal">
-                    Homeix connects customers with approved home-service professionals through one organized platform —
-                    so you can post needs, compare options, and choose confidently.
+                    @Localizer["HeroDescription"]
                 </p>
 
                 <!-- Action Buttons -->
@@ -51,23 +50,23 @@
                     {
                         <a asp-controller="Account" asp-action="HomeRedirect"
                            class="btn btn-hero-primary btn-lg">
-                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                            <i class="bi bi-speedometer2 me-2"></i>@Localizer["GoToDashboard"]
                         </a>
                     }
                     else
                     {
                         <a asp-controller="Account" asp-action="Register"
                            class="btn btn-hero-primary btn-lg">
-                            <i class="bi bi-person-plus me-2"></i>Create Account
+                            <i class="bi bi-person-plus me-2"></i>@Localizer["CreateAccount"]
                         </a>
                         <a asp-controller="Account" asp-action="Login"
                            class="btn btn-hero-secondary btn-lg">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                            <i class="bi bi-box-arrow-in-right me-2"></i>@Localizer["Login"]
                         </a>
                     }
                     <a asp-controller="WorkerPosts" asp-action="Index"
                        class="btn btn-hero-outline btn-lg">
-                        <i class="bi bi-search me-2"></i>Browse Professionals
+                        <i class="bi bi-search me-2"></i>@Localizer["BrowseProfessionals"]
                     </a>
                 </div>
 
@@ -87,8 +86,8 @@
                                 <i class="bi bi-shield-check"></i>
                             </div>
                             <div class="stat-content">
-                                <div class="stat-label">Trusted</div>
-                                <div class="stat-desc">Approved professionals</div>
+                                <div class="stat-label">@Localizer["StatTrusted"]</div>
+                                <div class="stat-desc">@Localizer["StatTrustedDesc"]</div>
                             </div>
                         </div>
                     </div>
@@ -98,8 +97,8 @@
                                 <i class="bi bi-eye"></i>
                             </div>
                             <div class="stat-content">
-                                <div class="stat-label">Clear</div>
-                                <div class="stat-desc">Details, photos, price range</div>
+                                <div class="stat-label">@Localizer["StatClear"]</div>
+                                <div class="stat-desc">@Localizer["StatClearDesc"]</div>
                             </div>
                         </div>
                     </div>
@@ -109,8 +108,8 @@
                                 <i class="bi bi-columns-gap"></i>
                             </div>
                             <div class="stat-content">
-                                <div class="stat-label">Organized</div>
-                                <div class="stat-desc">One place to manage it</div>
+                                <div class="stat-label">@Localizer["StatOrganized"]</div>
+                                <div class="stat-desc">@Localizer["StatOrganizedDesc"]</div>
                             </div>
                         </div>
                     </div>
@@ -120,15 +119,15 @@
                 <div class="hero-features reveal">
                     <div class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Profiles you can trust</span>
+                        <span>@Localizer["FeatureProfiles"]</span>
                     </div>
                     <div class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Ratings & reviews</span>
+                        <span>@Localizer["FeatureRatings"]</span>
                     </div>
                     <div class="feature-item">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Search & favorites</span>
+                        <span>@Localizer["FeatureSearch"]</span>
                     </div>
                 </div>
 
@@ -152,9 +151,9 @@
 <section class="py-5 section-why-homeix">
     <div class="container">
         <div class="text-center mb-4 reveal">
-            <h2 class="fw-bold mb-2">Why Homeix?</h2>
+            <h2 class="fw-bold mb-2">@Localizer["WhyHomeixTitle"]</h2>
             <p class="text-muted mb-0">
-                Built to solve real problems: trust, unclear details, and hard communication.
+                @Localizer["WhyHomeixSubtitle"]
             </p>
         </div>
 
@@ -165,11 +164,10 @@
                      style="box-shadow: 0 10px 30px rgba(0,0,0,.06);">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <i class="bi bi-person-heart fs-4 text-primary"></i>
-                        <h4 class="fw-bold mb-0">For Customers</h4>
+                        <h4 class="fw-bold mb-0">@Localizer["ForCustomers"]</h4>
                     </div>
                     <p class="text-muted mb-0">
-                        Find reliable help faster. Compare options using real profiles, clear service details,
-                        and community feedback—so you choose with confidence.
+                        @Localizer["ForCustomersDesc"]
                     </p>
                 </div>
             </div>
@@ -179,11 +177,10 @@
                      style="box-shadow: 0 10px 30px rgba(0,0,0,.06);">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <i class="bi bi-briefcase fs-4 text-primary"></i>
-                        <h4 class="fw-bold mb-0">For Professionals</h4>
+                        <h4 class="fw-bold mb-0">@Localizer["ForProfessionals"]</h4>
                     </div>
                     <p class="text-muted mb-0">
-                        Reach real customers in a structured marketplace. Present your services clearly,
-                        build reputation with reviews, and manage your work from one place.
+                        @Localizer["ForProfessionalsDesc"]
                     </p>
                 </div>
             </div>
@@ -195,9 +192,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-person-check"></i></div>
-                        <h5 class="fw-bold mt-3">Approved professionals</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["ApprovedProfessionalsTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Professionals apply before offering services, helping customers feel safer when choosing.
+                            @Localizer["ApprovedProfessionalsDesc"]
                         </p>
                     </div>
                 </div>
@@ -207,9 +204,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-card-checklist"></i></div>
-                        <h5 class="fw-bold mt-3">Clear service details</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["ClearServiceDetailsTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Posts include useful information like descriptions, photos, and price ranges—so expectations are clearer.
+                            @Localizer["ClearServiceDetailsDesc"]
                         </p>
                     </div>
                 </div>
@@ -219,9 +216,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-star"></i></div>
-                        <h5 class="fw-bold mt-3">Ratings & reviews</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["RatingsReviewsTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Reputation is visible to everyone, encouraging better quality and more accountable behavior.
+                            @Localizer["RatingsReviewsDesc"]
                         </p>
                     </div>
                 </div>
@@ -231,9 +228,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-person-lines-fill"></i></div>
-                        <h5 class="fw-bold mt-3">Public profiles</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["PublicProfilesTitle"]</h5>
                         <p class="text-muted mb-0">
-                            View profile info, services, and reviews to make smarter decisions before contacting anyone.
+                            @Localizer["PublicProfilesDesc"]
                         </p>
                     </div>
                 </div>
@@ -243,9 +240,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-funnel"></i></div>
-                        <h5 class="fw-bold mt-3">Search & filtering</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["SearchFilteringTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Find what you need faster by filtering by category, price range, and community rating.
+                            @Localizer["SearchFilteringDesc"]
                         </p>
                     </div>
                 </div>
@@ -255,9 +252,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-heart"></i></div>
-                        <h5 class="fw-bold mt-3">Favorites</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["FavoritesTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Save posts you like and return to them later without searching again.
+                            @Localizer["FavoritesDesc"]
                         </p>
                     </div>
                 </div>
@@ -267,9 +264,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-images"></i></div>
-                        <h5 class="fw-bold mt-3">Photos that explain more</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["PhotosTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Photos help customers explain problems better and help professionals present services clearly.
+                            @Localizer["PhotosDesc"]
                         </p>
                     </div>
                 </div>
@@ -279,9 +276,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-megaphone"></i></div>
-                        <h5 class="fw-bold mt-3">Highlighted offers</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["HighlightedOffersTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Featured content helps users discover important offers faster while keeping the marketplace organized.
+                            @Localizer["HighlightedOffersDesc"]
                         </p>
                     </div>
                 </div>
@@ -291,9 +288,9 @@
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <div class="icon-bubble mx-auto"><i class="bi bi-phone"></i></div>
-                        <h5 class="fw-bold mt-3">Responsive experience</h5>
+                        <h5 class="fw-bold mt-3">@Localizer["ResponsiveExperienceTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Smooth experience across desktop and mobile so users can manage work anywhere.
+                            @Localizer["ResponsiveExperienceDesc"]
                         </p>
                     </div>
                 </div>
@@ -307,19 +304,18 @@
                  style="box-shadow: 0 10px 30px rgba(0,0,0,.06);">
                 <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
                     <div>
-                        <h5 class="fw-bold mb-1">Built on trust + transparency</h5>
+                        <h5 class="fw-bold mb-1">@Localizer["TrustTransparencyTitle"]</h5>
                         <p class="text-muted mb-0">
-                            Homeix reduces uncertainty by using verified workflows, clear post information, and real community feedback —
-                            improving the whole home-service experience for everyone.
+                            @Localizer["TrustTransparencyDesc"]
                         </p>
                     </div>
 
                     <div class="d-flex gap-2 flex-wrap">
                         <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-primary">
-                            Explore Services
+                            @Localizer["ExploreServices"]
                         </a>
                         <a asp-controller="CustomerPosts" asp-action="Create" class="btn btn-primary">
-                            Post a Request
+                            @Localizer["PostRequest"]
                         </a>
                     </div>
                 </div>
@@ -335,8 +331,8 @@
 <section class="py-5 section-popular-services">
     <div class="container">
         <div class="text-center mb-4 reveal">
-            <h2 class="fw-bold mb-1">Popular services</h2>
-            <p class="text-muted mb-0">Hover or tap to preview — the row moves automatically.</p>
+            <h2 class="fw-bold mb-1">@Localizer["PopularServicesTitle"]</h2>
+            <p class="text-muted mb-0">@Localizer["PopularServicesSubtitle"]</p>
         </div>
 
         @functions {
@@ -346,14 +342,14 @@
         @{
             var services = new[]
             {
-        new { Name = "Plumbing", Icon = "bi-wrench-adjustable", Img = "plumbing.jpg" },
-        new { Name = "Electrical", Icon = "bi-lightning-charge", Img = "electrical.jpg" },
-        new { Name = "AC / Cooling", Icon = "bi-snow", Img = "ac.jpg" },
-        new { Name = "Painting", Icon = "bi-brush", Img = "painting.jpg" },
-        new { Name = "Cleaning", Icon = "bi-bucket", Img = "cleaning.jpg" },
-        new { Name = "Repairs", Icon = "bi-tools", Img = "repairs.jpg" },
-        new { Name = "Carpentry", Icon = "bi-door-open", Img = "carpentry.jpg" },
-        new { Name = "Maintenance", Icon = "bi-house-gear", Img = "maintenance.jpg" },
+        new { Name = Localizer["ServicePlumbing"].Value, Icon = "bi-wrench-adjustable", Img = "plumbing.jpg" },
+        new { Name = Localizer["ServiceElectrical"].Value, Icon = "bi-lightning-charge", Img = "electrical.jpg" },
+        new { Name = Localizer["ServiceACCooling"].Value, Icon = "bi-snow", Img = "ac.jpg" },
+        new { Name = Localizer["ServicePainting"].Value, Icon = "bi-brush", Img = "painting.jpg" },
+        new { Name = Localizer["ServiceCleaning"].Value, Icon = "bi-bucket", Img = "cleaning.jpg" },
+        new { Name = Localizer["ServiceRepairs"].Value, Icon = "bi-tools", Img = "repairs.jpg" },
+        new { Name = Localizer["ServiceCarpentry"].Value, Icon = "bi-door-open", Img = "carpentry.jpg" },
+        new { Name = Localizer["ServiceMaintenance"].Value, Icon = "bi-house-gear", Img = "maintenance.jpg" },
         };
         }
 
@@ -369,7 +365,7 @@
                                     <div class="card-body text-center py-4">
                                         <i class="bi @s.Icon fs-1 text-primary"></i>
                                         <div class="fw-bold mt-2">@s.Name</div>
-                                        <div class="text-muted small">Tap to preview</div>
+                                        <div class="text-muted small">@Localizer["TapToPreview"]</div>
                                     </div>
                                 </div>
                                 <div class="flip-face flip-back card shadow-sm border-0 rounded-4 overflow-hidden">
@@ -383,6 +379,7 @@
         </div>
     </div>
 </section>
+
 <!-- ==========================================
    CUSTOMER & PROFESSIONAL ROLES (INFORMATION)
 ========================================== -->
@@ -391,9 +388,11 @@
 
         <!-- Section Header -->
         <div class="text-center mb-5 reveal">
-            <h2 class="fw-bold mb-2">Customer and Professional Roles</h2>
+            <h2 class="fw-bold mb-2">
+                @Localizer["RolesTitle"]
+            </h2>
             <p class="text-muted mb-0">
-                Homeix is designed to support both sides of the home-service process in one organized system.
+                @Localizer["RolesSubtitle"]
             </p>
         </div>
 
@@ -406,30 +405,31 @@
                         <div class="icon-bubble">
                             <i class="bi bi-house-check"></i>
                         </div>
-                        <h4 class="fw-bold mb-0">Customer</h4>
+                        <h4 class="fw-bold mb-0">
+                            @Localizer["CustomerTitle"]
+                        </h4>
                     </div>
 
                     <p class="text-muted mb-3">
-                        Customers use Homeix to request home services and explore available professionals
-                        through clear profiles, structured posts, and community feedback.
+                        @Localizer["CustomerDesc"]
                     </p>
 
                     <ul class="list-unstyled text-muted small mb-0">
                         <li class="mb-2">
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Create service requests with detailed descriptions
+                            @Localizer["CustomerPoint1"]
                         </li>
                         <li class="mb-2">
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Compare professionals using profiles and ratings
+                            @Localizer["CustomerPoint2"]
                         </li>
                         <li class="mb-2">
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            View photos, price ranges, and reviews
+                            @Localizer["CustomerPoint3"]
                         </li>
                         <li>
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Save posts for later reference
+                            @Localizer["CustomerPoint4"]
                         </li>
                     </ul>
                 </div>
@@ -442,37 +442,37 @@
                         <div class="icon-bubble">
                             <i class="bi bi-person-badge"></i>
                         </div>
-                        <h4 class="fw-bold mb-0">Professional</h4>
+                        <h4 class="fw-bold mb-0">
+                            @Localizer["ProfessionalTitle"]
+                        </h4>
                     </div>
 
                     <p class="text-muted mb-3">
-                        Professionals use Homeix to present their services in a verified marketplace
-                        and connect with customers seeking reliable home-service solutions.
+                        @Localizer["ProfessionalDesc"]
                     </p>
 
                     <ul class="list-unstyled text-muted small mb-0">
                         <li class="mb-2">
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Apply for verification before offering services
+                            @Localizer["ProfessionalPoint1"]
                         </li>
                         <li class="mb-2">
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Publish structured service posts with clear details
+                            @Localizer["ProfessionalPoint2"]
                         </li>
                         <li class="mb-2">
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Build reputation through ratings and reviews
+                            @Localizer["ProfessionalPoint3"]
                         </li>
                         <li>
                             <i class="bi bi-check-circle me-2 text-primary"></i>
-                            Manage services and visibility from one platform
+                            @Localizer["ProfessionalPoint4"]
                         </li>
                     </ul>
                 </div>
             </div>
 
         </div>
-
     </div>
 </section>
 
@@ -482,20 +482,20 @@
 <section class="py-5 section-faq">
     <div class="container">
         <div class="text-center mb-4 reveal">
-            <h2 class="fw-bold mb-2">Frequently asked questions</h2>
-            <p class="text-muted mb-0">Quick answers to common questions.</p>
+            <h2 class="fw-bold mb-2">@Localizer["FAQTitle"]</h2>
+            <p class="text-muted mb-0">@Localizer["FAQSubtitle"]</p>
         </div>
 
         <div class="accordion accordion-flush border rounded-4 overflow-hidden reveal" id="homeixFaq">
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#a1">
-                        How do I post a request as a customer?
+                        @Localizer["FAQ1Question"]
                     </button>
                 </h2>
                 <div id="a1" class="accordion-collapse collapse show">
                     <div class="accordion-body text-muted">
-                        Create an account, then publish a request with a clear description, location, photos, and budget range.
+                        @Localizer["FAQ1Answer"]
                     </div>
                 </div>
             </div>
@@ -503,12 +503,12 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a2">
-                        How do professionals join Homeix?
+                        @Localizer["FAQ2Question"]
                     </button>
                 </h2>
                 <div id="a2" class="accordion-collapse collapse">
                     <div class="accordion-body text-muted">
-                        Professionals submit an application. Once approved, they can publish services and appear to customers in the marketplace.
+                        @Localizer["FAQ2Answer"]
                     </div>
                 </div>
             </div>
@@ -516,12 +516,12 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a3">
-                        How do I choose the right person?
+                        @Localizer["FAQ3Question"]
                     </button>
                 </h2>
                 <div id="a3" class="accordion-collapse collapse">
                     <div class="accordion-body text-muted">
-                        Use filters, view profiles, and check ratings and reviews to compare options before deciding.
+                        @Localizer["FAQ3Answer"]
                     </div>
                 </div>
             </div>
@@ -529,12 +529,12 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a4">
-                        Can I save posts to review later?
+                        @Localizer["FAQ4Question"]
                     </button>
                 </h2>
                 <div id="a4" class="accordion-collapse collapse">
                     <div class="accordion-body text-muted">
-                        Yes. You can add posts to Favorites so you can return to them anytime.
+                        @Localizer["FAQ4Answer"]
                     </div>
                 </div>
             </div>
@@ -548,30 +548,30 @@
 ========================================== -->
 <section class="section-cta text-white py-5">
     <div class="container text-center reveal">
-        <h2 class="fw-bold mb-2 text-white">Ready to start?</h2>
+        <h2 class="fw-bold mb-2 text-white">@Localizer["CTATitle"]</h2>
         <p class="text-white-50 mb-4">
-            Join Homeix and manage home services with more trust, clarity, and control.
+            @Localizer["CTASubtitle"]
         </p>
 
         <div class="d-flex justify-content-center flex-wrap gap-2">
             @if (isAuth)
             {
                 <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-accent btn-lg fw-bold">
-                    Open My Homeix
+                    @Localizer["OpenMyHomeix"]
                 </a>
             }
             else
             {
                 <a asp-controller="Account" asp-action="Register" class="btn btn-accent btn-lg fw-bold">
-                    Create Account
+                    @Localizer["CreateAccount"]
                 </a>
                 <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">
-                    Login
+                    @Localizer["Login"]
                 </a>
             }
 
             <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-outline-light btn-lg">
-                Become a Professional
+                @Localizer["BecomeProfessional"]
             </a>
         </div>
 

@@ -1,101 +1,150 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
 
-		Version 1.3
+  <data name="Home"><value>Home</value></data>
+  <data name="HeroBadgeText"><value>Verified professionals • Clear details • Trusted workflows</value></data>
+  <data name="HeroMainTitle"><value>Fix your home.</value></data>
+  <data name="HeroSubTitle"><value>Faster. Safer. Smarter.</value></data>
+  <data name="HeroDescription"><value>Homeix connects customers with approved home-service professionals through one organized platform — so you can post needs, compare options, and choose confidently.</value></data>
 
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
+  <data name="GoToDashboard"><value>Go to Dashboard</value></data>
+  <data name="CreateAccount"><value>Create Account</value></data>
+  <data name="Login"><value>Login</value></data>
+  <data name="BrowseProfessionals"><value>Browse Professionals</value></data>
+  <data name="DownloadApp"><value>Download App</value></data>
 
-		Example:
+  <data name="StatTrusted"><value>Trusted</value></data>
+  <data name="StatTrustedDesc"><value>Approved professionals</value></data>
+  <data name="StatClear"><value>Clear</value></data>
+  <data name="StatClearDesc"><value>Details, photos, price range</value></data>
+  <data name="StatOrganized"><value>Organized</value></data>
+  <data name="StatOrganizedDesc"><value>One place to manage it</value></data>
 
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
+  <data name="FeatureProfiles"><value>Profiles you can trust</value></data>
+  <data name="FeatureRatings"><value>Ratings &amp; reviews</value></data>
+  <data name="FeatureSearch"><value>Search &amp; favorites</value></data>
 
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
+  <data name="WhyHomeixTitle"><value>Why Homeix?</value></data>
+  <data name="WhyHomeixSubtitle"><value>Built to solve real problems: trust, unclear details, and hard communication.</value></data>
 
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
+  <data name="ForCustomers"><value>For Customers</value></data>
+  <data name="ForCustomersDesc"><value>Find reliable help faster. Compare options using real profiles, clear service details, and community feedback—so you choose with confidence.</value></data>
 
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
+  <data name="ForProfessionals"><value>For Professionals</value></data>
+  <data name="ForProfessionalsDesc"><value>Reach real customers in a structured marketplace. Present your services clearly, build reputation with reviews, and manage your work from one place.</value></data>
 
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
+  <data name="ApprovedProfessionalsTitle"><value>Approved professionals</value></data>
+  <data name="ApprovedProfessionalsDesc"><value>Professionals apply before offering services, helping customers feel safer when choosing.</value></data>
 
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
+  <data name="ClearServiceDetailsTitle"><value>Clear service details</value></data>
+  <data name="ClearServiceDetailsDesc"><value>Posts include useful information like descriptions, photos, and price ranges—so expectations are clearer.</value></data>
 
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
+  <data name="RatingsReviewsTitle"><value>Ratings &amp; reviews</value></data>
+  <data name="RatingsReviewsDesc"><value>Reputation is visible to everyone, encouraging better quality and more accountable behavior.</value></data>
 
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
+  <data name="PublicProfilesTitle"><value>Public profiles</value></data>
+  <data name="PublicProfilesDesc"><value>View profile info, services, and reviews to make smarter decisions before contacting anyone.</value></data>
+
+  <data name="SearchFilteringTitle"><value>Search &amp; filtering</value></data>
+  <data name="SearchFilteringDesc"><value>Find what you need faster by filtering by category, price range, and community rating.</value></data>
+
+  <data name="FavoritesTitle"><value>Favorites</value></data>
+  <data name="FavoritesDesc"><value>Save posts you like and return to them later without searching again.</value></data>
+
+  <data name="PhotosTitle"><value>Photos that explain more</value></data>
+  <data name="PhotosDesc"><value>Photos help customers explain problems better and help professionals present services clearly.</value></data>
+
+  <data name="HighlightedOffersTitle"><value>Highlighted offers</value></data>
+  <data name="HighlightedOffersDesc"><value>Featured content helps users discover important offers faster while keeping the marketplace organized.</value></data>
+
+  <data name="ResponsiveExperienceTitle"><value>Responsive experience</value></data>
+  <data name="ResponsiveExperienceDesc"><value>Smooth experience across desktop and mobile so users can manage work anywhere.</value></data>
+
+  <data name="TrustTransparencyTitle"><value>Built on trust + transparency</value></data>
+  <data name="TrustTransparencyDesc"><value>Homeix reduces uncertainty by using verified workflows, clear post information, and real community feedback — improving the whole home-service experience for everyone.</value></data>
+
+  <data name="ExploreServices"><value>Explore Services</value></data>
+  <data name="PostRequest"><value>Post a Request</value></data>
+
+  <data name="PopularServicesTitle"><value>Popular services</value></data>
+  <data name="PopularServicesSubtitle"><value>Hover or tap to preview — the row moves automatically.</value></data>
+
+  <data name="ServicePlumbing"><value>Plumbing</value></data>
+  <data name="ServiceElectrical"><value>Electrical</value></data>
+  <data name="ServiceACCooling"><value>AC / Cooling</value></data>
+  <data name="ServicePainting"><value>Painting</value></data>
+  <data name="ServiceCleaning"><value>Cleaning</value></data>
+  <data name="ServiceRepairs"><value>Repairs</value></data>
+  <data name="ServiceCarpentry"><value>Carpentry</value></data>
+  <data name="ServiceMaintenance"><value>Maintenance</value></data>
+
+  <data name="TapToPreview"><value>Tap to preview</value></data>
+
+  <data name="ChooseYourPathTitle"><value>Choose your path</value></data>
+  <data name="ChooseYourPathSubtitle"><value>Customer or Professional — one platform.</value></data>
+
+  <data name="PathCustomer"><value>Customer</value></data>
+  <data name="PathCustomerDesc"><value>Post your needs, compare options, and choose based on real reviews.</value></data>
+
+  <data name="PathProfessional"><value>Professional</value></data>
+  <data name="PathProfessionalDesc"><value>Apply, publish services clearly, and build reputation with real feedback.</value></data>
+
+  <data name="Create"><value>Create</value></data>
+  <data name="Search"><value>Search</value></data>
+  <data name="Apply"><value>Apply</value></data>
+  <data name="BrowsePosts"><value>Browse posts</value></data>
+
+  <data name="DiscoverFaster"><value>Discover faster</value></data>
+  <data name="DiscoverFasterDesc"><value>Use filters to narrow results.</value></data>
+
+  <data name="ChooseConfidently"><value>Choose confidently</value></data>
+  <data name="ChooseConfidentlyDesc"><value>Profiles and reviews help decide.</value></data>
+
+  <data name="SaveWhatYouLike"><value>Save what you like</value></data>
+  <data name="SaveWhatYouLikeDesc"><value>Favorites keep things organized.</value></data>
+
+  <data name="FAQTitle"><value>Frequently asked questions</value></data>
+  <data name="FAQSubtitle"><value>Quick answers to common questions.</value></data>
+
+  <data name="FAQ1Question"><value>How do I post a request as a customer?</value></data>
+  <data name="FAQ1Answer"><value>Create an account, then publish a request with a clear description, location, photos, and budget range.</value></data>
+
+  <data name="FAQ2Question"><value>How do professionals join Homeix?</value></data>
+  <data name="FAQ2Answer"><value>Professionals submit an application. Once approved, they can publish services and appear to customers in the marketplace.</value></data>
+
+  <data name="FAQ3Question"><value>How do I choose the right person?</value></data>
+  <data name="FAQ3Answer"><value>Use filters, view profiles, and check ratings and reviews to compare options before deciding.</value></data>
+
+  <data name="FAQ4Question"><value>Can I save posts to review later?</value></data>
+  <data name="FAQ4Answer"><value>Yes. You can add posts to Favorites so you can return to them anytime.</value></data>
+
+  <data name="CTATitle"><value>Ready to start?</value></data>
+  <data name="CTASubtitle"><value>Join Homeix and manage home services with more trust, clarity, and control.</value></data>
+
+  <data name="OpenMyHomeix"><value>Open My Homeix</value></data>
+  <data name="BecomeProfessional"><value>Become a Professional</value></data>
+
+  <data name="RolesTitle"><value>Customer and Professional Roles</value></data>
+<data name="RolesSubtitle"><value>Homeix is designed to support both sides of the home-service process in one organized system.</value></data>
+
+<data name="CustomerTitle"><value>Customer</value></data>
+<data name="CustomerDesc"><value>Customers use Homeix to request home services and explore available professionals through clear profiles, structured posts, and community feedback.</value></data>
+
+<data name="CustomerPoint1"><value>Create service requests with detailed descriptions</value></data>
+<data name="CustomerPoint2"><value>Compare professionals using profiles and ratings</value></data>
+<data name="CustomerPoint3"><value>View photos, price ranges, and reviews</value></data>
+<data name="CustomerPoint4"><value>Save posts for later reference</value></data>
+
+<data name="ProfessionalTitle"><value>Professional</value></data>
+<data name="ProfessionalDesc"><value>Professionals use Homeix to present their services in a verified marketplace and connect with customers seeking reliable home-service solutions.</value></data>
+
+<data name="ProfessionalPoint1"><value>Apply for verification before offering services</value></data>
+<data name="ProfessionalPoint2"><value>Publish structured service posts with clear details</value></data>
+<data name="ProfessionalPoint3"><value>Build reputation through ratings and reviews</value></data>
+<data name="ProfessionalPoint4"><value>Manage services and visibility from one platform</value></data>
+
 </root>
