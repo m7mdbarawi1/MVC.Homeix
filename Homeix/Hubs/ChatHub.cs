@@ -24,11 +24,15 @@ namespace Homeix.Hubs
             return id;
         }
 
+        /* ================= CONNECTION ================= */
+
         public override async Task OnConnectedAsync()
         {
             var userId = GetCurrentUserId();
 
             await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
+
+            // notify others (not self)
             await Clients.Others.SendAsync("UserOnline", userId);
 
             await base.OnConnectedAsync();
@@ -45,22 +49,20 @@ namespace Homeix.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        // Keep signature to NOT break your current client invoke:
-        // SendMessage(conversationId, senderId, receiverId, message)
+        /* ================= SEND MESSAGE ================= */
+        // Signature MUST stay the same (client depends on it)
         public async Task SendMessage(int conversationId, int senderId, int receiverId, string message)
         {
             var currentUserId = GetCurrentUserId();
 
-            // Prevent spoofing
+            // prevent spoofing
             if (senderId != currentUserId)
                 throw new HubException("Invalid sender.");
 
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            // Validate conversation exists + user is a participant + receiver matches
             var conversation = await _context.Conversations
-                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.ConversationId == conversationId);
 
             if (conversation == null)
@@ -73,7 +75,6 @@ namespace Homeix.Hubs
             if (!validPair)
                 throw new HubException("Not allowed for this conversation.");
 
-            // Save to DB
             var msg = new Message
             {
                 ConversationId = conversationId,
@@ -85,7 +86,6 @@ namespace Homeix.Hubs
             _context.Messages.Add(msg);
             await _context.SaveChangesAsync();
 
-            // Broadcast to both users
             await Clients.Groups($"user-{currentUserId}", $"user-{receiverId}")
                 .SendAsync("ReceiveMessage", new
                 {
@@ -97,19 +97,37 @@ namespace Homeix.Hubs
                 });
         }
 
-        // Optional conversationId arg (client can pass it)
+        /* ================= TYPING ================= */
         public async Task Typing(int receiverId, int conversationId = 0)
         {
             var senderId = GetCurrentUserId();
+
+            if (receiverId <= 0 || conversationId <= 0)
+                return;
+
             await Clients.Group($"user-{receiverId}")
-                .SendAsync("UserTyping", new { conversationId, senderId });
+                .SendAsync("UserTyping", new
+                {
+                    conversationId,
+                    senderId
+                });
         }
 
+        /* ================= SEEN ================= */
         public async Task MessageSeen(int senderId, int conversationId = 0)
         {
             var viewerId = GetCurrentUserId();
+
+            if (senderId <= 0 || conversationId <= 0)
+                return;
+
+            // notify ONLY the sender that their message was seen
             await Clients.Group($"user-{senderId}")
-                .SendAsync("MessageSeen", new { conversationId, viewerId });
+                .SendAsync("MessageSeen", new
+                {
+                    conversationId,
+                    viewerId
+                });
         }
     }
 }

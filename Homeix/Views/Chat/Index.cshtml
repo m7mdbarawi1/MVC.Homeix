@@ -167,7 +167,11 @@
 
     <script>
         const currentUserId = @currentUserId;
-        const conversationId = @(conversationId ?? 0);
+
+        // ✅ IMPORTANT:
+        // Use -1 when conversationId is null (prevents "!conversationId" bugs and lets realtime work)
+        const conversationId = @((conversationId.HasValue) ? conversationId.Value : -1);
+
         const receiverId = @(selectedUser?.UserId ?? 0);
 
         const chatUserList = document.getElementById("chatUserList");
@@ -226,12 +230,20 @@
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
+            .withAutomaticReconnect()
             .build();
 
         (async () => {
             try {
                 await connection.start();
                 scrollToBottom();
+
+                // ✅ Mark chat as seen when opening/reloading the page
+                // (so Seen works even after refresh / open chat)
+                if (receiverId && conversationId > 0) {
+                    // receiverId here is "the other user"
+                    connection.invoke("MessageSeen", receiverId, conversationId);
+                }
             } catch (e) {
                 console.error("SignalR start failed:", e);
             }
@@ -246,11 +258,13 @@
 
             bumpChatUserToTop(otherUserId);
 
-            // Only render in the open chat if it matches
-            if (!conversationId || data.conversationId !== conversationId) return;
+            // ✅ Only filter when we have a real conversationId
+            // If conversationId is -1 (shouldn't happen when selectedUser exists), we allow render
+            if (conversationId > 0 && data.conversationId !== conversationId) return;
 
             appendMessageSafe(data);
 
+            // ✅ If message is from other user, mark it seen immediately
             if (data.senderId !== currentUserId) {
                 connection.invoke("MessageSeen", data.senderId, data.conversationId);
             }
@@ -264,12 +278,23 @@
             const text = messageInput.value.trim();
             if (!text) return;
 
+            // ✅ must have a valid conversation before sending (in your current backend design)
+            if (conversationId <= 0 || !receiverId) {
+                console.warn("Cannot send: invalid conversationId or receiverId", { conversationId, receiverId });
+                return;
+            }
+
             try {
                 await connection.invoke("SendMessage", conversationId, currentUserId, receiverId, text);
 
                 messageInput.value = "";
                 autoGrow(messageInput);
-                if (seenIndicator) seenIndicator.innerText = "";
+
+                // Reset seen indicator because a new outgoing message is pending view by receiver
+                if (seenIndicator) {
+                    seenIndicator.innerText = "";
+                    seenIndicator.style.opacity = "0.85";
+                }
             } catch (err) {
                 console.error(err);
             }
@@ -290,18 +315,27 @@
         }
         messageInput?.addEventListener("input", () => autoGrow(messageInput));
 
-        // ================= TYPING (throttled) =================
-        let typingCooldown = false;
-        messageInput?.addEventListener("input", () => {
-            if (typingCooldown || !receiverId) return;
-            typingCooldown = true;
+        // ================= TYPING (REAL TIME) =================
+        let typingTimer;
 
+        messageInput?.addEventListener("input", () => {
+            if (!receiverId || conversationId <= 0) return;
+
+            // Send typing event every input (SignalR is lightweight)
             connection.invoke("Typing", receiverId, conversationId);
-            setTimeout(() => typingCooldown = false, 700);
+
+            // Clear indicator locally after user stops typing
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                if (typingIndicator) typingIndicator.innerText = "";
+            }, 1200);
         });
 
         connection.on("UserTyping", (data) => {
-            if (data?.conversationId && data.conversationId !== conversationId) return;
+            if (!data) return;
+            if (data.conversationId !== conversationId) return;
+            if (data.senderId === currentUserId) return; // don't show for myself
+
             if (!typingIndicator) return;
 
             typingIndicator.innerText = "Typing...";
@@ -313,10 +347,21 @@
         connection.on("UserOnline", id => setOnlineDot(id, true));
         connection.on("UserOffline", id => setOnlineDot(id, false));
 
-        // ================= SEEN =================
+        // ================= SEEN (REAL TIME) =================
         connection.on("MessageSeen", (data) => {
-            if (data?.conversationId && data.conversationId !== conversationId) return;
-            if (seenIndicator) seenIndicator.innerText = "Seen ✔";
+            if (!data) return;
+
+            // must match open conversation
+            if (data.conversationId !== conversationId) return;
+
+            // viewerId is the person who saw the message
+            // if viewerId == currentUserId => that means I saw something (do not show "Seen")
+            if (data.viewerId === currentUserId) return;
+
+            if (seenIndicator) {
+                seenIndicator.innerText = "Seen ✔";
+                seenIndicator.style.opacity = "1";
+            }
         });
     </script>
 }

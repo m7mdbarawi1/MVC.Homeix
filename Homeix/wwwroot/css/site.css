@@ -3548,3 +3548,123 @@ body:not(.offcanvas-open) .offcanvas-backdrop {
 .offcanvas-backdrop:not(.show) {
     pointer-events: none !important;
 }
+/* =========================================================
+   CHAT SIDEBAR – DARK MODE VISIBILITY FIX
+   ========================================================= */
+
+/* Base user item */
+.chat-users .list-group-item {
+    border: none;
+    border-radius: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ---------- LIGHT MODE ---------- */
+html:not(.dark-theme) .chat-users .list-group-item {
+    background: transparent;
+    color: var(--light-text);
+}
+
+    html:not(.dark-theme) .chat-users .list-group-item:hover {
+        background: rgba(26, 35, 126, 0.08); /* blue hover */
+    }
+
+    html:not(.dark-theme) .chat-users .list-group-item.active {
+        background: rgba(26, 35, 126, 0.15); /* blue selected */
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+/* ---------- DARK MODE ---------- */
+html.dark-theme .chat-users {
+    background: var(--dark-card);
+}
+
+    /* Normal item */
+    html.dark-theme .chat-users .list-group-item {
+        background: transparent;
+        color: var(--dark-text);
+    }
+
+        /* Hover */
+        html.dark-theme .chat-users .list-group-item:hover {
+            background: rgba(26, 35, 126, 0.35); /* strong blue hover */
+            color: #ffffff;
+        }
+
+        /* ACTIVE (SELECTED CONVERSATION) */
+        html.dark-theme .chat-users .list-group-item.active {
+            background: linear-gradient( 135deg, rgba(26, 35, 126, 0.85), rgba(10, 15, 43, 0.95) );
+            color: #ffffff !important;
+            font-weight: 700;
+            border-left: 4px solid var(--gold);
+        }
+
+            /* Keep name & email readable */
+            html.dark-theme .chat-users .list-group-item.active .text-muted,
+            html.dark-theme .chat-users .list-group-item:hover .text-muted {
+                color: rgba(255, 255, 255, 0.75) !important;
+            }
+
+            /* Avatar ring for selected */
+            html.dark-theme .chat-users .list-group-item.active img {
+                border: 2px solid var(--gold);
+            }
+
+    /* Online dot visibility */
+    html.dark-theme .chat-users .online-dot {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+        html.dark-theme .chat-users .online-dot.online {
+            background: #22c55e; /* green stays clear */
+        }
+
+/* Remove Bootstrap default active shadow */
+.chat-users .list-group-item.active:focus {
+    box-shadow: none;
+}
+/* =========================================================
+   CHAT – SEEN INDICATOR VISIBILITY FIX
+   ========================================================= */
+
+#seenIndicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding-top: 4px;
+    min-height: 1em; /* prevent layout jump */
+}
+
+/* ---------- LIGHT MODE ---------- */
+html:not(.dark-theme) #seenIndicator {
+    color: rgba(26, 35, 126, 0.85); /* soft blue */
+}
+
+/* ---------- DARK MODE ---------- */
+html.dark-theme #seenIndicator {
+    color: rgba(255, 215, 0, 0.85); /* gold */
+}
+
+/* When message is seen */
+#seenIndicator:not(:empty) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Optional: subtle animation when it appears */
+#seenIndicator:not(:empty) {
+    animation: seenFadeIn 0.3s ease-out;
+}
+
+@keyframes seenFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
