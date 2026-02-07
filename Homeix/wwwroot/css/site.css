@@ -3516,3 +3516,35 @@ html.dark-theme .step-icon {
         transform: none !important;
     }
 }
+/* =========================================================
+   CHAT OFFCANVAS FIX (Z-INDEX & CLICK BLOCKING)
+   ========================================================= */
+
+/* Chat offcanvas must be above backdrop */
+.chat-users.offcanvas {
+    z-index: 1055 !important;
+}
+
+/* Backdrop must stay below chat */
+.offcanvas-backdrop {
+    z-index: 1050 !important;
+}
+
+/* Prevent backdrop from blocking clicks when closed */
+body:not(.offcanvas-open) .offcanvas-backdrop {
+    display: none !important;
+}
+
+/* Ensure backdrop doesn't cover content on desktop */
+@media (min-width: 768px) {
+    .offcanvas-backdrop {
+        display: none !important;
+    }
+}
+.offcanvas-backdrop.show {
+    pointer-events: auto;
+}
+
+.offcanvas-backdrop:not(.show) {
+    pointer-events: none !important;
+}
