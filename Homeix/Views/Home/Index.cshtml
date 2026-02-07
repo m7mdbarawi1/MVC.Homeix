@@ -1,1358 +1,587 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
     ViewData["Title"] = "Home";
     bool isAuth = User?.Identity?.IsAuthenticated ?? false;
 }
 
 <!-- ==========================================
-   SECTION 1: HERO - 3D PARALLAX ANIMATION
+   HERO (Enhanced, Modern, Responsive)
 ========================================== -->
-<section class="section-hero section-1" data-section="1">
-    <div class="parallax-bg">
-        <div class="parallax-layer layer-1" data-depth="0.1"></div>
-        <div class="parallax-layer layer-2" data-depth="0.2"></div>
-        <div class="parallax-layer layer-3" data-depth="0.3"></div>
-        <div class="parallax-layer layer-4" data-depth="0.4"></div>
-    </div>
+<section class="home-hero position-relative">
+    <!-- Decorative pattern -->
+    <img src="~/images/home/tools-pattern.png"
+         alt=""
+         class="position-absolute top-0 start-0 w-100 h-100 hero-pattern"
+         style="object-fit: cover; opacity: .12; pointer-events: none;" />
 
-    <div class="container">
-        <div class="row align-items-center min-vh-100 py-6">
-            <div class="col-lg-7">
-                <div class="hero-content">
-                    <div class="hero-badge animate-element" data-animation="pop-in">
-                        <span class="badge-dot"></span>
-                        <span class="badge-text">TRANSFORMING HOME SERVICES SINCE 2020</span>
-                    </div>
+    <!-- Animated blobs -->
+    <div class="home-blob blob-1"></div>
+    <div class="home-blob blob-2"></div>
+    <div class="home-blob blob-3"></div>
 
-                    <h1 class="hero-title animate-element" data-animation="slide-up" data-delay="100">
-                        <span class="text-gradient-primary">Homeix:</span> Where
-                        <span class="text-rotating" data-words='["Quality","Trust","Excellence","Professionalism"]'>
-                            Quality
-                        </span>
-                        Meets Home Service
-                    </h1>
+    <div class="container position-relative hero-container">
+        <div class="row justify-content-center align-items-center min-vh-70">
+            <div class="col-lg-10 col-xl-9 text-center">
 
-                    <p class="hero-subtitle animate-element" data-animation="slide-up" data-delay="200">
-                        The all-in-one platform connecting homeowners with verified professionals.
-                        Experience seamless project management, secure payments, and real-time communication.
-                    </p>
-
-                    <div class="hero-actions animate-element" data-animation="slide-up" data-delay="300">
-                        <div class="d-flex flex-wrap gap-3">
-                            @if (isAuth)
-                            {
-                                <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-xl btn-gradient-primary">
-                                    <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
-                                </a>
-                            }
-                            else
-                            {
-                                <a asp-controller="Account" asp-action="Register" class="btn btn-xl btn-gradient-primary">
-                                    <i class="bi bi-rocket-takeoff me-2"></i> Get Started Free
-                                </a>
-                                <a asp-controller="Account" asp-action="Login" class="btn btn-xl btn-outline-light">
-                                    <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
-                                </a>
-                            }
-                            <a href="#section-2" class="btn btn-xl btn-outline-light scroll-to-section">
-                                <i class="bi bi-chevron-down me-2"></i> Explore More
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="hero-stats mt-6">
-                        <div class="row g-4">
-                            <div class="col-4 animate-element" data-animation="fade-in" data-delay="400">
-                                <div class="stat-box">
-                                    <div class="stat-number" data-count="5000">0</div>
-                                    <div class="stat-label">Active Pros</div>
-                                </div>
-                            </div>
-                            <div class="col-4 animate-element" data-animation="fade-in" data-delay="500">
-                                <div class="stat-box">
-                                    <div class="stat-number" data-count="98">0</div>
-                                    <div class="stat-label">Success Rate</div>
-                                </div>
-                            </div>
-                            <div class="col-4 animate-element" data-animation="fade-in" data-delay="600">
-                                <div class="stat-box">
-                                    <div class="stat-number" data-count="24">0</div>
-                                    <div class="stat-label">Hour Support</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="hero-visual animate-element" data-animation="scale-up">
-                    <div class="floating-card card-1">
-                        <div class="card-icon">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <h6>Verified Pros</h6>
-                        <p>Background checked</p>
-                    </div>
-                    <div class="floating-card card-2">
-                        <div class="card-icon">
-                            <i class="bi bi-chat-dots"></i>
-                        </div>
-                        <h6>Live Chat</h6>
-                        <p>Real-time communication</p>
-                    </div>
-                    <div class="floating-card card-3">
-                        <div class="card-icon">
-                            <i class="bi bi-credit-card"></i>
-                        </div>
-                        <h6>Secure Payments</h6>
-                        <p>Protected transactions</p>
-                    </div>
-                    <div class="floating-card card-4">
-                        <div class="card-icon">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                        <h6>Smart Scheduling</h6>
-                        <p>Automated booking</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 2: INDUSTRY STATS - ANIMATED COUNTERS
-========================================== -->
-<section class="section-stats section-2" data-section="2" id="section-2">
-    <div class="section-divider">
-        <span class="divider-text">Industry Leadership</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Leading the <span class="text-gradient-primary">Home Service Revolution</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    With innovative technology and unwavering commitment to quality
-                </p>
-            </div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-card-large animate-element" data-animation="fade-in">
-                        <div class="stat-icon">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-number" data-count="25000">0</div>
-                            <div class="stat-label">Homeowners Served</div>
-                            <p class="stat-desc">Across 50+ cities nationwide</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-card-large animate-element" data-animation="fade-in" data-delay="100">
-                        <div class="stat-icon">
-                            <i class="bi bi-briefcase-fill"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-number" data-count="5000">0</div>
-                            <div class="stat-label">Verified Professionals</div>
-                            <p class="stat-desc">Rigorous vetting process</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-card-large animate-element" data-animation="fade-in" data-delay="200">
-                        <div class="stat-icon">
-                            <i class="bi bi-check-circle-fill"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-number" data-count="98000">0</div>
-                            <div class="stat-label">Projects Completed</div>
-                            <p class="stat-desc">With 4.8/5 average rating</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-card-large animate-element" data-animation="fade-in" data-delay="300">
-                        <div class="stat-icon">
-                            <i class="bi bi-lightning-charge-fill"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-number" data-count="15">0</div>
-                            <div class="stat-label">Minute Avg Response</div>
-                            <p class="stat-desc">24/7 professional support</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="progress-bars mt-6">
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="progress-item animate-element" data-animation="slide-right">
-                        <div class="progress-header">
-                            <span>Customer Satisfaction</span>
-                            <span class="progress-value">98%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 98%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6">
-                    <div class="progress-item animate-element" data-animation="slide-right" data-delay="100">
-                        <div class="progress-header">
-                            <span>On-Time Completion</span>
-                            <span class="progress-value">95%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 95%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 3: SERVICES SHOWCASE - 3D CAROUSEL
-========================================== -->
-<section class="section-services section-3" data-section="3">
-    <div class="section-divider">
-        <span class="divider-text">Premium Services</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Comprehensive <span class="text-gradient-primary">Home Solutions</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Every service you need, delivered by certified professionals
-                </p>
-            </div>
-        </div>
-
-        <div class="services-carousel-3d">
-            <div class="carousel-container">
-                <div class="carousel-track" id="services-track">
-                    <!-- Service cards will be generated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="carousel-controls">
-                <button class="carousel-btn prev-btn">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-                <button class="carousel-btn next-btn">
-                    <i class="bi bi-chevron-right"></i>
-                </button>
-            </div>
-
-            <div class="carousel-indicators">
-                <!-- Indicators will be generated by JavaScript -->
-            </div>
-        </div>
-
-        <div class="service-categories mt-6">
-            <div class="row g-3">
-                <div class="col-lg-3 col-md-6">
-                    <div class="category-card animate-element" data-animation="pop-in">
-                        <div class="category-icon">
-                            <i class="bi bi-tools"></i>
-                        </div>
-                        <h6>Repairs & Maintenance</h6>
-                        <span class="category-count">45 Services</span>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="category-card animate-element" data-animation="pop-in" data-delay="100">
-                        <div class="category-icon">
-                            <i class="bi bi-house-heart"></i>
-                        </div>
-                        <h6>Home Improvement</h6>
-                        <span class="category-count">32 Services</span>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="category-card animate-element" data-animation="pop-in" data-delay="200">
-                        <div class="category-icon">
-                            <i class="bi bi-tree"></i>
-                        </div>
-                        <h6>Outdoor Services</h6>
-                        <span class="category-count">28 Services</span>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="category-card animate-element" data-animation="pop-in" data-delay="300">
-                        <div class="category-icon">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <h6>Safety & Security</h6>
-                        <span class="category-count">19 Services</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 4: HOW IT WORKS - ANIMATED STEPS
-========================================== -->
-<section class="section-process section-4" data-section="4">
-    <div class="section-divider">
-        <span class="divider-text">Simple Process</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    How <span class="text-gradient-primary">Homeix Works</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Four simple steps to transform your home service experience
-                </p>
-            </div>
-        </div>
-
-        <div class="process-timeline">
-            <div class="timeline-line"></div>
-
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <div class="process-step animate-element" data-animation="slide-up">
-                        <div class="step-number">01</div>
-                        <div class="step-icon">
-                            <div class="icon-inner">
-                                <i class="bi bi-pencil-square"></i>
-                            </div>
-                        </div>
-                        <div class="step-content">
-                            <h4>Post Your Project</h4>
-                            <p>Describe your needs, upload photos, and set your budget. Our AI will match you with the best professionals.</p>
-                            <ul class="step-features">
-                                <li><i class="bi bi-check-circle"></i> Free project posting</li>
-                                <li><i class="bi bi-check-circle"></i> Unlimited revisions</li>
-                                <li><i class="bi bi-check-circle"></i> Budget calculator</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="process-step animate-element" data-animation="slide-up" data-delay="100">
-                        <div class="step-number">02</div>
-                        <div class="step-icon">
-                            <div class="icon-inner">
-                                <i class="bi bi-people-fill"></i>
-                            </div>
-                        </div>
-                        <div class="step-content">
-                            <h4>Get Multiple Quotes</h4>
-                            <p>Receive competitive quotes from verified professionals within hours. Compare ratings, reviews, and portfolios.</p>
-                            <ul class="step-features">
-                                <li><i class="bi bi-check-circle"></i> 3-5 quotes guaranteed</li>
-                                <li><i class="bi bi-check-circle"></i> Transparent pricing</li>
-                                <li><i class="bi bi-check-circle"></i> Professional reviews</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="process-step animate-element" data-animation="slide-up" data-delay="200">
-                        <div class="step-number">03</div>
-                        <div class="step-icon">
-                            <div class="icon-inner">
-                                <i class="bi bi-chat-left-text-fill"></i>
-                            </div>
-                        </div>
-                        <div class="step-content">
-                            <h4>Chat & Finalize</h4>
-                            <p>Communicate directly with professionals, ask questions, and finalize details before work begins.</p>
-                            <ul class="step-features">
-                                <li><i class="bi bi-check-circle"></i> Built-in messaging</li>
-                                <li><i class="bi bi-check-circle"></i> Video consultations</li>
-                                <li><i class="bi bi-check-circle"></i> Contract signing</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="process-step animate-element" data-animation="slide-up" data-delay="300">
-                        <div class="step-number">04</div>
-                        <div class="step-icon">
-                            <div class="icon-inner">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </div>
-                        </div>
-                        <div class="step-content">
-                            <h4>Track & Complete</h4>
-                            <p>Monitor progress in real-time, make secure payments, and leave reviews upon completion.</p>
-                            <ul class="step-features">
-                                <li><i class="bi bi-check-circle"></i> Progress tracking</li>
-                                <li><i class="bi bi-check-circle"></i> Secure payments</li>
-                                <li><i class="bi bi-check-circle"></i> Quality assurance</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 5: TESTIMONIALS - INTERACTIVE SLIDER
-========================================== -->
-<section class="section-testimonials section-5" data-section="5">
-    <div class="section-divider">
-        <span class="divider-text">Client Stories</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Trusted by <span class="text-gradient-primary">Thousands</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Real stories from homeowners and professionals nationwide
-                </p>
-            </div>
-        </div>
-
-        <div class="testimonial-slider-wrapper">
-            <div class="testimonial-slider">
-                <div class="slider-container">
-                    <div class="slider-track">
-                        <div class="testimonial-slide active">
-                            <div class="testimonial-content">
-                                <div class="quote-icon">
-                                    <i class="bi bi-quote"></i>
-                                </div>
-                                <p class="testimonial-text">
-                                    "As a professional contractor, Homeix has completely transformed my business.
-                                    The integrated scheduling and payment system saved me over 15 hours per week
-                                    in administrative work. I've doubled my client base in just 6 months!"
-                                </p>
-                                <div class="testimonial-author">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Chen" class="author-avatar">
-                                    <div class="author-info">
-                                        <h6>Michael Chen</h6>
-                                        <span>Licensed Contractor, 12 years experience</span>
-                                        <div class="author-rating">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="testimonial-slide">
-                            <div class="testimonial-content">
-                                <div class="quote-icon">
-                                    <i class="bi bi-quote"></i>
-                                </div>
-                                <p class="testimonial-text">
-                                    "I needed emergency plumbing repairs at 2 AM. Within 30 minutes,
-                                    I had three verified plumbers responding through Homeix. The work
-                                    was completed professionally, and the payment protection gave me
-                                    complete peace of mind."
-                                </p>
-                                <div class="testimonial-author">
-                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson" class="author-avatar">
-                                    <div class="author-info">
-                                        <h6>Sarah Johnson</h6>
-                                        <span>Homeowner, San Francisco</span>
-                                        <div class="author-rating">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-half"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="testimonial-slide">
-                            <div class="testimonial-content">
-                                <div class="quote-icon">
-                                    <i class="bi bi-quote"></i>
-                                </div>
-                                <p class="testimonial-text">
-                                    "The quality of professionals on Homeix is exceptional. Every worker
-                                    I've hired through the platform has been punctual, professional, and
-                                    delivered outstanding results. The review system helps me make informed
-                                    decisions every time."
-                                </p>
-                                <div class="testimonial-author">
-                                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="David Wilson" class="author-avatar">
-                                    <div class="author-info">
-                                        <h6>David Wilson</h6>
-                                        <span>Property Manager, 25+ properties</span>
-                                        <div class="author-rating">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="slider-controls">
-                    <button class="slider-btn prev-btn">
-                        <i class="bi bi-chevron-left"></i>
-                    </button>
-                    <div class="slider-dots">
-                        <span class="dot active"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                    </div>
-                    <button class="slider-btn next-btn">
-                        <i class="bi bi-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="trust-badges mt-6">
-            <div class="row g-4 justify-content-center">
-                <div class="col-auto">
-                    <div class="badge-item">
+                <!-- Badge -->
+                <div class="hero-badge-wrapper reveal">
+                    <div class="hero-badge">
                         <i class="bi bi-shield-check"></i>
-                        <span>100% Verified Pros</span>
+                        <span>Verified professionals • Clear details • Trusted workflows</span>
                     </div>
                 </div>
-                <div class="col-auto">
-                    <div class="badge-item">
-                        <i class="bi bi-credit-card"></i>
-                        <span>Secure Payments</span>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <div class="badge-item">
-                        <i class="bi bi-chat-heart"></i>
-                        <span>24/7 Support</span>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <div class="badge-item">
-                        <i class="bi bi-award"></i>
-                        <span>Quality Guarantee</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- ==========================================
-   SECTION 6: FEATURES - INTERACTIVE GRID
-========================================== -->
-<section class="section-features section-6" data-section="6">
-    <div class="section-divider">
-        <span class="divider-text">Advanced Features</span>
-    </div>
+                <!-- Main Title -->
+                <h1 class="hero-title fw-bold reveal">
+                    Fix your home.<br class="d-none d-md-block" />
+                    <span class="hero-highlight">Faster. Safer. Smarter.</span>
+                </h1>
 
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Powerful <span class="text-gradient-primary">Features</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Everything you need for seamless home service management
+                <!-- Subtitle -->
+                <p class="hero-subtitle lead reveal">
+                    Homeix connects customers with approved home-service professionals through one organized platform —
+                    so you can post needs, compare options, and choose confidently.
                 </p>
+
+                <!-- Action Buttons -->
+                <div class="hero-actions reveal">
+                    @if (isAuth)
+                    {
+                        <a asp-controller="Account" asp-action="HomeRedirect"
+                           class="btn btn-hero-primary btn-lg">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Register"
+                           class="btn btn-hero-primary btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </a>
+                        <a asp-controller="Account" asp-action="Login"
+                           class="btn btn-hero-secondary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
+                    }
+                    <a asp-controller="WorkerPosts" asp-action="Index"
+                       class="btn btn-hero-outline btn-lg">
+                        <i class="bi bi-search me-2"></i>Browse Professionals
+                    </a>
+                </div>
+
+                <!-- Mobile App Download -->
+                <div class="hero-app-download reveal">
+                    <a asp-controller="Downloads" asp-action="MobileApp" class="app-download-link">
+                        <i class="bi bi-android2"></i>
+                        <span>@Localizer["DownloadApp"]</span>
+                    </a>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-3 justify-content-center hero-stats reveal">
+                    <div class="col-6 col-md-4">
+                        <div class="hero-stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">Trusted</div>
+                                <div class="stat-desc">Approved professionals</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="hero-stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-eye"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">Clear</div>
+                                <div class="stat-desc">Details, photos, price range</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="hero-stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-columns-gap"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">Organized</div>
+                                <div class="stat-desc">One place to manage it</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features List -->
+                <div class="hero-features reveal">
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Profiles you can trust</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Ratings & reviews</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Search & favorites</span>
+                    </div>
+                </div>
+
             </div>
         </div>
+    </div>
 
-        <div class="features-grid">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card animate-element" data-animation="flip-in">
-                        <div class="feature-icon">
-                            <i class="bi bi-robot"></i>
-                        </div>
-                        <h4>AI-Powered Matching</h4>
-                        <p>Our intelligent algorithm matches you with the perfect professionals based on project requirements, location, and ratings.</p>
-                        <div class="feature-stats">
-                            <div class="stat">
-                                <span class="number">99%</span>
-                                <span class="label">Match Accuracy</span>
-                            </div>
-                            <div class="stat">
-                                <span class="number">15min</span>
-                                <span class="label">Avg Match Time</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card animate-element" data-animation="flip-in" data-delay="100">
-                        <div class="feature-icon">
-                            <i class="bi bi-calendar-week"></i>
-                        </div>
-                        <h4>Smart Scheduling</h4>
-                        <p>Automated appointment scheduling with real-time availability, reminders, and calendar synchronization.</p>
-                        <div class="feature-stats">
-                            <div class="stat">
-                                <span class="number">95%</span>
-                                <span class="label">On-Time Rate</span>
-                            </div>
-                            <div class="stat">
-                                <span class="number">24/7</span>
-                                <span class="label">Booking Available</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card animate-element" data-animation="flip-in" data-delay="200">
-                        <div class="feature-icon">
-                            <i class="bi bi-shield-lock"></i>
-                        </div>
-                        <h4>Secure Payments</h4>
-                        <p>End-to-end encrypted transactions with escrow protection and multiple payment options.</p>
-                        <div class="feature-stats">
-                            <div class="stat">
-                                <span class="number">100%</span>
-                                <span class="label">Payment Protection</span>
-                            </div>
-                            <div class="stat">
-                                <span class="number">5+</span>
-                                <span class="label">Payment Methods</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card animate-element" data-animation="flip-in" data-delay="300">
-                        <div class="feature-icon">
-                            <i class="bi bi-graph-up"></i>
-                        </div>
-                        <h4>Progress Tracking</h4>
-                        <p>Real-time project tracking with photo updates, milestone completion, and automated notifications.</p>
-                        <div class="feature-stats">
-                            <div class="stat">
-                                <span class="number">Live</span>
-                                <span class="label">Updates</span>
-                            </div>
-                            <div class="stat">
-                                <span class="number">100%</span>
-                                <span class="label">Transparency</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card animate-element" data-animation="flip-in" data-delay="400">
-                        <div class="feature-icon">
-                            <i class="bi bi-chat-square-text"></i>
-                        </div>
-                        <h4>Built-in Messaging</h4>
-                        <p>Secure communication platform with file sharing, voice messages, and video calls.</p>
-                        <div class="feature-stats">
-                            <div class="stat">
-                                <span class="number">Instant</span>
-                                <span class="label">Communication</span>
-                            </div>
-                            <div class="stat">
-                                <span class="number">Unlimited</span>
-                                <span class="label">Messages</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card animate-element" data-animation="flip-in" data-delay="500">
-                        <div class="feature-icon">
-                            <i class="bi bi-file-text"></i>
-                        </div>
-                        <h4>Digital Contracts</h4>
-                        <p>Legally binding digital contracts with e-signature capabilities and automated renewals.</p>
-                        <div class="feature-stats">
-                            <div class="stat">
-                                <span class="number">Legal</span>
-                                <span class="label">Protection</span>
-                            </div>
-                            <div class="stat">
-                                <span class="number">Instant</span>
-                                <span class="label">Signing</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Bottom Wave -->
+    <div class="hero-wave">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+        </svg>
     </div>
 </section>
 
 <!-- ==========================================
-   SECTION 7: PROFESSIONALS SHOWCASE
+   WHY HOMEIX (REAL VALUE – CUSTOMER & WORKER)
 ========================================== -->
-<section class="section-pros section-7" data-section="7">
-    <div class="section-divider">
-        <span class="divider-text">Top Professionals</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Meet Our <span class="text-gradient-primary">Elite Professionals</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Highly rated professionals delivering exceptional service
-                </p>
-            </div>
+<section class="py-5 section-why-homeix">
+    <div class="container">
+        <div class="text-center mb-4 reveal">
+            <h2 class="fw-bold mb-2">Why Homeix?</h2>
+            <p class="text-muted mb-0">
+                Built to solve real problems: trust, unclear details, and hard communication.
+            </p>
         </div>
 
-        <div class="pros-grid">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="pro-card animate-element" data-animation="slide-up">
-                        <div class="pro-header">
-                            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="James Wilson" class="pro-avatar">
-                            <div class="pro-badge">
-                                <i class="bi bi-award-fill"></i>
-                                Top Rated
-                            </div>
-                        </div>
-                        <div class="pro-body">
-                            <h5 class="pro-name">James Wilson</h5>
-                            <span class="pro-title">Master Electrician</span>
-                            <div class="pro-rating">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <span class="rating-text">4.9 (342 reviews)</span>
-                            </div>
-                            <div class="pro-stats">
-                                <div class="stat">
-                                    <span class="number">15</span>
-                                    <span class="label">Years Exp</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="number">98%</span>
-                                    <span class="label">Success Rate</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="number">1240</span>
-                                    <span class="label">Projects</span>
-                                </div>
-                            </div>
-                            <div class="pro-skills">
-                                <span class="skill-tag">Wiring</span>
-                                <span class="skill-tag">Lighting</span>
-                                <span class="skill-tag">Smart Home</span>
-                            </div>
-                        </div>
+        <!-- Split value for both sides -->
+        <div class="row g-4 align-items-stretch mb-4">
+            <div class="col-lg-6 reveal">
+                <div class="p-4 rounded-4 h-100 border card-custom-bg"
+                     style="box-shadow: 0 10px 30px rgba(0,0,0,.06);">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-person-heart fs-4 text-primary"></i>
+                        <h4 class="fw-bold mb-0">For Customers</h4>
                     </div>
+                    <p class="text-muted mb-0">
+                        Find reliable help faster. Compare options using real profiles, clear service details,
+                        and community feedback—so you choose with confidence.
+                    </p>
                 </div>
+            </div>
 
-                <div class="col-lg-4 col-md-6">
-                    <div class="pro-card animate-element" data-animation="slide-up" data-delay="100">
-                        <div class="pro-header">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Maria Garcia" class="pro-avatar">
-                            <div class="pro-badge">
-                                <i class="bi bi-lightning-fill"></i>
-                                Fast Responder
-                            </div>
-                        </div>
-                        <div class="pro-body">
-                            <h5 class="pro-name">Maria Garcia</h5>
-                            <span class="pro-title">Plumbing Specialist</span>
-                            <div class="pro-rating">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-half"></i>
-                                <span class="rating-text">4.8 (289 reviews)</span>
-                            </div>
-                            <div class="pro-stats">
-                                <div class="stat">
-                                    <span class="number">12</span>
-                                    <span class="label">Years Exp</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="number">99%</span>
-                                    <span class="label">Success Rate</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="number">1560</span>
-                                    <span class="label">Projects</span>
-                                </div>
-                            </div>
-                            <div class="pro-skills">
-                                <span class="skill-tag">Emergency</span>
-                                <span class="skill-tag">Installation</span>
-                                <span class="skill-tag">Repair</span>
-                            </div>
-                        </div>
+            <div class="col-lg-6 reveal">
+                <div class="p-4 rounded-4 h-100 border card-custom-bg"
+                     style="box-shadow: 0 10px 30px rgba(0,0,0,.06);">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-briefcase fs-4 text-primary"></i>
+                        <h4 class="fw-bold mb-0">For Professionals</h4>
                     </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <div class="pro-card animate-element" data-animation="slide-up" data-delay="200">
-                        <div class="pro-header">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Robert Chen" class="pro-avatar">
-                            <div class="pro-badge">
-                                <i class="bi bi-heart-fill"></i>
-                                Most Loved
-                            </div>
-                        </div>
-                        <div class="pro-body">
-                            <h5 class="pro-name">Robert Chen</h5>
-                            <span class="pro-title">HVAC Expert</span>
-                            <div class="pro-rating">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <span class="rating-text">5.0 (412 reviews)</span>
-                            </div>
-                            <div class="pro-stats">
-                                <div class="stat">
-                                    <span class="number">18</span>
-                                    <span class="label">Years Exp</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="number">100%</span>
-                                    <span class="label">Success Rate</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="number">2100</span>
-                                    <span class="label">Projects</span>
-                                </div>
-                            </div>
-                            <div class="pro-skills">
-                                <span class="skill-tag">AC Repair</span>
-                                <span class="skill-tag">Installation</span>
-                                <span class="skill-tag">Maintenance</span>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-muted mb-0">
+                        Reach real customers in a structured marketplace. Present your services clearly,
+                        build reputation with reviews, and manage your work from one place.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <div class="pros-stats mt-6">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="pro-stat-card animate-element" data-animation="fade-in">
-                        <div class="stat-number">5,000+</div>
-                        <div class="stat-label">Verified Professionals</div>
-                        <p class="stat-desc">Background checked and licensed</p>
+        <div class="row g-4 text-center">
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-person-check"></i></div>
+                        <h5 class="fw-bold mt-3">Approved professionals</h5>
+                        <p class="text-muted mb-0">
+                            Professionals apply before offering services, helping customers feel safer when choosing.
+                        </p>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="pro-stat-card animate-element" data-animation="fade-in" data-delay="100">
-                        <div class="stat-number">15+</div>
-                        <div class="stat-label">Years Average Experience</div>
-                        <p class="stat-desc">Industry expertise you can trust</p>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-card-checklist"></i></div>
+                        <h5 class="fw-bold mt-3">Clear service details</h5>
+                        <p class="text-muted mb-0">
+                            Posts include useful information like descriptions, photos, and price ranges—so expectations are clearer.
+                        </p>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="pro-stat-card animate-element" data-animation="fade-in" data-delay="200">
-                        <div class="stat-number">98.5%</div>
-                        <div class="stat-label">Customer Satisfaction</div>
-                        <p class="stat-desc">Consistent quality delivery</p>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-star"></i></div>
+                        <h5 class="fw-bold mt-3">Ratings & reviews</h5>
+                        <p class="text-muted mb-0">
+                            Reputation is visible to everyone, encouraging better quality and more accountable behavior.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-person-lines-fill"></i></div>
+                        <h5 class="fw-bold mt-3">Public profiles</h5>
+                        <p class="text-muted mb-0">
+                            View profile info, services, and reviews to make smarter decisions before contacting anyone.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-funnel"></i></div>
+                        <h5 class="fw-bold mt-3">Search & filtering</h5>
+                        <p class="text-muted mb-0">
+                            Find what you need faster by filtering by category, price range, and community rating.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-heart"></i></div>
+                        <h5 class="fw-bold mt-3">Favorites</h5>
+                        <p class="text-muted mb-0">
+                            Save posts you like and return to them later without searching again.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-images"></i></div>
+                        <h5 class="fw-bold mt-3">Photos that explain more</h5>
+                        <p class="text-muted mb-0">
+                            Photos help customers explain problems better and help professionals present services clearly.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-megaphone"></i></div>
+                        <h5 class="fw-bold mt-3">Highlighted offers</h5>
+                        <p class="text-muted mb-0">
+                            Featured content helps users discover important offers faster while keeping the marketplace organized.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 reveal">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="icon-bubble mx-auto"><i class="bi bi-phone"></i></div>
+                        <h5 class="fw-bold mt-3">Responsive experience</h5>
+                        <p class="text-muted mb-0">
+                            Smooth experience across desktop and mobile so users can manage work anywhere.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Trust statement aligned with your report -->
+        <div class="mt-5 reveal">
+            <div class="p-4 rounded-4 border card-custom-bg"
+                 style="box-shadow: 0 10px 30px rgba(0,0,0,.06);">
+                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">Built on trust + transparency</h5>
+                        <p class="text-muted mb-0">
+                            Homeix reduces uncertainty by using verified workflows, clear post information, and real community feedback —
+                            improving the whole home-service experience for everyone.
+                        </p>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a asp-controller="WorkerPosts" asp-action="Index" class="btn btn-outline-primary">
+                            Explore Services
+                        </a>
+                        <a asp-controller="CustomerPosts" asp-action="Create" class="btn btn-primary">
+                            Post a Request
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 
 <!-- ==========================================
-   SECTION 8: PRICING - COMPARISON TABLE
+   POPULAR SERVICES
 ========================================== -->
-<section class="section-pricing section-8" data-section="8">
-    <div class="section-divider">
-        <span class="divider-text">Transparent Pricing</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Simple, <span class="text-gradient-primary">Transparent Pricing</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Choose the plan that fits your needs
-                </p>
-            </div>
+<section class="py-5 section-popular-services">
+    <div class="container">
+        <div class="text-center mb-4 reveal">
+            <h2 class="fw-bold mb-1">Popular services</h2>
+            <p class="text-muted mb-0">Hover or tap to preview — the row moves automatically.</p>
         </div>
 
-        <div class="pricing-switcher mb-6">
-            <div class="switcher-inner">
-                <span class="switcher-label">Monthly</span>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="pricingSwitch">
-                </div>
-                <span class="switcher-label">Yearly <span class="badge bg-primary">Save 20%</span></span>
-            </div>
-        </div>
+        @functions {
+            string ServiceImg(string file) => Url.Content("~/images/home/services/" + file);
+        }
 
-        <div class="pricing-cards">
-            <div class="row g-4 justify-content-center">
-                <div class="col-lg-4">
-                    <div class="pricing-card animate-element" data-animation="scale-up">
-                        <div class="pricing-header">
-                            <h4>Basic</h4>
-                            <div class="price">
-                                <span class="currency">$</span>
-                                <span class="amount">0</span>
-                                <span class="period">/month</span>
+        @{
+            var services = new[]
+            {
+        new { Name = "Plumbing", Icon = "bi-wrench-adjustable", Img = "plumbing.jpg" },
+        new { Name = "Electrical", Icon = "bi-lightning-charge", Img = "electrical.jpg" },
+        new { Name = "AC / Cooling", Icon = "bi-snow", Img = "ac.jpg" },
+        new { Name = "Painting", Icon = "bi-brush", Img = "painting.jpg" },
+        new { Name = "Cleaning", Icon = "bi-bucket", Img = "cleaning.jpg" },
+        new { Name = "Repairs", Icon = "bi-tools", Img = "repairs.jpg" },
+        new { Name = "Carpentry", Icon = "bi-door-open", Img = "carpentry.jpg" },
+        new { Name = "Maintenance", Icon = "bi-house-gear", Img = "maintenance.jpg" },
+        };
+        }
+
+        <div class="popular-marquee reveal">
+            <div class="popular-track">
+                @for (int loop = 0; loop < 2; loop++)
+                {
+                    foreach (var s in services)
+                    {
+                        <div class="service-flip popular-item" role="button" tabindex="0">
+                            <div class="flip-inner">
+                                <div class="flip-face flip-front card shadow-sm border-0 rounded-4">
+                                    <div class="card-body text-center py-4">
+                                        <i class="bi @s.Icon fs-1 text-primary"></i>
+                                        <div class="fw-bold mt-2">@s.Name</div>
+                                        <div class="text-muted small">Tap to preview</div>
+                                    </div>
+                                </div>
+                                <div class="flip-face flip-back card shadow-sm border-0 rounded-4 overflow-hidden">
+                                    <img src="@ServiceImg(s.Img)" alt="@s.Name" />
+                                </div>
                             </div>
-                            <p class="pricing-desc">For homeowners with occasional needs</p>
                         </div>
-                        <div class="pricing-features">
-                            <ul>
-                                <li><i class="bi bi-check-circle"></i> Free project posting</li>
-                                <li><i class="bi bi-check-circle"></i> Basic professional matching</li>
-                                <li><i class="bi bi-check-circle"></i> Standard messaging</li>
-                                <li><i class="bi bi-x-circle"></i> No progress tracking</li>
-                                <li><i class="bi bi-x-circle"></i> Limited support</li>
-                            </ul>
-                        </div>
-                        <div class="pricing-footer">
-                            <a href="#" class="btn btn-outline-primary w-100">Get Started Free</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="pricing-card featured animate-element" data-animation="scale-up" data-delay="100">
-                        <div class="pricing-badge">Most Popular</div>
-                        <div class="pricing-header">
-                            <h4>Professional</h4>
-                            <div class="price">
-                                <span class="currency">$</span>
-                                <span class="amount">29</span>
-                                <span class="period">/month</span>
-                            </div>
-                            <p class="pricing-desc">For regular home maintenance</p>
-                        </div>
-                        <div class="pricing-features">
-                            <ul>
-                                <li><i class="bi bi-check-circle"></i> Everything in Basic</li>
-                                <li><i class="bi bi-check-circle"></i> AI-powered matching</li>
-                                <li><i class="bi bi-check-circle"></i> Priority support</li>
-                                <li><i class="bi bi-check-circle"></i> Progress tracking</li>
-                                <li><i class="bi bi-check-circle"></i> Secure payments</li>
-                            </ul>
-                        </div>
-                        <div class="pricing-footer">
-                            <a href="#" class="btn btn-primary w-100">Get Professional</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="pricing-card animate-element" data-animation="scale-up" data-delay="200">
-                        <div class="pricing-header">
-                            <h4>Business</h4>
-                            <div class="price">
-                                <span class="currency">$</span>
-                                <span class="amount">99</span>
-                                <span class="period">/month</span>
-                            </div>
-                            <p class="pricing-desc">For property managers & businesses</p>
-                        </div>
-                        <div class="pricing-features">
-                            <ul>
-                                <li><i class="bi bi-check-circle"></i> Everything in Professional</li>
-                                <li><i class="bi bi-check-circle"></i> Multi-property management</li>
-                                <li><i class="bi bi-check-circle"></i> Advanced analytics</li>
-                                <li><i class="bi bi-check-circle"></i> Dedicated account manager</li>
-                                <li><i class="bi bi-check-circle"></i> Custom integrations</li>
-                            </ul>
-                        </div>
-                        <div class="pricing-footer">
-                            <a href="#" class="btn btn-outline-primary w-100">Contact Sales</a>
-                        </div>
-                    </div>
-                </div>
+                    }
+                }
             </div>
         </div>
     </div>
 </section>
-
 <!-- ==========================================
-   SECTION 9: FAQ - ACCORDION WITH SEARCH
+   CUSTOMER & PROFESSIONAL ROLES (INFORMATION)
 ========================================== -->
-<section class="section-faq section-9" data-section="9">
-    <div class="section-divider">
-        <span class="divider-text">FAQ Center</span>
-    </div>
+<section class="py-5 section-role-info">
+    <div class="container">
 
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Frequently Asked <span class="text-gradient-primary">Questions</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Find answers to common questions about Homeix
-                </p>
-            </div>
+        <!-- Section Header -->
+        <div class="text-center mb-5 reveal">
+            <h2 class="fw-bold mb-2">Customer and Professional Roles</h2>
+            <p class="text-muted mb-0">
+                Homeix is designed to support both sides of the home-service process in one organized system.
+            </p>
         </div>
 
-        <div class="faq-search mb-6 animate-element" data-animation="fade-in">
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" class="form-control" placeholder="Search for answers..." id="faqSearch">
-                <button class="btn btn-primary">Search</button>
-            </div>
-        </div>
+        <div class="row g-4 justify-content-center">
 
-        <div class="faq-accordion">
-            <div class="accordion" id="faqAccordion">
-                <div class="accordion-item animate-element" data-animation="slide-up">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                            How does Homeix verify professionals?
-                        </button>
-                    </h2>
-                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            <p>Our verification process includes:</p>
-                            <ul>
-                                <li>License and certification validation</li>
-                                <li>Background checks</li>
-                                <li>Insurance verification</li>
-                                <li>Skill assessment tests</li>
-                                <li>Reference checks from previous clients</li>
-                            </ul>
-                            <p>Only 15% of applicants pass our rigorous verification process.</p>
+            <!-- CUSTOMER -->
+            <div class="col-lg-5 reveal">
+                <div class="h-100 border rounded-4 p-4 card-custom-bg">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-bubble">
+                            <i class="bi bi-house-check"></i>
                         </div>
+                        <h4 class="fw-bold mb-0">Customer</h4>
                     </div>
-                </div>
 
-                <div class="accordion-item animate-element" data-animation="slide-up" data-delay="100">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                            How are payments protected?
-                        </button>
-                    </h2>
-                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            <p>We use a secure escrow system:</p>
-                            <ul>
-                                <li>Funds are held securely until work is completed</li>
-                                <li>Multiple payment options (credit card, PayPal, bank transfer)</li>
-                                <li>End-to-end encryption for all transactions</li>
-                                <li>Dispute resolution process</li>
-                                <li>Money-back guarantee for unsatisfied work</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item animate-element" data-animation="slide-up" data-delay="200">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                            What's the average response time?
-                        </button>
-                    </h2>
-                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            <p>Our platform ensures quick responses:</p>
-                            <ul>
-                                <li>Average first response: 15 minutes</li>
-                                <li>Emergency requests: Under 5 minutes</li>
-                                <li>Quotes delivered within 2 hours</li>
-                                <li>24/7 customer support availability</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-item animate-element" data-animation="slide-up" data-delay="300">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                            Can I cancel or reschedule a service?
-                        </button>
-                    </h2>
-                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            <p>Yes, we offer flexible scheduling:</p>
-                            <ul>
-                                <li>Free cancellation up to 24 hours before service</li>
-                                <li>Easy rescheduling through the dashboard</li>
-                                <li>No fees for last-minute emergencies</li>
-                                <li>Automatic reminders and notifications</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 10: BLOG PREVIEW - CARDS SLIDER
-========================================== -->
-<section class="section-blog section-10" data-section="10">
-    <div class="section-divider">
-        <span class="divider-text">Latest Insights</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Home Service <span class="text-gradient-primary">Insights</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    Tips, trends, and expert advice for your home
-                </p>
-            </div>
-        </div>
-
-        <div class="blog-carousel">
-            <div class="blog-track">
-                <div class="blog-card animate-element" data-animation="slide-up">
-                    <div class="blog-image">
-                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Home Maintenance">
-                        <span class="blog-category">Maintenance</span>
-                    </div>
-                    <div class="blog-content">
-                        <h5 class="blog-title">10 Essential Home Maintenance Tips for 2024</h5>
-                        <p class="blog-excerpt">Learn the crucial maintenance tasks that can save you thousands in repairs this year.</p>
-                        <div class="blog-meta">
-                            <span class="date"><i class="bi bi-calendar"></i> Jan 15, 2024</span>
-                            <span class="read-time"><i class="bi bi-clock"></i> 5 min read</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="blog-card animate-element" data-animation="slide-up" data-delay="100">
-                    <div class="blog-image">
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Smart Home">
-                        <span class="blog-category">Technology</span>
-                    </div>
-                    <div class="blog-content">
-                        <h5 class="blog-title">Smart Home Upgrades That Increase Property Value</h5>
-                        <p class="blog-excerpt">Discover which smart home technologies provide the best return on investment.</p>
-                        <div class="blog-meta">
-                            <span class="date"><i class="bi bi-calendar"></i> Jan 10, 2024</span>
-                            <span class="read-time"><i class="bi bi-clock"></i> 7 min read</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="blog-card animate-element" data-animation="slide-up" data-delay="200">
-                    <div class="blog-image">
-                        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Energy Saving">
-                        <span class="blog-category">Sustainability</span>
-                    </div>
-                    <div class="blog-content">
-                        <h5 class="blog-title">Energy-Efficient Home Improvements Guide</h5>
-                        <p class="blog-excerpt">Reduce your carbon footprint and utility bills with these proven upgrades.</p>
-                        <div class="blog-meta">
-                            <span class="date"><i class="bi bi-calendar"></i> Jan 5, 2024</span>
-                            <span class="read-time"><i class="bi bi-clock"></i> 6 min read</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 11: COMPARISON - HOMEIX VS OTHERS
-========================================== -->
-<section class="section-comparison section-11" data-section="11">
-    <div class="section-divider">
-        <span class="divider-text">Why Choose Homeix</span>
-    </div>
-
-    <div class="container py-6">
-        <div class="row mb-6">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="section-title animate-element" data-animation="slide-up">
-                    Homeix vs <span class="text-gradient-primary">Traditional Services</span>
-                </h2>
-                <p class="section-subtitle animate-element" data-animation="slide-up" data-delay="100">
-                    See how we're revolutionizing home services
-                </p>
-            </div>
-        </div>
-
-        <div class="comparison-table animate-element" data-animation="fade-in">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Traditional Services</th>
-                        <th>Homeix Platform</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Professional Verification</td>
-                        <td><i class="bi bi-x-circle text-danger"></i> Self-reported</td>
-                        <td><i class="bi bi-check-circle text-success"></i> Rigorous 5-step process</td>
-                    </tr>
-                    <tr>
-                        <td>Response Time</td>
-                        <td><i class="bi bi-clock text-warning"></i> 1-3 days average</td>
-                        <td><i class="bi bi-lightning text-success"></i> 15 minutes average</td>
-                    </tr>
-                    <tr>
-                        <td>Price Transparency</td>
-                        <td><i class="bi bi-question-circle text-warning"></i> Estimates vary widely</td>
-                        <td><i class="bi bi-cash-stack text-success"></i> Upfront competitive quotes</td>
-                    </tr>
-                    <tr>
-                        <td>Payment Security</td>
-                        <td><i class="bi bi-shield-x text-danger"></i> Cash/check only</td>
-                        <td><i class="bi bi-shield-check text-success"></i> Secure escrow system</td>
-                    </tr>
-                    <tr>
-                        <td>Progress Tracking</td>
-                        <td><i class="bi bi-eye-slash text-danger"></i> No visibility</td>
-                        <td><i class="bi bi-eye text-success"></i> Real-time updates</td>
-                    </tr>
-                    <tr>
-                        <td>Support Availability</td>
-                        <td><i class="bi bi-clock text-warning"></i> Business hours only</td>
-                        <td><i class="bi bi-clock-history text-success"></i> 24/7 customer support</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="comparison-stats mt-6">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="comparison-stat animate-element" data-animation="fade-in">
-                        <div class="stat-number">70%</div>
-                        <div class="stat-label">Faster Service Completion</div>
-                        <p>Compared to traditional methods</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="comparison-stat animate-element" data-animation="fade-in" data-delay="100">
-                        <div class="stat-number">40%</div>
-                        <div class="stat-label">Cost Savings</div>
-                        <p>On average home service projects</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="comparison-stat animate-element" data-animation="fade-in" data-delay="200">
-                        <div class="stat-number">98%</div>
-                        <div class="stat-label">Higher Satisfaction</div>
-                        <p>Verified customer ratings</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==========================================
-   SECTION 12: FINAL CTA - GRADIENT BACKGROUND
-========================================== -->
-<section class="section-final-cta section-12" data-section="12">
-    <div class="container py-6">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <div class="final-cta-content animate-element" data-animation="scale-up">
-                    <h2 class="cta-title mb-4">Ready to Transform Your Home Experience?</h2>
-                    <p class="cta-text mb-5">
-                        Join thousands of satisfied homeowners and professionals who trust Homeix for their home service needs.
-                        Start your journey today and experience the future of home services.
+                    <p class="text-muted mb-3">
+                        Customers use Homeix to request home services and explore available professionals
+                        through clear profiles, structured posts, and community feedback.
                     </p>
 
-                    <div class="cta-buttons">
-                        @if (isAuth)
-                        {
-                            <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-xl btn-gradient-primary">
-                                <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Account" asp-action="Register" class="btn btn-xl btn-gradient-primary me-3">
-                                <i class="bi bi-rocket-takeoff me-2"></i> Start Free Trial
-                            </a>
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-xl btn-outline-light">
-                                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
-                            </a>
-                        }
+                    <ul class="list-unstyled text-muted small mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Create service requests with detailed descriptions
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Compare professionals using profiles and ratings
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            View photos, price ranges, and reviews
+                        </li>
+                        <li>
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Save posts for later reference
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PROFESSIONAL -->
+            <div class="col-lg-5 reveal">
+                <div class="h-100 border rounded-4 p-4 card-custom-bg">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-bubble">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">Professional</h4>
                     </div>
 
-                    <div class="cta-features mt-6">
-                        <div class="row g-4 justify-content-center">
-                            <div class="col-auto">
-                                <div class="feature">
-                                    <i class="bi bi-shield-check"></i>
-                                    <span>No credit card required</span>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="feature">
-                                    <i class="bi bi-clock"></i>
-                                    <span>14-day free trial</span>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="feature">
-                                    <i class="bi bi-headset"></i>
-                                    <span>24/7 support</span>
-                                </div>
-                            </div>
-                        </div>
+                    <p class="text-muted mb-3">
+                        Professionals use Homeix to present their services in a verified marketplace
+                        and connect with customers seeking reliable home-service solutions.
+                    </p>
+
+                    <ul class="list-unstyled text-muted small mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Apply for verification before offering services
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Publish structured service posts with clear details
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Build reputation through ratings and reviews
+                        </li>
+                        <li>
+                            <i class="bi bi-check-circle me-2 text-primary"></i>
+                            Manage services and visibility from one platform
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ==========================================
+   FAQ
+========================================== -->
+<section class="py-5 section-faq">
+    <div class="container">
+        <div class="text-center mb-4 reveal">
+            <h2 class="fw-bold mb-2">Frequently asked questions</h2>
+            <p class="text-muted mb-0">Quick answers to common questions.</p>
+        </div>
+
+        <div class="accordion accordion-flush border rounded-4 overflow-hidden reveal" id="homeixFaq">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#a1">
+                        How do I post a request as a customer?
+                    </button>
+                </h2>
+                <div id="a1" class="accordion-collapse collapse show">
+                    <div class="accordion-body text-muted">
+                        Create an account, then publish a request with a clear description, location, photos, and budget range.
                     </div>
                 </div>
             </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a2">
+                        How do professionals join Homeix?
+                    </button>
+                </h2>
+                <div id="a2" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Professionals submit an application. Once approved, they can publish services and appear to customers in the marketplace.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a3">
+                        How do I choose the right person?
+                    </button>
+                </h2>
+                <div id="a3" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Use filters, view profiles, and check ratings and reviews to compare options before deciding.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a4">
+                        Can I save posts to review later?
+                    </button>
+                </h2>
+                <div id="a4" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Yes. You can add posts to Favorites so you can return to them anytime.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+   CTA
+========================================== -->
+<section class="section-cta text-white py-5">
+    <div class="container text-center reveal">
+        <h2 class="fw-bold mb-2 text-white">Ready to start?</h2>
+        <p class="text-white-50 mb-4">
+            Join Homeix and manage home services with more trust, clarity, and control.
+        </p>
+
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            @if (isAuth)
+            {
+                <a asp-controller="Account" asp-action="HomeRedirect" class="btn btn-accent btn-lg fw-bold">
+                    Open My Homeix
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-accent btn-lg fw-bold">
+                    Create Account
+                </a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">
+                    Login
+                </a>
+            }
+
+            <a asp-controller="WorkerApprovals" asp-action="Index" class="btn btn-outline-light btn-lg">
+                Become a Professional
+            </a>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            <a asp-controller="Downloads"
+               asp-action="MobileApp"
+               class="btn btn-outline-light btn-sm d-flex align-items-center gap-2 px-3 py-2">
+                <i class="bi bi-android2 fs-5"></i>
+                <span>@Localizer["DownloadApp"]</span>
+            </a>
         </div>
     </div>
 </section>
@@ -1360,318 +589,24 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Initialize all animations
-            initScrollAnimations();
+            const els = document.querySelectorAll(".reveal");
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) e.target.classList.add("is-visible");
+                });
+            }, { threshold: 0.12 });
 
-            // Initialize services carousel
-            initServicesCarousel();
+            els.forEach(el => obs.observe(el));
 
-            // Initialize testimonial slider
-            initTestimonialSlider();
-
-            // Initialize text rotation
-            initTextRotation();
-
-            // Initialize counters
-            initCounters();
-
-            // Initialize pricing switcher
-            initPricingSwitcher();
-
-            // Initialize FAQ search
-            initFAQSearch();
-
-            // Initialize smooth scrolling
-            initSmoothScrolling();
+            document.querySelectorAll(".service-flip").forEach(card => {
+                card.addEventListener("click", () => card.classList.toggle("is-flipped"));
+                card.addEventListener("keypress", (ev) => {
+                    if (ev.key === "Enter" || ev.key === " ") {
+                        ev.preventDefault();
+                        card.classList.toggle("is-flipped");
+                    }
+                });
+            });
         });
-
-        function initScrollAnimations() {
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -100px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const element = entry.target;
-                        const animation = element.getAttribute('data-animation');
-                        const delay = parseInt(element.getAttribute('data-delay')) || 0;
-
-                        setTimeout(() => {
-                            element.classList.add(`animate-${animation}`);
-                        }, delay);
-
-                        observer.unobserve(element);
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.animate-element').forEach(el => observer.observe(el));
-        }
-
-        function initServicesCarousel() {
-            const services = [
-                { title: "Emergency Plumbing", icon: "bi-droplet", color: "#3b82f6", rating: 4.9, jobs: 1240 },
-                { title: "Electrical Wiring", icon: "bi-lightning-charge", color: "#f59e0b", rating: 4.8, jobs: 980 },
-                { title: "AC Installation", icon: "bi-snow", color: "#06b6d4", rating: 4.7, jobs: 1560 },
-                { title: "Deep Cleaning", icon: "bi-bucket", color: "#10b981", rating: 4.9, jobs: 2100 },
-                { title: "Home Painting", icon: "bi-brush", color: "#8b5cf6", rating: 4.6, jobs: 890 },
-                { title: "Furniture Assembly", icon: "bi-hammer", color: "#ef4444", rating: 4.8, jobs: 1250 },
-                { title: "Garden Maintenance", icon: "bi-tree", color: "#22c55e", rating: 4.7, jobs: 760 },
-                { title: "Smart Home Setup", icon: "bi-house-gear", color: "#6366f1", rating: 4.9, jobs: 540 }
-            ];
-
-            const track = document.getElementById('services-track');
-            const indicators = document.querySelector('.carousel-indicators');
-
-            services.forEach((service, index) => {
-                // Create service card
-                const card = document.createElement('div');
-                card.className = 'service-carousel-card';
-                card.innerHTML = `
-                    <div class="service-carousel-icon" style="background: linear-gradient(135deg, ${service.color}, ${lightenColor(service.color, 20)})">
-                        <i class="bi ${service.icon}"></i>
-                    </div>
-                    <h5>${service.title}</h5>
-                    <div class="service-carousel-rating">
-                        ${generateStars(service.rating)}
-                        <span class="ms-2">${service.rating}</span>
-                    </div>
-                    <div class="service-carousel-stats">
-                        <span><i class="bi bi-check-circle me-1"></i> ${service.jobs.toLocaleString()} jobs</span>
-                    </div>
-                `;
-                track.appendChild(card);
-
-                // Create indicator
-                const indicator = document.createElement('span');
-                indicator.className = `indicator ${index === 0 ? 'active' : ''}`;
-                indicator.addEventListener('click', () => goToSlide(index));
-                indicators.appendChild(indicator);
-            });
-
-            let currentSlide = 0;
-            const totalSlides = services.length;
-            const slideWidth = 300; // Card width + gap
-
-            function goToSlide(index) {
-                currentSlide = index;
-                track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-
-                // Update indicators
-                document.querySelectorAll('.indicator').forEach((ind, i) => {
-                    ind.classList.toggle('active', i === currentSlide);
-                });
-            }
-
-            // Navigation buttons
-            document.querySelector('.carousel-btn.prev-btn').addEventListener('click', () => {
-                if (currentSlide > 0) {
-                    goToSlide(currentSlide - 1);
-                }
-            });
-
-            document.querySelector('.carousel-btn.next-btn').addEventListener('click', () => {
-                if (currentSlide < totalSlides - 3) {
-                    goToSlide(currentSlide + 1);
-                }
-            });
-
-            // Auto slide
-            setInterval(() => {
-                if (currentSlide < totalSlides - 3) {
-                    goToSlide(currentSlide + 1);
-                } else {
-                    goToSlide(0);
-                }
-            }, 5000);
-        }
-
-        function initTestimonialSlider() {
-            const slides = document.querySelectorAll('.testimonial-slide');
-            const dots = document.querySelectorAll('.dot');
-            const prevBtn = document.querySelector('.prev-btn');
-            const nextBtn = document.querySelector('.next-btn');
-
-            let currentSlide = 0;
-
-            function updateSlider() {
-                slides.forEach((slide, index) => {
-                    slide.classList.toggle('active', index === currentSlide);
-                });
-
-                dots.forEach((dot, index) => {
-                    dot.classList.toggle('active', index === currentSlide);
-                });
-            }
-
-            prevBtn.addEventListener('click', () => {
-                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                updateSlider();
-            });
-
-            nextBtn.addEventListener('click', () => {
-                currentSlide = (currentSlide + 1) % slides.length;
-                updateSlider();
-            });
-
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    currentSlide = index;
-                    updateSlider();
-                });
-            });
-
-            // Auto slide every 7 seconds
-            setInterval(() => {
-                currentSlide = (currentSlide + 1) % slides.length;
-                updateSlider();
-            }, 7000);
-        }
-
-        function initTextRotation() {
-            const element = document.querySelector('.text-rotating');
-            const words = JSON.parse(element.getAttribute('data-words'));
-            let currentIndex = 0;
-
-            function rotateText() {
-                element.style.opacity = '0';
-                setTimeout(() => {
-                    element.textContent = words[currentIndex];
-                    element.style.opacity = '1';
-                    currentIndex = (currentIndex + 1) % words.length;
-                }, 500);
-            }
-
-            // Initial rotation after 2 seconds
-            setTimeout(() => {
-                rotateText();
-                setInterval(rotateText, 3000);
-            }, 2000);
-        }
-
-        function initCounters() {
-            const counters = document.querySelectorAll('.stat-number[data-count]');
-
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-count'));
-                const duration = 2000;
-                const step = target / (duration / 16); // 60fps
-                let current = 0;
-
-                const updateCounter = () => {
-                    current += step;
-                    if (current < target) {
-                        counter.textContent = Math.ceil(current);
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target.toLocaleString();
-                    }
-                };
-
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting) {
-                        updateCounter();
-                        observer.unobserve(counter);
-                    }
-                }, { threshold: 0.5 });
-
-                observer.observe(counter);
-            });
-        }
-
-        function initPricingSwitcher() {
-            const switchElement = document.getElementById('pricingSwitch');
-            const monthlyPrices = [0, 29, 99];
-            const yearlyPrices = [0, 23.2, 79.2]; // 20% discount
-
-            switchElement.addEventListener('change', function() {
-                const isYearly = this.checked;
-                const amounts = document.querySelectorAll('.price .amount');
-
-                amounts.forEach((amount, index) => {
-                    const price = isYearly ? yearlyPrices[index] : monthlyPrices[index];
-                    amount.textContent = price;
-                });
-
-                // Update period text
-                const periods = document.querySelectorAll('.price .period');
-                periods.forEach(period => {
-                    period.textContent = isYearly ? '/year' : '/month';
-                });
-            });
-        }
-
-        function initFAQSearch() {
-            const searchInput = document.getElementById('faqSearch');
-            const accordionItems = document.querySelectorAll('.accordion-item');
-
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-
-                accordionItems.forEach(item => {
-                    const text = item.textContent.toLowerCase();
-                    if (text.includes(searchTerm)) {
-                        item.style.display = 'block';
-                        // Open the accordion if it contains search term
-                        const button = item.querySelector('.accordion-button');
-                        if (!button.classList.contains('collapsed')) {
-                            button.click();
-                        }
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        }
-
-        function initSmoothScrolling() {
-            document.querySelectorAll('.scroll-to-section').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-        }
-
-        // Utility functions
-        function lightenColor(color, percent) {
-            const num = parseInt(color.replace("#", ""), 16);
-            const amt = Math.round(2.55 * percent);
-            const R = (num >> 16) + amt;
-            const G = (num >> 8 & 0x00FF) + amt;
-            const B = (num & 0x0000FF) + amt;
-
-            return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
-        }
-
-        function generateStars(rating) {
-            let stars = '';
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-
-            for (let i = 1; i <= 5; i++) {
-                if (i <= fullStars) {
-                    stars += '<i class="bi bi-star-fill"></i>';
-                } else if (i === fullStars + 1 && hasHalfStar) {
-                    stars += '<i class="bi bi-star-half"></i>';
-                } else {
-                    stars += '<i class="bi bi-star"></i>';
-                }
-            }
-
-            return stars;
-        }
     </script>
 }
